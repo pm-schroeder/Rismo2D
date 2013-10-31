@@ -1850,13 +1850,17 @@ void MODEL::UCDOutput( FILE*    id,
           case PROJECT::kKINRATIO:
           {
             // kinEr
-            double L2 = 0.094 * 0.094 * Lx[no] * Ly[no];
+//            double L2 = 0.094 * 0.094 * Lx[no] * Ly[no];
+            double L2 = sqrt( project->KD.cm*project->KD.cd ) * TYPE::deflt.lm * TYPE::deflt.lm * Lx[no] * Ly[no]; // deflt.lm ggf. anpassen
             double kr = 0.0;
             if( L2 > 1.0e-9 )  kr = project->statist->GetVtVt(no) / L2;
             // kinE
             double kE = project->statist->GetKinE(no);
 
-            fprintf( id, " %14.6le", kE / (kE + kr ) );
+            double kinRatio = 0.0;
+            if ( (kE + kr ) > 1.0e-9 ) kinRatio = kE / (kE + kr );
+
+            fprintf( id, " %14.6le", kinRatio );
             break;
           }
         }
