@@ -35,7 +35,7 @@
 #include "Project.h"
 
 
-int PROJECT::release = 40517;
+int PROJECT::release = 40518;
 
 
 PROJECT::PROJECT()

@@ -1836,7 +1836,8 @@ void MODEL::UCDOutput( FILE*    id,
 
           case PROJECT::kKINER:
           {
-            double L2 = 0.094 * 0.094 * Lx[no] * Ly[no];
+//            double L2 = 0.094 * 0.094 * Lx[no] * Ly[no];
+            double L2 = sqrt( project->KD.cm*project->KD.cd ) * TYPE::deflt.lm * TYPE::deflt.lm * Lx[no] * Ly[no]; // deflt.lm ggf. anpassen
             double kr = 0.0;
             if( L2 > 1.0e-9 )  kr = project->statist->GetVtVt(no) / L2;
             fprintf( id, " %14.6le", kr );

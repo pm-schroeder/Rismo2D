@@ -220,15 +220,17 @@ void GRID::Turbulence( PROJECT* project )
 
         double Utau = sqrt( node[n].cf * (U*U + V*V) );
         double cK   = 1.0 / sqrt( node[n].cf );
-        double PKv  = cK * Utau*Utau*Utau / H;
+//        double PKv  = cK * Utau*Utau*Utau / H;
 
         // LES
         double L  = ls[n] / cnt[n];
 
         double vt = ste[n] * H * Utau  +  L * L * sqrt( phi[n] );
 
-        double D  = vt * phi[n] + PKv;
-        double K  = sqrt( vt * D / cm / cd );
+//        double D  = vt * phi[n];// + PKv;
+//        double K  = sqrt( vt * D / cm / cd );
+
+        double K = (L * L * phi[n]  +  Utau*Utau * sqrt(cK*ste[n]) ) / sqrt(cm/cd);
 
         node[n].vt = vt;
         node[n].uu =
