@@ -785,7 +785,15 @@ void MODEL::OutputSeriesHeader( PROJECT *project, TMSER *tmser )
 void MODEL::OutputSeries( PROJECT *project, int timeStep, TMSER *tmser )
 {
   // write the header, if this is the first time step
-  if( timeStep == tmser->first ) OutputSeriesHeader( project, tmser );
+  //if( timeStep == tmser->first ) OutputSeriesHeader( project, tmser );
+
+  static int firstCall = true;
+  if( firstCall )
+  {
+    tmser->first = timeStep;
+    OutputSeriesHeader( project, tmser );
+    firstCall = false;
+  }
 
   TMSERHEAD header;
 

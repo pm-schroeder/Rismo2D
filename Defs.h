@@ -16,7 +16,7 @@
 #define DEFS_INCL
 
 //#define _MPI_DBG
-#define _MPI_
+//#define _MPI_
 
 #ifdef _MPI_
 #include <mpi.h>
