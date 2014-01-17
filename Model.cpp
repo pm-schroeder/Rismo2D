@@ -1875,6 +1875,14 @@ void MODEL::UCDOutput( FILE*    id,
             fprintf( id, " %14.6le", kinRatio );
             break;
           }
+
+          case PROJECT::kMAXUS:
+            fprintf( id, " %14.6le", project->statist->GetMaxUs(no) );
+            break;
+
+          case PROJECT::kMAXTAU:
+            fprintf( id, " %14.6le", project->statist->GetMaxTau(no) );
+            break;
         }
       }
 

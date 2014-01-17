@@ -781,7 +781,7 @@ void PROJECT::Compute()
     }
 
     // do statistics ---------------------------------------------------------------------
-    if( statistics )  statist->Sum( M2D );
+    if( statistics )  statist->Sum( this, M2D );
 
 
     // write results file ----------------------------------------------------------------

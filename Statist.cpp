@@ -51,11 +51,15 @@ void STATIST::Init( int np )
 
   this->VtVt = new double [np];
 
+  this->maxTau = new double [np];
+  this->maxUs  = new double [np];
+
   this->nwet = new int [np];
 
-  if(     !this->U   ||  !this->V    ||  !this->S   ||  !this->H
-      ||  !this->Vt  ||  !this->UU   ||  !this->VV  ||  !this->UV
-      ||  !this->HH  ||  !this->VtVt ||  !this->nwet )
+  if(     !this->U   ||  !this->V    ||  !this->S    ||  !this->H
+      ||  !this->Vt  ||  !this->UU   ||  !this->VV   ||  !this->UV
+      ||  !this->HH  ||  !this->VtVt ||  !this->nwet ||  !this->maxTau
+      ||  !this->maxUs )
     REPORT::rpt.Error( "can not allocate memory - STATIST::STATIST (1)" );
 
 
@@ -73,6 +77,9 @@ void STATIST::Init( int np )
     this->UV[i]   = 0.0;
     this->HH[i]   = 0.0;
     this->VtVt[i] = 0.0;
+
+    this->maxTau[i] = 0.0;
+    this->maxUs[i]  = 0.0;
   }
 }
 
@@ -90,6 +97,9 @@ STATIST::~STATIST()
   delete[] VV;
   delete[] HH;
   delete[] VtVt;
+
+  delete[] maxTau;
+  delete[] maxUs;
 
   delete[] nwet;
 }
@@ -188,6 +198,16 @@ double STATIST::GetVarVt( int no )
 double STATIST::GetVtVt( int no )
 {
   return VtVt[no] / nwet[no];
+}
+
+double STATIST::GetMaxUs( int no )
+{
+  return maxUs[no];
+}
+
+double STATIST::GetMaxTau( int no )
+{
+  return maxTau[no];
 }
 
 double STATIST::GetFldRate( int no )
@@ -475,7 +495,7 @@ void STATIST::Write( MODEL   *model,
 }
 
 
-void STATIST::Sum( MODEL* model )
+void STATIST::Sum( PROJECT *project, MODEL* model )
 {
   this->n++;
 
@@ -503,6 +523,15 @@ void STATIST::Sum( MODEL* model )
       this->UV[i]   += nd->v.U * nd->v.V;
       this->HH[i]   += H * H;
       this->VtVt[i] += nd->vt * nd->vt;
+
+      double Us = sqrt( nd->v.U*nd->v.U + nd->v.V*nd->v.V );
+//      double tau = project->rho * H * nd->cf * Us;
+      double Utau = project->sed.GetUtau( Us, H, 0.0, project );
+      double tau = project->rho * Utau * Utau;
+
+
+      if( Us  > this->maxUs[i] )  this->maxUs[i]  = Us;
+      if( tau > this->maxTau[i] ) this->maxTau[i] = tau;
     }
   }
 }
@@ -532,5 +561,7 @@ void STATIST::Reset( MODEL* model )
     this->HH[i]   = 0.0;
     this->VtVt[i] = 0.0;
 
+    this->maxTau[i] = 0.0;
+    this->maxUs[i]  = 0.0;
   }
 }

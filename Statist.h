@@ -52,6 +52,9 @@ class STATIST
     double *HH;        //        H*H
     double *VtVt;      //        Vt*Vt
 
+    double *maxTau;    // maximum of bottom friction
+    double *maxUs;     // maximum of velocity
+
   public:
     STATIST();
     ~STATIST();
@@ -70,12 +73,14 @@ class STATIST
     double GetVarVt( int no );
     double GetVtVt( int no );
     double GetFldRate( int no );
+    double GetMaxTau( int no );
+    double GetMaxUs( int no );
 
     void Init( int np );
     void Read( int np, char *fileName, SUBDOM *subdom );
     void Write( MODEL *model, int release, char *staFile,
                 char *rgFile, int timeStep, PROJECT *project );
-    void Sum( MODEL* );
+    void Sum( PROJECT*, MODEL* );
     void Reset( MODEL* );
 };
 

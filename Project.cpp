@@ -35,7 +35,7 @@
 #include "Project.h"
 
 
-int PROJECT::release = 40518;
+int PROJECT::release = 405183;
 
 
 PROJECT::PROJECT()
@@ -216,7 +216,7 @@ PROJECT::PROJECT()
 
   //---------------------------------------------------------------------------------------
 
-  nval = kSZ_VARS;                          // kSZ_VARS = 58
+  nval = kSZ_VARS;                          // kSZ_VARS = ??
 
   valist    = new VALIST[nval];
   vpoutlist = new int[nval];
@@ -288,6 +288,8 @@ PROJECT::PROJECT()
   vl->id = kKINER;   vl->name = "kinEr";   vl->unit = "m2/s2";  vl->dim = 1;  vl->vec = 1;  vl++;  // 59
   vl->id = kFLDRATE; vl->name = "fldRate"; vl->unit = "-";      vl->dim = 1;  vl->vec = 1;  vl++;  // 60
   vl->id = kKINRATIO;vl->name = "kinRatio";vl->unit = "-";      vl->dim = 1;  vl->vec = 1;  vl++;  // 61
+  vl->id = kMAXUS;   vl->name = "maxUs";   vl->unit = "m/s";    vl->dim = 1;  vl->vec = 1;  vl++;  // 62
+  vl->id = kMAXTAU;  vl->name = "maxTau";  vl->unit = "N/m2";   vl->dim = 1;  vl->vec = 1;  vl++;  // 63
 
   vpdata = 0;
   vpcomp = 0;
@@ -1629,7 +1631,8 @@ void PROJECT::Input_30900( ASCIIFILE* file )
                     || valist[i].id == kVARV   || valist[i].id == kVARUV
                     || valist[i].id == kKINE   || valist[i].id == kSDEVH
                     || valist[i].id == kVARVT  || valist[i].id == kMEANUS
-                    || valist[i].id == kMEANS   )
+                    || valist[i].id == kMEANS  || valist[i].id == kMAXTAU
+                    || valist[i].id == kMAXUS )
                 {
                   statistics = true;
                 }
