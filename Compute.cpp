@@ -837,11 +837,14 @@ void PROJECT::Compute()
     }
 
     // write time series -----------------------------------------------------------------
+   static bool tmser_first_call[50];
+
     for( int its=0; its<ntmser; its++ )
     {
       if( tmser[its].ntm == 0  ||  (tmser[its].ntm > iTM && tmser[its].tmlist[iTM]) )
       {
-        M2D->OutputSeries( this, iTM, &tmser[its] );
+        M2D->OutputSeries( this, iTM, &tmser[its], tmser_first_call[its]);
+        tmser_first_call[its] = true;
       }
     }
 

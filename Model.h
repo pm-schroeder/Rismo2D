@@ -89,7 +89,7 @@ class MODEL
     void    Output( PROJECT* project, int timeStep );
 
     void    OutputSeriesHeader( PROJECT *project, TMSER* tmser );
-    void    OutputSeries( PROJECT *project, int timeStep, TMSER* tmser );
+    void    OutputSeries( PROJECT *project, int timeStep, TMSER* tmser, bool tmser_first_call );
 
     void    AttachOutput( PROJECT *project, int val );
     void    DetachOutput( PROJECT *project );
