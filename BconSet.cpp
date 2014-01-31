@@ -484,6 +484,8 @@ void BCONSET::InitBcon( PROJECT* project, TIME* actualTime, double* preQ )
   // set the targeted water elevation at gauges in PROJECT::gaugeSo[]
   // and copy the current water elevation at gauges to PROJECT::gaugeS[]
 
+  project->ngauge = 0; //Ausschalten der Gauges
+
   for( int i=0; i<project->ngauge; i++ )
   {
     int gauge = 0;
