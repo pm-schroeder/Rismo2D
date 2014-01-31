@@ -1883,6 +1883,12 @@ void MODEL::UCDOutput( FILE*    id,
             break;
           }
 
+          case PROJECT::kMAXUV:
+            fprintf( id, " %14.6le", project->statist->GetMaxU(no) );
+            fprintf( id, " %14.6le", project->statist->GetMaxV(no) );
+            fprintf( id, " %14.6le", 0.0);
+            break;
+
           case PROJECT::kMAXUS:
             fprintf( id, " %14.6le", project->statist->GetMaxUs(no) );
             break;

@@ -54,6 +54,8 @@ class STATIST
 
     double *maxTau;    // maximum of bottom friction
     double *maxUs;     // maximum of velocity
+    double *maxU;      // maximum U
+    double *maxV;      // maximum V
 
   public:
     STATIST();
@@ -75,6 +77,8 @@ class STATIST
     double GetFldRate( int no );
     double GetMaxTau( int no );
     double GetMaxUs( int no );
+    double GetMaxU( int no );
+    double GetMaxV( int no );
 
     void Init( int np );
     void Read( int np, char *fileName, SUBDOM *subdom );

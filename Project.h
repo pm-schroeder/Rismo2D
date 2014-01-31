@@ -325,7 +325,7 @@ class PROJECT
       kEYY,     kDUU,    kDUV,    kDVV,   kVSEC, kUVBOT, kDZ,   kRE,    kFR,      kPE,
       kCU,      kPHI,    kROT,    kCURV,  kDZDS, kDZDN,  kDZMX, kDHDS,  kMEANUV,  kMEANS,
       kMEANUS,  kMEANH,  kMEANVT, kVARU,  kVARV, kVARUV, kKINE, kSDEVH, kVARVT,   kKINER,
-      kFLDRATE, kKINRATIO, kMAXUS, kMAXTAU, kSZ_VARS
+      kFLDRATE, kKINRATIO,kMAXUV, kMAXUS, kMAXTAU, kSZ_VARS
     };
 
     int     nval;

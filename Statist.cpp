@@ -53,13 +53,15 @@ void STATIST::Init( int np )
 
   this->maxTau = new double [np];
   this->maxUs  = new double [np];
+  this->maxU   = new double [np];
+  this->maxV   = new double [np];
 
   this->nwet = new int [np];
 
   if(     !this->U   ||  !this->V    ||  !this->S    ||  !this->H
       ||  !this->Vt  ||  !this->UU   ||  !this->VV   ||  !this->UV
-      ||  !this->HH  ||  !this->VtVt ||  !this->nwet ||  !this->maxTau
-      ||  !this->maxUs )
+      ||  !this->HH  ||  !this->VtVt ||  !this->nwet ||  !this->maxU
+      ||  !this->maxV||  !this->maxUs||  !this->maxTau )
     REPORT::rpt.Error( "can not allocate memory - STATIST::STATIST (1)" );
 
 
@@ -80,6 +82,8 @@ void STATIST::Init( int np )
 
     this->maxTau[i] = 0.0;
     this->maxUs[i]  = 0.0;
+    this->maxU[i]  = 0.0;
+    this->maxV[i]  = 0.0;
   }
 }
 
@@ -100,6 +104,8 @@ STATIST::~STATIST()
 
   delete[] maxTau;
   delete[] maxUs;
+  delete[] maxU;
+  delete[] maxV;
 
   delete[] nwet;
 }
@@ -208,6 +214,16 @@ double STATIST::GetMaxUs( int no )
 double STATIST::GetMaxTau( int no )
 {
   return maxTau[no];
+}
+
+double STATIST::GetMaxU( int no )
+{
+  return maxU[no];
+}
+
+double STATIST::GetMaxV( int no )
+{
+  return maxV[no];
 }
 
 double STATIST::GetFldRate( int no )
@@ -530,7 +546,12 @@ void STATIST::Sum( PROJECT *project, MODEL* model )
       double tau = project->rho * Utau * Utau;
 
 
-      if( Us  > this->maxUs[i] )  this->maxUs[i]  = Us;
+      if( Us  > this->maxUs[i] )
+      {
+        this->maxUs[i]  = Us;
+        this->maxU[i]   = nd->v.U;
+        this->maxV[i]   = nd->v.V;
+      }
       if( tau > this->maxTau[i] ) this->maxTau[i] = tau;
     }
   }
@@ -563,5 +584,8 @@ void STATIST::Reset( MODEL* model )
 
     this->maxTau[i] = 0.0;
     this->maxUs[i]  = 0.0;
+    this->maxU[i]   = 0.0;
+    this->maxV[i]   = 0.0;
+
   }
 }
