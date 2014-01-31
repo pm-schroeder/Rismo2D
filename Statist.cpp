@@ -293,17 +293,21 @@ void STATIST::Read( int np, char *statisticFile, SUBDOM *subdom )
 
     if( no >= 0 )
     {
-      sscanf( textLine, " %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+      sscanf( textLine, " %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
                         &name, &this->nwet[no],
                                &this->U[no],
                                &this->V[no],
+                               &this->S[no],
                                &this->H[no],
                                &this->Vt[no],
                                &this->UU[no],
                                &this->VV[no],
                                &this->UV[no],
                                &this->HH[no],
-                               &this->VtVt[no] );
+                               &this->VtVt[no],
+                               &this->maxU[no],
+                               &this->maxV[no],,
+                               &this->maxTau[no] );
     }
   }
 
@@ -337,26 +341,32 @@ void STATIST::Write( MODEL   *model,
       REPORT::rpt.Error( kOpenFileFault, "%s %s (STATIST::Write #1)",
                                          "can not open statistic file", filename );
 
-    fprintf( id, "# %d   Release %d   nwet,U,V,H,Vt,uu,vv,uv,hh,vtvt\n", this->n, release );
+    fprintf( id, "# %d   Release %d   nwet,U,V,S,H,Vt,uu,vv,uv,hh,vtvt,maxU,maxV,maxTau\n", this->n, release );
     fprintf( id, "%d\n", np );
 
     for( int n=0; n<np; n++ )
     {
       NODE* nd = rg->Getnode(n);
 
-      fprintf( id, "%8d %8d  %14.6le %14.6le %14.6le %14.6le",
+      fprintf( id, "%8d %8d  %14.6le %14.6le %14.6le %14.6le %14.6le",
                    nd->Getname(), this->nwet[n],
                                   this->U[n],
                                   this->V[n],
+                                  this->S[n],
                                   this->H[n],
                                   this->Vt[n] );
 
-      fprintf( id, " %14.6le %14.6le %14.6le %14.6le %14.6le\n",
+      fprintf( id, " %14.6le %14.6le %14.6le %14.6le %14.6le",
                         this->UU[n],
                         this->VV[n],
                         this->UV[n],
                         this->HH[n],
                         this->VtVt[n] );
+
+      fprintf( id, " %14.6le %14.6le %14.6le\n",
+                        this->maxU[n],
+                        this->maxV[n],
+                        this->maxTau[n] );
     }
 
     fclose( id );
@@ -524,7 +534,6 @@ void STATIST::Sum( PROJECT *project, MODEL* model )
     if( !isFS(nd->flag,NODE::kDry) )
     {
       this->nwet[i]++;
-
       double H = nd->v.S - nd->z;
 
       this->U[i]    += nd->v.U;
@@ -544,7 +553,7 @@ void STATIST::Sum( PROJECT *project, MODEL* model )
 //      double tau = project->rho * H * nd->cf * Us;
       double Utau = project->sed.GetUtau( Us, H, 0.0, project );
       double tau = project->rho * Utau * Utau;
-
+      this->maxUs[i] = sqrt( this->maxU[i]*this->maxU[i] + this->maxV[i]*this->maxV[i] );
 
       if( Us  > this->maxUs[i] )
       {
@@ -583,7 +592,7 @@ void STATIST::Reset( MODEL* model )
     this->VtVt[i] = 0.0;
 
     this->maxTau[i] = 0.0;
-    this->maxUs[i]  = 0.0;
+//    this->maxUs[i]  = 0.0;
     this->maxU[i]   = 0.0;
     this->maxV[i]   = 0.0;
 
