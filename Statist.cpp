@@ -306,7 +306,7 @@ void STATIST::Read( int np, char *statisticFile, SUBDOM *subdom )
                                &this->HH[no],
                                &this->VtVt[no],
                                &this->maxU[no],
-                               &this->maxV[no],,
+                               &this->maxV[no],
                                &this->maxTau[no] );
     }
   }
