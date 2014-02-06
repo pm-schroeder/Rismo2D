@@ -213,8 +213,8 @@ int MODEL::Input( PROJECT* project, NAME* name, TIME* prevTime, SED* sed )
   region->InputRegion( name->regionFile, subdom );
 
   sprintf( text, "\n %s %d\n %s %d\n",
-                 "(MODEL::input)          number of nodes            :", region->Getnp(),
-                 "                        number of region elements  :", region->Getne() );
+           "(MODEL::input)          number of nodes            :", region->Getnp(),
+           "                        number of region elements  :", region->Getne() );
   REPORT::rpt.Output( text, 2 );
 
   // set region-flag ---------------------------------------------------------------------
@@ -256,7 +256,7 @@ int MODEL::Input( PROJECT* project, NAME* name, TIME* prevTime, SED* sed )
   }
 
   sprintf( text, "\n %s %d\n",
-                 "(MODEL::input)          number of corner nodes     :", ncp );
+           "(MODEL::input)          number of corner nodes     :", ncp );
   REPORT::rpt.Output( text, 2 );
 
   // read control elements ---------------------------------------------------------------
@@ -265,7 +265,7 @@ int MODEL::Input( PROJECT* project, NAME* name, TIME* prevTime, SED* sed )
     control->InputControl( name->controlFile, region, subdom );
 
     sprintf( text, "\n %s %d\n",
-                   "(MODEL::input)          number of control elements :", control->Getne() );
+             "(MODEL::input)          number of control elements :", control->Getne() );
     REPORT::rpt.Output( text, 2 );
 
     for( int e=0; e<control->Getne(); e++ )  SF( control->Getelem(e)->flag, ELEM::kControl );
@@ -342,7 +342,7 @@ void MODEL::Output( PROJECT* project, int timeStep )
 
     // write number of nodes, elements and node data -------------------------------------
     fprintf( id, "%d  %d  %d  %d  %d\n", region->Getnp(), region->Getne(),
-                                         project->vpdata, project->vedata, 0 );
+             project->vpdata, project->vedata, 0 );
 
     // write nodes -----------------------------------------------------------------------
     for( int n=0; n<region->Getnp(); n++ )
@@ -410,7 +410,7 @@ void MODEL::Output( PROJECT* project, int timeStep )
 
     // write number of nodes, elements and node data -------------------------------------
     fprintf( id, "%d  %d  %d  %d  %d\n", npc, region->Getne(),
-                                         project->vpdata, project->vedata, 0 );
+             project->vpdata, project->vedata, 0 );
 
     // write nodes -----------------------------------------------------------------------
     for( int n=0; n<region->Getnp(); n++ )
@@ -484,7 +484,7 @@ void MODEL::Output( PROJECT* project, int timeStep )
 
     // write number of nodes, elements and node data -------------------------------------
     fprintf( id, "%d  %d  %d  %d  %d\n", npwet, newet,
-                                         project->vpdata, project->vedata, 0 );
+             project->vpdata, project->vedata, 0 );
 
 
     // write nodes -----------------------------------------------------------------------
@@ -493,7 +493,7 @@ void MODEL::Output( PROJECT* project, int timeStep )
       NODE* nd = region->Getnode(n);
 
       if(    !isFS(nd->flag, NODE::kDry)
-          &&  isFS(nd->flag, NODE::kCornNode) )
+             &&  isFS(nd->flag, NODE::kCornNode) )
       {
         double X = nd->x;
         double Y = nd->y;
@@ -593,7 +593,7 @@ void MODEL::Output( PROJECT* project, int timeStep )
 
     // write number of nodes, elements and node data -------------------------------------
     fprintf( id, "%d  %d  %d  %d  %d\n", nc, control->Getne(),
-                                         project->vpdata, 0, 0 );
+             project->vpdata, 0, 0 );
 
     // write nodes -----------------------------------------------------------------------
     for( int n=0; n<control->Getnp(); n++ )
@@ -662,122 +662,141 @@ void MODEL::OutputSeriesHeader( PROJECT *project, TMSER *tmser )
 
   // write the header and the grid geometry to the file (overwrite existing files)--------
   TMSERHEAD header;
+  TMSERHEAD header_old;
 
-  FILE *id = fopen( tmser->filename, "wb+" );
-  if( !id ) REPORT::rpt.Error( kOpenFileFault, "%s %s (MODEL::OutputSeriesHeader #1)",
-                               "cannot open file", tmser->filename );
-
-  header.np = npc;
-  header.ne = region->Getne();
-
-  header.first = tmser->first;
-  header.last  = 0;
-  header.step  = tmser->step;
-
-  project->timeint.startTime.Get( header.startTime );
-  project->timeint.deltaTime.Get( header.deltaTime );
-
-  header.vcomp = tmser->vcomp;
-  header.vdata = tmser->vdata;
-
-  fwrite( header.buffer, sizeof(char), kTMSERHEADSize, id );
-
-  // write idents of variables and their vector length
-  for( int i=0; i<header.vcomp; i++ )
+  FILE *id = fopen( tmser->filename, "rb+" );
+  if( !id )
   {
-    int  dim;
-    char ident[10];
+    id = fopen( tmser->filename, "wb+" );
+    if( !id ) REPORT::rpt.Error( kOpenFileFault, "%s %s (MODEL::OutputSeriesHeader #1)",
+                                 "cannot open file", tmser->filename );
 
-    int j = tmser->voutlist[i];
+    header.np = npc;
+    header.ne = region->Getne();
 
-    dim = project->valist[j].dim;
-    strcpy( ident, project->valist[j].name );
+    header.first = tmser->first;
+    header.last  = 0;
+    header.step  = tmser->step;
 
-    fwrite( &dim,  sizeof(int),   1, id );
-    fwrite( ident, sizeof(char), 10, id );
-  }
+    project->timeint.startTime.Get( header.startTime );
+    project->timeint.deltaTime.Get( header.deltaTime );
 
-  // write node names and coordinates (x,y,z) --------------------------------------------
-  int    *ndid = (int*)    MEMORY::memo.Array_nd( region->Getnp() );
-  double *xcor = (double*) MEMORY::memo.Array_nd( region->Getnp() );
-  double *ycor = (double*) MEMORY::memo.Array_nd( region->Getnp() );
-  double *zcor = (double*) MEMORY::memo.Array_nd( region->Getnp() );
+    header.vcomp = tmser->vcomp;
+    header.vdata = tmser->vdata;
 
-  npc = 0;
-  for( int n=0; n<region->Getnp(); n++ )
-  {
-    NODE *nd = region->Getnode(n);
+    fwrite( header.buffer, sizeof(char), kTMSERHEADSize, id );
 
-    if( isFS(nd->flag,NODE::kCornNode) )
+    // write idents of variables and their vector length
+    for( int i=0; i<header.vcomp; i++ )
     {
-      ndid[npc] = nd->Getname();
-      xcor[npc] = nd->x;
-      ycor[npc] = nd->y;
-      zcor[npc] = nd->zor;
-      npc++;
+      int  dim;
+      char ident[10];
+
+      int j = tmser->voutlist[i];
+
+      dim = project->valist[j].dim;
+      strcpy( ident, project->valist[j].name );
+
+      fwrite( &dim,  sizeof(int),   1, id );
+      fwrite( ident, sizeof(char), 10, id );
     }
-  }
 
-  fwrite( ndid, sizeof(int),    header.np, id );
-  fwrite( xcor, sizeof(double), header.np, id );
-  fwrite( ycor, sizeof(double), header.np, id );
-  fwrite( zcor, sizeof(double), header.np, id );
+    // write node names and coordinates (x,y,z) --------------------------------------------
+    int    *ndid = (int*)    MEMORY::memo.Array_nd( region->Getnp() );
+    double *xcor = (double*) MEMORY::memo.Array_nd( region->Getnp() );
+    double *ycor = (double*) MEMORY::memo.Array_nd( region->Getnp() );
+    double *zcor = (double*) MEMORY::memo.Array_nd( region->Getnp() );
 
-  // detach the temporarily used arrays --------------------------------------------------
-  MEMORY::memo.Detach( ndid );
-  MEMORY::memo.Detach( xcor );
-  MEMORY::memo.Detach( ycor );
-  MEMORY::memo.Detach( zcor );
-
-  // write element names, materials and connectivity -------------------------------------
-  int *elid = (int*) MEMORY::memo.Array_el( region->Getne() );
-  int *type = (int*) MEMORY::memo.Array_el( region->Getne() );
-  int *nd1  = (int*) MEMORY::memo.Array_el( region->Getne() );
-  int *nd2  = (int*) MEMORY::memo.Array_el( region->Getne() );
-  int *nd3  = (int*) MEMORY::memo.Array_el( region->Getne() );
-  int *nd4  = (int*) MEMORY::memo.Array_el( region->Getne() );
-
-  for( int e=0; e<region->Getne(); e++ )
-  {
-    ELEM *el = region->Getelem(e);
-
-    elid[e] = el->Getname();
-    type[e] = el->type;
-
-    switch( el->shape )
+    npc = 0;
+    for( int n=0; n<region->Getnp(); n++ )
     {
-      case kTri:
-        nd1[e] = el->Getnode(0)->Getname();
-        nd2[e] = el->Getnode(1)->Getname();
-        nd3[e] = el->Getnode(2)->Getname();
-        nd4[e] = 0;
-        break;
+      NODE *nd = region->Getnode(n);
 
-      case kQuad:
-        nd1[e] = el->Getnode(0)->Getname();
-        nd2[e] = el->Getnode(1)->Getname();
-        nd3[e] = el->Getnode(2)->Getname();
-        nd4[e] = el->Getnode(3)->Getname();
-        break;
+      if( isFS(nd->flag,NODE::kCornNode) )
+      {
+        ndid[npc] = nd->Getname();
+        xcor[npc] = nd->x;
+        ycor[npc] = nd->y;
+        zcor[npc] = nd->zor;
+        npc++;
+      }
     }
+
+    fwrite( ndid, sizeof(int),    header.np, id );
+    fwrite( xcor, sizeof(double), header.np, id );
+    fwrite( ycor, sizeof(double), header.np, id );
+    fwrite( zcor, sizeof(double), header.np, id );
+
+    // detach the temporarily used arrays --------------------------------------------------
+    MEMORY::memo.Detach( ndid );
+    MEMORY::memo.Detach( xcor );
+    MEMORY::memo.Detach( ycor );
+    MEMORY::memo.Detach( zcor );
+
+    // write element names, materials and connectivity -------------------------------------
+    int *elid = (int*) MEMORY::memo.Array_el( region->Getne() );
+    int *type = (int*) MEMORY::memo.Array_el( region->Getne() );
+    int *nd1  = (int*) MEMORY::memo.Array_el( region->Getne() );
+    int *nd2  = (int*) MEMORY::memo.Array_el( region->Getne() );
+    int *nd3  = (int*) MEMORY::memo.Array_el( region->Getne() );
+    int *nd4  = (int*) MEMORY::memo.Array_el( region->Getne() );
+
+    for( int e=0; e<region->Getne(); e++ )
+    {
+      ELEM *el = region->Getelem(e);
+
+      elid[e] = el->Getname();
+      type[e] = el->type;
+
+      switch( el->shape )
+      {
+        case kTri:
+          nd1[e] = el->Getnode(0)->Getname();
+          nd2[e] = el->Getnode(1)->Getname();
+          nd3[e] = el->Getnode(2)->Getname();
+          nd4[e] = 0;
+          break;
+
+        case kQuad:
+          nd1[e] = el->Getnode(0)->Getname();
+          nd2[e] = el->Getnode(1)->Getname();
+          nd3[e] = el->Getnode(2)->Getname();
+          nd4[e] = el->Getnode(3)->Getname();
+          break;
+      }
+    }
+
+    fwrite( elid, sizeof(int), header.ne, id );
+    fwrite( type, sizeof(int), header.ne, id );
+    fwrite( nd1,  sizeof(int), header.ne, id );
+    fwrite( nd2,  sizeof(int), header.ne, id );
+    fwrite( nd3,  sizeof(int), header.ne, id );
+    fwrite( nd4,  sizeof(int), header.ne, id );
+
+    // detach the temporarily used arrays --------------------------------------------------
+    MEMORY::memo.Detach( elid );
+    MEMORY::memo.Detach( type );
+    MEMORY::memo.Detach( nd1 );
+    MEMORY::memo.Detach( nd2 );
+    MEMORY::memo.Detach( nd3 );
+    MEMORY::memo.Detach( nd4 );
+
   }
 
-  fwrite( elid, sizeof(int), header.ne, id );
-  fwrite( type, sizeof(int), header.ne, id );
-  fwrite( nd1,  sizeof(int), header.ne, id );
-  fwrite( nd2,  sizeof(int), header.ne, id );
-  fwrite( nd3,  sizeof(int), header.ne, id );
-  fwrite( nd4,  sizeof(int), header.ne, id );
+  else if( fread( header_old.buffer, sizeof(char), kTMSERHEADSize, id ) < kTMSERHEADSize
+          || header_old.vcomp != tmser->vcomp || header_old.vdata != tmser->vdata
+      || header_old.step != tmser->step )
+  {
+    REPORT::rpt.Error( kReadFileFault, "%s %s (MODEL::OutputSeries #2)",
+                       "can not read file header", tmser->filename );
+  }
+
+
+
 
   fclose( id );
 
-  // detach the temporarily used arrays --------------------------------------------------
-  MEMORY::memo.Detach( elid );
-  MEMORY::memo.Detach( type );
-  MEMORY::memo.Detach( nd1 );
-  MEMORY::memo.Detach( nd2 );
-  MEMORY::memo.Detach( nd3 );
-  MEMORY::memo.Detach( nd4 );
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -787,7 +806,7 @@ void MODEL::OutputSeries( PROJECT *project, int timeStep, TMSER *tmser, bool tms
   // write the header, if this is the first time step
   //if( timeStep == tmser->first ) OutputSeriesHeader( project, tmser );
 
-//  static int firstCall = true;
+  //  static int firstCall = true;
   //  if( firstCalltmser[its])
   //  {
   //    tmser->first = timeStep;
@@ -832,6 +851,33 @@ void MODEL::OutputSeries( PROJECT *project, int timeStep, TMSER *tmser, bool tms
   fseek( id, 0L, SEEK_SET );
   fwrite( header.buffer, sizeof(char), kTMSERHEADSize, id );
 
+  unsigned long pos;
+
+  //  if( header_old.last >= timeStep)
+  //  {
+  int ntimesteps = timeStep/tmser->step-1;
+
+  // calculate actual right position in rts
+  pos = kTMSERHEADSize
+      + header.vcomp * (sizeof(int) + 10*sizeof(char) )
+      + header.np * ( sizeof(int) + 3*sizeof(double) )
+      + header.ne * ( 6 * sizeof(int) )
+      + header.np * ( header.vdata * ntimesteps * sizeof(double) );
+
+  fseek( id, pos, SEEK_SET);
+  //  }
+  //  else
+  //  {
+
+  //  }
+
+  //  header.last = timeStep;
+
+  //  fseek( id, 0L, SEEK_SET );
+  //  fwrite( header.buffer, sizeof(char), kTMSERHEADSize, id )
+
+
+
 
   for( int i=0; i<tmser->vcomp; i++ )
   {
@@ -867,13 +913,13 @@ void MODEL::OutputSeries( PROJECT *project, int timeStep, TMSER *tmser, bool tms
             break;
 
           case PROJECT::kCB:
-            {
-              double U  = nd->v.U;
-              double V  = nd->v.V;
-              double Us = sqrt( U*U + V*V );
-              if( Us > 0.0 )  x[npc] = nd->v.Qb / Us;
-              else            x[npc] = 0.0;
-            }
+          {
+            double U  = nd->v.U;
+            double V  = nd->v.V;
+            double Us = sqrt( U*U + V*V );
+            if( Us > 0.0 )  x[npc] = nd->v.Qb / Us;
+            else            x[npc] = 0.0;
+          }
             break;
 
           case PROJECT::kQB:
@@ -889,11 +935,11 @@ void MODEL::OutputSeries( PROJECT *project, int timeStep, TMSER *tmser, bool tms
             break;
 
           case PROJECT::kSEDUV:
-            {
-              int no = nd->Getno();
-              x[npc] = nd->v.Qb*sed->sx[no];
-              y[npc] = nd->v.Qb*sed->sy[no];
-            }
+          {
+            int no = nd->Getno();
+            x[npc] = nd->v.Qb*sed->sx[no];
+            y[npc] = nd->v.Qb*sed->sy[no];
+          }
             break;
 
           case PROJECT::kDUVDT:
@@ -914,11 +960,11 @@ void MODEL::OutputSeries( PROJECT *project, int timeStep, TMSER *tmser, bool tms
             break;
 
           case PROJECT::kUS:
-            {
-              double U  = nd->v.U;
-              double V  = nd->v.V;
-              x[npc] = sqrt( U*U + V*V );
-            }
+          {
+            double U  = nd->v.U;
+            double V  = nd->v.V;
+            x[npc] = sqrt( U*U + V*V );
+          }
             break;
 
           case PROJECT::kCF:
@@ -962,22 +1008,22 @@ void MODEL::OutputSeries( PROJECT *project, int timeStep, TMSER *tmser, bool tms
             break;
 
           case PROJECT::kTAU:
-            {
-              double H    = nd->v.S - nd->z;
-              double U    = nd->v.U;
-              double V    = nd->v.V;
-              double Us   = sqrt( U*U + V*V );
-              double Utau = sed->GetUtau( Us, H, 0.0, project );
-              x[npc] = project->rho * Utau * Utau;
-            }
+          {
+            double H    = nd->v.S - nd->z;
+            double U    = nd->v.U;
+            double V    = nd->v.V;
+            double Us   = sqrt( U*U + V*V );
+            double Utau = sed->GetUtau( Us, H, 0.0, project );
+            x[npc] = project->rho * Utau * Utau;
+          }
             break;
 
           case PROJECT::kMAN:
-            {
-              double H  = nd->v.S - nd->z;
-              if( H > 0.0 ) x[npc] = sqrt( nd->cf * pow(H,1.0/3.0) / project->g );
-              else          x[npc] =  0.0;
-            }
+          {
+            double H  = nd->v.S - nd->z;
+            if( H > 0.0 ) x[npc] = sqrt( nd->cf * pow(H,1.0/3.0) / project->g );
+            else          x[npc] =  0.0;
+          }
             break;
 
           case PROJECT::kVT:
@@ -985,61 +1031,61 @@ void MODEL::OutputSeries( PROJECT *project, int timeStep, TMSER *tmser, bool tms
             break;
 
           case PROJECT::kEst:
-            {
-              double K   = nd->v.K;
-              double D   = nd->v.D;
-              double H   = nd->v.S - nd->z;
-              double U   = nd->v.U;
-              double V   = nd->v.V;
-              double Ust = sqrt( nd->cf * (U*U + V*V) );
-              double cm  = project->KD.cm;
-              if( nd->v.D > 0.0  &&  Ust > 0.0  &&  H > 0.0 ) x[npc] = cm*K*K/D / Ust / H;
-              else                                            x[npc] = 0.0;
-            }
+          {
+            double K   = nd->v.K;
+            double D   = nd->v.D;
+            double H   = nd->v.S - nd->z;
+            double U   = nd->v.U;
+            double V   = nd->v.V;
+            double Ust = sqrt( nd->cf * (U*U + V*V) );
+            double cm  = project->KD.cm;
+            if( nd->v.D > 0.0  &&  Ust > 0.0  &&  H > 0.0 ) x[npc] = cm*K*K/D / Ust / H;
+            else                                            x[npc] = 0.0;
+          }
             break;
 
           case PROJECT::kEXX:
-            {
-              double r = sqrt( 4.0*nd->exy*nd->exy + (nd->exx-nd->eyy)*(nd->exx-nd->eyy) );
-              x[npc] = 0.5*(nd->exx + nd->eyy + r) * nd->vt;
-            }
+          {
+            double r = sqrt( 4.0*nd->exy*nd->exy + (nd->exx-nd->eyy)*(nd->exx-nd->eyy) );
+            x[npc] = 0.5*(nd->exx + nd->eyy + r) * nd->vt;
+          }
             break;
 
           case PROJECT::kEYY:
-            {
-              double r = sqrt( 4.0*nd->exy*nd->exy + (nd->exx-nd->eyy)*(nd->exx-nd->eyy) );
-              x[npc] = 0.5*(nd->exx + nd->eyy - r) * nd->vt;
-            }
+          {
+            double r = sqrt( 4.0*nd->exy*nd->exy + (nd->exx-nd->eyy)*(nd->exx-nd->eyy) );
+            x[npc] = 0.5*(nd->exx + nd->eyy - r) * nd->vt;
+          }
             break;
 
           case PROJECT::kDUU:
-            {
-              double H  = nd->v.S - nd->z;
-              double U  = nd->v.U;
-              double V  = nd->v.V;
-              double Us = sqrt( U*U + V*V );
-              x[npc] = H * Us * Us * nd->Dxx;
-            }
+          {
+            double H  = nd->v.S - nd->z;
+            double U  = nd->v.U;
+            double V  = nd->v.V;
+            double Us = sqrt( U*U + V*V );
+            x[npc] = H * Us * Us * nd->Dxx;
+          }
             break;
 
           case PROJECT::kDUV:
-            {
-              double H  = nd->v.S - nd->z;
-              double U  = nd->v.U;
-              double V  = nd->v.V;
-              double Us = sqrt( U*U + V*V );
-              x[npc] = H * Us * Us * nd->Dxy;
-            }
+          {
+            double H  = nd->v.S - nd->z;
+            double U  = nd->v.U;
+            double V  = nd->v.V;
+            double Us = sqrt( U*U + V*V );
+            x[npc] = H * Us * Us * nd->Dxy;
+          }
             break;
 
           case PROJECT::kDVV:
-            {
-              double H  = nd->v.S - nd->z;
-              double U  = nd->v.U;
-              double V  = nd->v.V;
-              double Us = sqrt( U*U + V*V );
-              x[npc] = H * Us * Us * nd->Dyy;
-            }
+          {
+            double H  = nd->v.S - nd->z;
+            double U  = nd->v.U;
+            double V  = nd->v.V;
+            double Us = sqrt( U*U + V*V );
+            x[npc] = H * Us * Us * nd->Dyy;
+          }
             break;
 
           case PROJECT::kVSEC:
@@ -1047,22 +1093,22 @@ void MODEL::OutputSeries( PROJECT *project, int timeStep, TMSER *tmser, bool tms
             break;
 
           case PROJECT::kUVBOT:
+          {
+            double H  = nd->v.S - nd->z;
+            double U  = nd->v.U;
+            double V  = nd->v.V;
+            double Us = sqrt( U*U + V*V );
+            if( Us > 1.0e-9 )
             {
-              double H  = nd->v.S - nd->z;
-              double U  = nd->v.U;
-              double V  = nd->v.V;
-              double Us = sqrt( U*U + V*V );
-              if( Us > 1.0e-9 )
-              {
-                x[npc] = nd->v.U - nd->Vsec * V/Us;
-                y[npc] = nd->v.V + nd->Vsec * U/Us;
-              }
-              else
-              {
-                x[npc] = 0.0;
-                y[npc] = 0.0;
-              }
+              x[npc] = nd->v.U - nd->Vsec * V/Us;
+              y[npc] = nd->v.V + nd->Vsec * U/Us;
             }
+            else
+            {
+              x[npc] = 0.0;
+              y[npc] = 0.0;
+            }
+          }
             break;
 
           case PROJECT::kDZ:
@@ -1070,46 +1116,46 @@ void MODEL::OutputSeries( PROJECT *project, int timeStep, TMSER *tmser, bool tms
             break;
 
           case PROJECT::kRE:
-            {
-              double H  = nd->v.S - nd->z;
-              double U  = nd->v.U;
-              double V  = nd->v.V;
-              double Us = sqrt( U*U + V*V );
-              x[npc] = 4.0 * Us * H / project->vk;
-            }
+          {
+            double H  = nd->v.S - nd->z;
+            double U  = nd->v.U;
+            double V  = nd->v.V;
+            double Us = sqrt( U*U + V*V );
+            x[npc] = 4.0 * Us * H / project->vk;
+          }
             break;
 
           case PROJECT::kFR:
-            {
-              double H  = nd->v.S - nd->z;
-              double U  = nd->v.U;
-              double V  = nd->v.V;
-              double Us = sqrt( U*U + V*V );
-              if( H <= 0.0 ) x[npc] = 0.0;
-              else           x[npc] = Us / sqrt( project->g * H );
-            }
+          {
+            double H  = nd->v.S - nd->z;
+            double U  = nd->v.U;
+            double V  = nd->v.V;
+            double Us = sqrt( U*U + V*V );
+            if( H <= 0.0 ) x[npc] = 0.0;
+            else           x[npc] = Us / sqrt( project->g * H );
+          }
             break;
 
           case PROJECT::kPE:
-            {
-              int    no = nd->Getno();
-              double H  = nd->v.S - nd->z;
-              double U  = nd->v.U;
-              double V  = nd->v.V;
-              if( nd->vt > 0.0 ) x[npc] = sqrt( U*Lx[no]*U*Lx[no] + V*Ly[no]*V*Ly[no] ) / nd->vt;
-              else               x[npc] = 0.0;
-            }
+          {
+            int    no = nd->Getno();
+            double H  = nd->v.S - nd->z;
+            double U  = nd->v.U;
+            double V  = nd->v.V;
+            if( nd->vt > 0.0 ) x[npc] = sqrt( U*Lx[no]*U*Lx[no] + V*Ly[no]*V*Ly[no] ) / nd->vt;
+            else               x[npc] = 0.0;
+          }
             break;
 
           case PROJECT::kCU:
-            {
-              int    no = nd->Getno();
-              double H  = nd->v.S - nd->z;
-              double U  = nd->v.U;
-              double V  = nd->v.V;
-              double dt = project->timeint.deltaTime.Getsec();
-              x[npc] = sqrt(U/Lx[no]*U/Lx[no]+V/Ly[no]*V/Ly[no])*dt;
-            }
+          {
+            int    no = nd->Getno();
+            double H  = nd->v.S - nd->z;
+            double U  = nd->v.U;
+            double V  = nd->v.V;
+            double dt = project->timeint.deltaTime.Getsec();
+            x[npc] = sqrt(U/Lx[no]*U/Lx[no]+V/Ly[no]*V/Ly[no])*dt;
+          }
             break;
 
           case PROJECT::kPHI:
@@ -1117,15 +1163,15 @@ void MODEL::OutputSeries( PROJECT *project, int timeStep, TMSER *tmser, bool tms
             break;
 
           case PROJECT::kROT:
-            {
-              double H  = nd->v.S - nd->z;
-              if( H < 0.0 ) H = 0.0;
-              double U  = nd->v.U;
-              double V  = nd->v.V;
-              double Us = sqrt( U*U + V*V );
-              if( Us > 0.0 ) x[npc] = rot[region->Getnode(n)->Getno()] * H / Us;
-              else           x[npc] = 0.0;
-            }
+          {
+            double H  = nd->v.S - nd->z;
+            if( H < 0.0 ) H = 0.0;
+            double U  = nd->v.U;
+            double V  = nd->v.V;
+            double Us = sqrt( U*U + V*V );
+            if( Us > 0.0 ) x[npc] = rot[region->Getnode(n)->Getno()] * H / Us;
+            else           x[npc] = 0.0;
+          }
             break;
 
           case PROJECT::kCURV:
@@ -1137,7 +1183,8 @@ void MODEL::OutputSeries( PROJECT *project, int timeStep, TMSER *tmser, bool tms
       }
     }
 
-    fseek( id, 0L, SEEK_END );
+    //    fseek( id, 0L, SEEK_END );
+    //    fseek( id, 0L, SEEK_CUR );
 
     if( project->valist[tmser->voutlist[i]].dim == 1 )
     {
@@ -1163,11 +1210,11 @@ void MODEL::AttachOutput( PROJECT* project, int val )
 {
 
   if( !project->sed.Getinit()  &&  (   val == PROJECT::kSEDUV
-                                    || val == PROJECT::kLS
-                                    || val == PROJECT::kQBE
-                                    || val == PROJECT::kDZDS
-                                    || val == PROJECT::kDZMX
-                                    || val == PROJECT::kDHDS ) )
+                                       || val == PROJECT::kLS
+                                       || val == PROJECT::kQBE
+                                       || val == PROJECT::kDZDS
+                                       || val == PROJECT::kDZMX
+                                       || val == PROJECT::kDHDS ) )
   {
     project->sed.Initialize( project );
   }
@@ -1197,8 +1244,8 @@ void MODEL::AttachOutput( PROJECT* project, int val )
 
   if( !Lx  &&
       (    val == PROJECT::kCU
-        || val == PROJECT::kPE
-        || val == PROJECT::kKINER ) )
+           || val == PROJECT::kPE
+           || val == PROJECT::kKINER ) )
   {
     Lx = (double*) MEMORY::memo.Array_nd( region->Getnp() );
     Ly = (double*) MEMORY::memo.Array_nd( region->Getnp() );
@@ -1263,8 +1310,8 @@ void MODEL::AttachOutput( PROJECT* project, int val )
   // -----------------------------------------------------------------------------------
 
   if( !rc  &&  (   val == PROJECT::kRC
-                || val == PROJECT::kD90
-                || val == PROJECT::kD50) )
+                   || val == PROJECT::kD90
+                   || val == PROJECT::kD50) )
   {
     rc  = (double*) MEMORY::memo.Array_nd( region->Getnp() );
     d90 = (double*) MEMORY::memo.Array_nd( region->Getnp() );
@@ -1317,8 +1364,8 @@ void MODEL::AttachOutput( PROJECT* project, int val )
   }
 
   if( !Hr  &&  (   val == PROJECT::kHR
-                || val == PROJECT::kHD
-                || val == PROJECT::kKD ) )
+                   || val == PROJECT::kHD
+                   || val == PROJECT::kKD ) )
   {
     Hr = (double*) MEMORY::memo.Array_nd( region->Getnp() );
     Hd = (double*) MEMORY::memo.Array_nd( region->Getnp() );
@@ -1378,12 +1425,12 @@ void MODEL::AttachOutput( PROJECT* project, int val )
             {
               kd[no] += type->duneCoef * Hde * ( 1.0 - exp(-25.0*Hde/Lde) );
 
-//              if( Lre > 0.01 )  kd[no] += 20.0 * 0.7 * Hre * Hre / Lre;
+              //              if( Lre > 0.01 )  kd[no] += 20.0 * 0.7 * Hre * Hre / Lre;
               if( Lre > 0.01 )  kd[no] += type->duneCoef * Hre * ( 1.0 - exp(-25.0*Hre/Lre) );
             }
             else if( Lre > 0.01 )
             {
-//              kd[no] += 20.0 * Hre * Hre / Lre;
+              //              kd[no] += 20.0 * Hre * Hre / Lre;
               kd[no] += type->duneCoef * Hre * ( 1.0 - exp(-25.0*Hre/Lre) );
             }
 
@@ -1407,8 +1454,8 @@ void MODEL::AttachOutput( PROJECT* project, int val )
   }
 
   if( !hp  &&  (   val == PROJECT::kHP
-                || val == PROJECT::kDP
-                || val == PROJECT::kSP ) )
+                   || val == PROJECT::kDP
+                   || val == PROJECT::kSP ) )
   {
     hp = (double*) MEMORY::memo.Array_nd( region->Getnp() );
     dp = (double*) MEMORY::memo.Array_nd( region->Getnp() );
@@ -1673,10 +1720,10 @@ void MODEL::UCDOutput( FILE*    id,
             break;
 
           case PROJECT::kTAU:
-            {
-              double Utau = project->sed.GetUtau( Us, H, 0.0, project );
-              fprintf( id, " %14.6le", project->rho * Utau * Utau );
-            }
+          {
+            double Utau = project->sed.GetUtau( Us, H, 0.0, project );
+            fprintf( id, " %14.6le", project->rho * Utau * Utau );
+          }
             break;
 
           case PROJECT::kMAN:
@@ -1769,10 +1816,10 @@ void MODEL::UCDOutput( FILE*    id,
             break;
 
           case PROJECT::kCU:
-            {
-              double dt = project->timeint.deltaTime.Getsec();
-              fprintf( id, " %14.6le", sqrt(U/Lx[no]*U/Lx[no]+V/Ly[no]*V/Ly[no])*dt );
-            }
+          {
+            double dt = project->timeint.deltaTime.Getsec();
+            fprintf( id, " %14.6le", sqrt(U/Lx[no]*U/Lx[no]+V/Ly[no]*V/Ly[no])*dt );
+          }
             break;
 
           case PROJECT::kPHI:
@@ -1789,7 +1836,7 @@ void MODEL::UCDOutput( FILE*    id,
             break;
 
 
-          // for internal usage (debugging) ...
+            // for internal usage (debugging) ...
           case PROJECT::kDZDS:
             if( dzds )  fprintf( id, " %14.6le", dzds[no] );
             break;
@@ -1802,7 +1849,7 @@ void MODEL::UCDOutput( FILE*    id,
             if( dhds )  fprintf( id, " %14.6le", dhds[no] );
             break;
 
-          // output of statistics
+            // output of statistics
           case PROJECT::kMEANUV:
             fprintf( id, " %14.6le", project->statist->GetMeanU(no) );
             fprintf( id, " %14.6le", project->statist->GetMeanV(no) );
@@ -1851,10 +1898,10 @@ void MODEL::UCDOutput( FILE*    id,
 
           case PROJECT::kKINER:
           {
-//            //double L2 = 0.094 * 0.094 * Lx[no] * Ly[no];
-//            double L2 = sqrt( project->KD.cm*project->KD.cd ) * TYPE::deflt.lm * TYPE::deflt.lm * Lx[no] * Ly[no]; // deflt.lm ggf. anpassen
-//            double kr = 0.0;
-//            if( L2 > 1.0e-9 )  kr = project->statist->GetVtVt(no) / L2;
+            //            //double L2 = 0.094 * 0.094 * Lx[no] * Ly[no];
+            //            double L2 = sqrt( project->KD.cm*project->KD.cd ) * TYPE::deflt.lm * TYPE::deflt.lm * Lx[no] * Ly[no]; // deflt.lm ggf. anpassen
+            //            double kr = 0.0;
+            //            if( L2 > 1.0e-9 )  kr = project->statist->GetVtVt(no) / L2;
 
             double kr = 0.0;
             kr = -1.5 * nd->uu;
@@ -1869,7 +1916,7 @@ void MODEL::UCDOutput( FILE*    id,
           case PROJECT::kKINRATIO:
           {
             // kinEr
-//            double L2 = 0.094 * 0.094 * Lx[no] * Ly[no];
+            //            double L2 = 0.094 * 0.094 * Lx[no] * Ly[no];
             double L2 = sqrt( project->KD.cm*project->KD.cd ) * TYPE::deflt.lm * TYPE::deflt.lm * Lx[no] * Ly[no]; // deflt.lm ggf. anpassen
             double kr = 0.0;
             if( L2 > 1.0e-9 )  kr = project->statist->GetVtVt(no) / L2;
