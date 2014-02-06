@@ -785,10 +785,10 @@ void MODEL::OutputSeriesHeader( PROJECT *project, TMSER *tmser )
 
   else if( fread( header_old.buffer, sizeof(char), kTMSERHEADSize, id ) < kTMSERHEADSize
           || header_old.vcomp != tmser->vcomp || header_old.vdata != tmser->vdata
-      || header_old.step != tmser->step )
+          || header_old.step  != tmser->step )
   {
-    REPORT::rpt.Error( kReadFileFault, "%s %s (MODEL::OutputSeries #2)",
-                       "can not read file header", tmser->filename );
+    REPORT::rpt.Error( kReadFileFault, "%s %s %s (MODEL::OutputSeries #2)",
+                       "can not read file header", tmser->filename, "oder rts-Ausgaben nicht kompatibel" );
   }
 
 
@@ -851,33 +851,15 @@ void MODEL::OutputSeries( PROJECT *project, int timeStep, TMSER *tmser, bool tms
   fseek( id, 0L, SEEK_SET );
   fwrite( header.buffer, sizeof(char), kTMSERHEADSize, id );
 
-  unsigned long pos;
-
-  //  if( header_old.last >= timeStep)
-  //  {
-  int ntimesteps = timeStep/tmser->step-1;
-
   // calculate actual right position in rts
-  pos = kTMSERHEADSize
+  int ntimesteps = timeStep/tmser->step-1;
+  unsigned long pos = kTMSERHEADSize
       + header.vcomp * (sizeof(int) + 10*sizeof(char) )
       + header.np * ( sizeof(int) + 3*sizeof(double) )
       + header.ne * ( 6 * sizeof(int) )
       + header.np * ( header.vdata * ntimesteps * sizeof(double) );
 
   fseek( id, pos, SEEK_SET);
-  //  }
-  //  else
-  //  {
-
-  //  }
-
-  //  header.last = timeStep;
-
-  //  fseek( id, 0L, SEEK_SET );
-  //  fwrite( header.buffer, sizeof(char), kTMSERHEADSize, id )
-
-
-
 
   for( int i=0; i<tmser->vcomp; i++ )
   {
