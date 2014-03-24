@@ -784,8 +784,8 @@ void MODEL::OutputSeriesHeader( PROJECT *project, TMSER *tmser )
   }
 
   else if( fread( header_old.buffer, sizeof(char), kTMSERHEADSize, id ) < kTMSERHEADSize
-          || header_old.vcomp != tmser->vcomp || header_old.vdata != tmser->vdata
-          || header_old.step  != tmser->step )
+          || header_old.vcomp != tmser->vcomp || header_old.vdata != tmser->vdata )
+//          || header_old.step  != tmser->step )
   {
     REPORT::rpt.Error( kReadFileFault, "%s %s %s (MODEL::OutputSeries #2)",
                        "can not read file header", tmser->filename, "oder rts-Ausgaben nicht kompatibel" );
@@ -846,13 +846,15 @@ void MODEL::OutputSeries( PROJECT *project, int timeStep, TMSER *tmser, bool tms
                        "can not read file header", tmser->filename );
   }
 
-  header.last = timeStep;
+  if( header.last >= timeStep )
+  {
+//  header.last = timeStep;
 
-  fseek( id, 0L, SEEK_SET );
-  fwrite( header.buffer, sizeof(char), kTMSERHEADSize, id );
+//  fseek( id, 0L, SEEK_SET );
+//  fwrite( header.buffer, sizeof(char), kTMSERHEADSize, id );
 
   // calculate actual right position in rts
-  int ntimesteps = timeStep/tmser->step-1;
+  int ntimesteps = ( timeStep - header.first ) / tmser->step;
   unsigned long pos = kTMSERHEADSize
       + header.vcomp * (sizeof(int) + 10*sizeof(char) )
       + header.np * ( sizeof(int) + 3*sizeof(double) )
@@ -860,6 +862,14 @@ void MODEL::OutputSeries( PROJECT *project, int timeStep, TMSER *tmser, bool tms
       + header.np * ( header.vdata * ntimesteps * sizeof(double) );
 
   fseek( id, pos, SEEK_SET);
+  }
+  else
+  {
+    header.last = timeStep;
+    fseek( id, 0L, SEEK_SET );
+    fwrite( header.buffer, sizeof(char), kTMSERHEADSize, id );
+    fseek( id, 0L, SEEK_END);
+  }
 
   for( int i=0; i<tmser->vcomp; i++ )
   {
@@ -1918,12 +1928,35 @@ void MODEL::UCDOutput( FILE*    id,
             fprintf( id, " %14.6le", 0.0);
             break;
 
+          case PROJECT::kMINUV:
+            fprintf( id, " %14.6le", project->statist->GetMinU(no) );
+            fprintf( id, " %14.6le", project->statist->GetMinV(no) );
+            fprintf( id, " %14.6le", 0.0);
+            break;
+
           case PROJECT::kMAXUS:
             fprintf( id, " %14.6le", project->statist->GetMaxUs(no) );
             break;
 
+          case PROJECT::kMINUS:
+            fprintf( id, " %14.6le", project->statist->GetMinUs(no) );
+            break;
+
           case PROJECT::kMAXTAU:
             fprintf( id, " %14.6le", project->statist->GetMaxTau(no) );
+            break;
+
+          case PROJECT::kMAXU:
+            fprintf( id, " %14.6le", project->statist->GetMaxU_scalar(no) );
+            break;
+          case PROJECT::kMINU:
+            fprintf( id, " %14.6le", project->statist->GetMinU_scalar(no) );
+            break;
+          case PROJECT::kMAXV:
+            fprintf( id, " %14.6le", project->statist->GetMaxV_scalar(no) );
+            break;
+          case PROJECT::kMINV:
+            fprintf( id, " %14.6le", project->statist->GetMinV_scalar(no) );
             break;
         }
       }

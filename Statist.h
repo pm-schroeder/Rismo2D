@@ -54,8 +54,17 @@ class STATIST
 
     double *maxTau;    // maximum of bottom friction
     double *maxUs;     // maximum of velocity
-    double *maxU;      // maximum U
-    double *maxV;      // maximum V
+    double *minUs;     // minimum of velocity
+    double *maxU;      // U vectorcomponent of maximum velocity
+    double *maxV;      // V vectorcomponent of maximum velocity
+    double *minU;      // U vectorcomponent of minimum velocity
+    double *minV;      // V vectorcomponent of minimum velocity
+
+    double *maxU_scalar;      // maximum U
+    double *minU_scalar;      // minimum U
+    double *maxV_scalar;      // maximum V
+    double *minV_scalar;      // minimum V
+
 
   public:
     STATIST();
@@ -77,8 +86,16 @@ class STATIST
     double GetFldRate( int no );
     double GetMaxTau( int no );
     double GetMaxUs( int no );
+    double GetMinUs( int no );
     double GetMaxU( int no );
     double GetMaxV( int no );
+    double GetMinU( int no );
+    double GetMinV( int no );
+
+    double GetMaxU_scalar( int no );
+    double GetMaxV_scalar( int no );
+    double GetMinU_scalar( int no );
+    double GetMinV_scalar( int no );
 
     void Init( int np );
     void Read( int np, char *fileName, SUBDOM *subdom );

@@ -319,13 +319,14 @@ class PROJECT
   public:
     enum VARS
     {
-      kUV=0,    kS,      kK,      kD,     kC,    kCB,    kQB,   kQBE,   kLS,      kSEDUV,
-      kDUVDT,   kDSDT,   kZ,      kH,     kUS,   kCF,    kRC,   kD90,   kD50,     kKD,
-      kHR,      kHD,     kHP,     kDP,    kSP,   kTAU,   kMAN,  kVT,    kEst,     kEXX,
-      kEYY,     kDUU,    kDUV,    kDVV,   kVSEC, kUVBOT, kDZ,   kRE,    kFR,      kPE,
-      kCU,      kPHI,    kROT,    kCURV,  kDZDS, kDZDN,  kDZMX, kDHDS,  kMEANUV,  kMEANS,
-      kMEANUS,  kMEANH,  kMEANVT, kVARU,  kVARV, kVARUV, kKINE, kSDEVH, kVARVT,   kKINER,
-      kFLDRATE, kKINRATIO,kMAXUV, kMAXUS, kMAXTAU, kSZ_VARS
+      kUV=0,    kS,       kK,      kD,     kC,    kCB,    kQB,    kQBE,    kLS,      kSEDUV,
+      kDUVDT,   kDSDT,    kZ,      kH,     kUS,   kCF,    kRC,    kD90,    kD50,     kKD,
+      kHR,      kHD,      kHP,     kDP,    kSP,   kTAU,   kMAN,   kVT,     kEst,     kEXX,
+      kEYY,     kDUU,     kDUV,    kDVV,   kVSEC, kUVBOT, kDZ,    kRE,     kFR,      kPE,
+      kCU,      kPHI,     kROT,    kCURV,  kDZDS, kDZDN,  kDZMX,  kDHDS,   kMEANUV,  kMEANS,
+      kMEANUS,  kMEANH,   kMEANVT, kVARU,  kVARV, kVARUV, kKINE,  kSDEVH,  kVARVT,   kKINER,
+      kFLDRATE, kKINRATIO,kMAXUV,  kMINUV, kMAXUS,kMINUS, kMAXTAU,kMAXU,   kMINU,    kMAXV,
+      kMINV,    kSZ_VARS
     };
 
     int     nval;

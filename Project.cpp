@@ -35,7 +35,7 @@
 #include "Project.h"
 
 
-int PROJECT::release = 405184;
+int PROJECT::release = 405185;
 
 
 PROJECT::PROJECT()
@@ -289,8 +289,14 @@ PROJECT::PROJECT()
   vl->id = kFLDRATE; vl->name = "fldRate"; vl->unit = "-";      vl->dim = 1;  vl->vec = 1;  vl++;  // 60
   vl->id = kKINRATIO;vl->name = "kinRatio";vl->unit = "-";      vl->dim = 1;  vl->vec = 1;  vl++;  // 61
   vl->id = kMAXUV;   vl->name = "maxUV";   vl->unit = "m/s";    vl->dim = 2;  vl->vec = 3;  vl++;  // 62
-  vl->id = kMAXUS;   vl->name = "maxUs";   vl->unit = "m/s";    vl->dim = 1;  vl->vec = 1;  vl++;  // 63
-  vl->id = kMAXTAU;  vl->name = "maxTau";  vl->unit = "N/m2";   vl->dim = 1;  vl->vec = 1;  vl++;  // 64
+  vl->id = kMINUV;   vl->name = "minUV";   vl->unit = "m/s";    vl->dim = 2;  vl->vec = 3;  vl++;  // 63
+  vl->id = kMAXUS;   vl->name = "maxUs";   vl->unit = "m/s";    vl->dim = 1;  vl->vec = 1;  vl++;  // 64
+  vl->id = kMINUS;   vl->name = "minUs";   vl->unit = "m/s";    vl->dim = 1;  vl->vec = 1;  vl++;  // 65
+  vl->id = kMAXTAU;  vl->name = "maxTau";  vl->unit = "N/m2";   vl->dim = 1;  vl->vec = 1;  vl++;  // 66
+  vl->id = kMAXU;    vl->name = "maxU";    vl->unit = "m/s";    vl->dim = 1;  vl->vec = 1;  vl++;  // 67
+  vl->id = kMAXV;    vl->name = "maxV";    vl->unit = "m/s";    vl->dim = 1;  vl->vec = 1;  vl++;  // 68
+  vl->id = kMINU;    vl->name = "minU";    vl->unit = "m/s";    vl->dim = 1;  vl->vec = 1;  vl++;  // 69
+  vl->id = kMINV;    vl->name = "minV";    vl->unit = "m/s";    vl->dim = 1;  vl->vec = 1;  vl++;  // 70
 
 
   vpdata = 0;
@@ -1633,8 +1639,9 @@ void PROJECT::Input_30900( ASCIIFILE* file )
                     || valist[i].id == kVARV   || valist[i].id == kVARUV
                     || valist[i].id == kKINE   || valist[i].id == kSDEVH
                     || valist[i].id == kVARVT  || valist[i].id == kMEANUS
-                    || valist[i].id == kMEANS  || valist[i].id == kMAXUV
-                    || valist[i].id == kMAXUS  || valist[i].id == kMAXTAU)
+                    || valist[i].id == kMEANS  || valist[i].id == kMAXTAU
+                    || valist[i].id == kMAXUV  || valist[i].id == kMINUV
+                    || valist[i].id == kMAXUS  || valist[i].id == kMINUS )
                 {
                   statistics = true;
                 }
@@ -1824,7 +1831,7 @@ void PROJECT::Input_30900( ASCIIFILE* file )
                                                            &dryRew->rewetLimit,
                                                            &dryRew->rewetPasses,
                                                            &dryRew->countDown );
-          if( dryRew->rewetLimit < dryRew->dryLimit ) dryRew->rewetLimit = dryRew->dryLimit;
+//          if( dryRew->rewetLimit < dryRew->dryLimit ) dryRew->rewetLimit = dryRew->dryLimit;
         }
         break;
 

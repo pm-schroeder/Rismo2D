@@ -53,15 +53,25 @@ void STATIST::Init( int np )
 
   this->maxTau = new double [np];
   this->maxUs  = new double [np];
+  this->minUs  = new double [np];
   this->maxU   = new double [np];
   this->maxV   = new double [np];
+  this->minU   = new double [np];
+  this->minV   = new double [np];
+  this->maxU_scalar   = new double [np];
+  this->maxV_scalar   = new double [np];
+  this->minU_scalar   = new double [np];
+  this->minV_scalar   = new double [np];
 
   this->nwet = new int [np];
 
   if(     !this->U   ||  !this->V    ||  !this->S    ||  !this->H
       ||  !this->Vt  ||  !this->UU   ||  !this->VV   ||  !this->UV
       ||  !this->HH  ||  !this->VtVt ||  !this->nwet ||  !this->maxU
-      ||  !this->maxV||  !this->maxUs||  !this->maxTau )
+      ||  !this->maxV||  !this->minU ||  !this->minV ||  !this->maxUs
+      ||  !this->minUs               || !this->maxTau
+      ||  !this->maxU_scalar         ||  !this->minU_scalar
+      ||  !this->maxV_scalar         ||  !this->minV_scalar)
     REPORT::rpt.Error( "can not allocate memory - STATIST::STATIST (1)" );
 
 
@@ -82,8 +92,16 @@ void STATIST::Init( int np )
 
     this->maxTau[i] = 0.0;
     this->maxUs[i]  = 0.0;
-    this->maxU[i]  = 0.0;
-    this->maxV[i]  = 0.0;
+    this->minUs[i]  = 0.0;
+    this->maxU[i]   = 0.0;
+    this->maxV[i]   = 0.0;
+    this->minU[i]   = 0.0;
+    this->minV[i]   = 0.0;
+
+    this->maxU_scalar[i] = 0.0;
+    this->maxV_scalar[i] = 0.0;
+    this->minU_scalar[i] = 0.0;
+    this->minV_scalar[i] = 0.0;
   }
 }
 
@@ -104,8 +122,16 @@ STATIST::~STATIST()
 
   delete[] maxTau;
   delete[] maxUs;
+  delete[] minUs;
   delete[] maxU;
   delete[] maxV;
+  delete[] minU;
+  delete[] minV;
+
+  delete[] maxU_scalar;
+  delete[] maxV_scalar;
+  delete[] minU_scalar;
+  delete[] minV_scalar;
 
   delete[] nwet;
 }
@@ -211,6 +237,11 @@ double STATIST::GetMaxUs( int no )
   return maxUs[no];
 }
 
+double STATIST::GetMinUs( int no )
+{
+  return minUs[no];
+}
+
 double STATIST::GetMaxTau( int no )
 {
   return maxTau[no];
@@ -224,6 +255,36 @@ double STATIST::GetMaxU( int no )
 double STATIST::GetMaxV( int no )
 {
   return maxV[no];
+}
+
+double STATIST::GetMinU( int no )
+{
+  return minU[no];
+}
+
+double STATIST::GetMinV( int no )
+{
+  return minV[no];
+}
+
+double STATIST::GetMaxU_scalar( int no )
+{
+  return maxU_scalar[no];
+}
+
+double STATIST::GetMaxV_scalar( int no )
+{
+  return maxV_scalar[no];
+}
+
+double STATIST::GetMinU_scalar( int no )
+{
+  return minU_scalar[no];
+}
+
+double STATIST::GetMinV_scalar( int no )
+{
+  return minV_scalar[no];
 }
 
 double STATIST::GetFldRate( int no )
@@ -293,7 +354,7 @@ void STATIST::Read( int np, char *statisticFile, SUBDOM *subdom )
 
     if( no >= 0 )
     {
-      sscanf( textLine, " %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+      sscanf( textLine, " %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
                         &name, &this->nwet[no],
                                &this->U[no],
                                &this->V[no],
@@ -307,6 +368,8 @@ void STATIST::Read( int np, char *statisticFile, SUBDOM *subdom )
                                &this->VtVt[no],
                                &this->maxU[no],
                                &this->maxV[no],
+                               &this->minU[no],
+                               &this->minV[no],
                                &this->maxTau[no] );
     }
   }
@@ -341,7 +404,7 @@ void STATIST::Write( MODEL   *model,
       REPORT::rpt.Error( kOpenFileFault, "%s %s (STATIST::Write #1)",
                                          "can not open statistic file", filename );
 
-    fprintf( id, "# %d   Release %d   nwet,U,V,S,H,Vt,uu,vv,uv,hh,vtvt,maxU,maxV,maxTau\n", this->n, release );
+    fprintf( id, "# %d   Release %d   nwet,U,V,S,H,Vt,uu,vv,uv,hh,vtvt,maxU,maxV,minU,minV,maxTau\n", this->n, release );
     fprintf( id, "%d\n", np );
 
     for( int n=0; n<np; n++ )
@@ -366,6 +429,8 @@ void STATIST::Write( MODEL   *model,
       fprintf( id, " %14.6le %14.6le %14.6le\n",
                         this->maxU[n],
                         this->maxV[n],
+                        this->minU[n],
+                        this->minV[n],
                         this->maxTau[n] );
     }
 
@@ -553,7 +618,8 @@ void STATIST::Sum( PROJECT *project, MODEL* model )
 //      double tau = project->rho * H * nd->cf * Us;
       double Utau = project->sed.GetUtau( Us, H, 0.0, project );
       double tau = project->rho * Utau * Utau;
-      this->maxUs[i] = sqrt( this->maxU[i]*this->maxU[i] + this->maxV[i]*this->maxV[i] );
+      this->maxUs[i] = sqrt( this->maxU[i]*this->maxU[i] + this->maxV[i]*this->maxV[i] ); // steht hier für die Initalisierung nach einem Restart, sonst würde die Abfrage Us>maxUs nicht funktionieren
+      this->minUs[i] = sqrt( this->minU[i]*this->minU[i] + this->minV[i]*this->minV[i] ); // steht hier für die Initalisierung nach einem Restart, sonst würde die Abfrage Us>maxUs nicht funktionieren
 
       if( Us  > this->maxUs[i] )
       {
@@ -561,7 +627,21 @@ void STATIST::Sum( PROJECT *project, MODEL* model )
         this->maxU[i]   = nd->v.U;
         this->maxV[i]   = nd->v.V;
       }
+
+      if( Us  < this->minUs[i] )
+      {
+        this->minUs[i]  = Us;
+        this->minU[i]   = nd->v.U;
+        this->minV[i]   = nd->v.V;
+      }
+
       if( tau > this->maxTau[i] ) this->maxTau[i] = tau;
+
+      if( nd->v.U > this->maxU_scalar[i] ) this->maxU_scalar[i] = nd->v.U;
+      if( nd->v.U < this->minU_scalar[i] ) this->minU_scalar[i] = nd->v.U;
+      if( nd->v.V > this->maxV_scalar[i] ) this->maxV_scalar[i] = nd->v.V;
+      if( nd->v.V < this->minV_scalar[i] ) this->minV_scalar[i] = nd->v.V;
+
     }
   }
 }
@@ -592,9 +672,17 @@ void STATIST::Reset( MODEL* model )
     this->VtVt[i] = 0.0;
 
     this->maxTau[i] = 0.0;
-//    this->maxUs[i]  = 0.0;
+    this->maxUs[i]  = 0.0;
+    this->minUs[i]  = 0.0;
     this->maxU[i]   = 0.0;
     this->maxV[i]   = 0.0;
+    this->minU[i]   = 0.0;
+    this->minV[i]   = 0.0;
+
+    this->maxU_scalar[i]   = 0.0;
+    this->maxV_scalar[i]   = 0.0;
+    this->minU_scalar[i]   = 0.0;
+    this->minV_scalar[i]   = 0.0;
 
   }
 }
