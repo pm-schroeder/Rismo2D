@@ -95,13 +95,13 @@ void STATIST::Init( int np )
     this->minUs[i]  = 0.0;
     this->maxU[i]   = 0.0;
     this->maxV[i]   = 0.0;
-    this->minU[i]   = 0.0;
-    this->minV[i]   = 0.0;
+    this->minU[i]   = 999.9;
+    this->minV[i]   = 999.9;
 
-    this->maxU_scalar[i] = 0.0;
-    this->maxV_scalar[i] = 0.0;
-    this->minU_scalar[i] = 0.0;
-    this->minV_scalar[i] = 0.0;
+    this->maxU_scalar[i] = -999.9;
+    this->maxV_scalar[i] = -999.9;
+    this->minU_scalar[i] = 999.9;
+    this->minV_scalar[i] = 999.9;
   }
 }
 
@@ -370,7 +370,7 @@ void STATIST::Read( int np, char *statisticFile, SUBDOM *subdom )
                                &this->maxV[no],
                                &this->minU[no],
                                &this->minV[no],
-                               &this->maxTau[no] );
+                               &this->maxTau[no]);
     }
   }
 
@@ -637,10 +637,15 @@ void STATIST::Sum( PROJECT *project, MODEL* model )
 
       if( tau > this->maxTau[i] ) this->maxTau[i] = tau;
 
+//      if( sqrt( nd->v.U * nd->v.U ) > sqrt( this->maxU_scalar[i] * this->maxU_scalar[i] )) this->maxU_scalar[i] = nd->v.U;
+//      if( sqrt( nd->v.U * nd->v.U ) < sqrt( this->minU_scalar[i] * this->maxU_scalar[i] )) this->minU_scalar[i] = nd->v.U;
+//      if( sqrt( nd->v.V * nd->v.V ) > sqrt( this->maxV_scalar[i] * this->maxV_scalar[i] )) this->maxV_scalar[i] = nd->v.V;
+//      if( sqrt( nd->v.V * nd->v.V ) < sqrt( this->minV_scalar[i] * this->maxV_scalar[i] )) this->minV_scalar[i] = nd->v.V;
+
       if( nd->v.U > this->maxU_scalar[i] ) this->maxU_scalar[i] = nd->v.U;
-      if( nd->v.U < this->minU_scalar[i] ) this->minU_scalar[i] = nd->v.U;
+      if( nd->v.U < this->maxU_scalar[i] ) this->minU_scalar[i] = nd->v.U;
       if( nd->v.V > this->maxV_scalar[i] ) this->maxV_scalar[i] = nd->v.V;
-      if( nd->v.V < this->minV_scalar[i] ) this->minV_scalar[i] = nd->v.V;
+      if( nd->v.V < this->maxV_scalar[i] ) this->minV_scalar[i] = nd->v.V;
 
     }
   }
@@ -676,13 +681,13 @@ void STATIST::Reset( MODEL* model )
     this->minUs[i]  = 0.0;
     this->maxU[i]   = 0.0;
     this->maxV[i]   = 0.0;
-    this->minU[i]   = 0.0;
-    this->minV[i]   = 0.0;
+    this->minU[i]   = 999.9;
+    this->minV[i]   = 999.9;
 
-    this->maxU_scalar[i]   = 0.0;
-    this->maxV_scalar[i]   = 0.0;
-    this->minU_scalar[i]   = 0.0;
-    this->minV_scalar[i]   = 0.0;
+    this->maxU_scalar[i]   = -999.9;
+    this->maxV_scalar[i]   = -999.9;
+    this->minU_scalar[i]   = 999.9;
+    this->minV_scalar[i]   = 999.9;
 
   }
 }
