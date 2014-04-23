@@ -1,0 +1,33 @@
+Rismo2D is a hydrodynamic numerical computer program to solve for the
+depth-averaged shallow water equations by means of the Finite Element
+Method. Rismo2D was developed during a research project funded by the
+German Research Foundation (DFG) at the Institute of Hydraulic Enginee-
+ring and Water Resources Management - Aachen University:
+
+The development of a numerical computational method
+for near-natural streams
+DFG-Project Ro 365 / 31
+
+Rismo2D computes the water elevation and the depth-averaged velocity
+for stationary or instationary streams. Based on a Finite Element
+discretization the computation can be carried out for arbitrary water-
+courses with complex geometrical and hydraulical boundary conditions.
+
+Different laws may be used to account for bottom roughness. The friction
+of non-submerged flood plain vegetation may be computed by means of
+geometrical parameters.
+
+The approximation of the (turbulent) Reynolds stresses is based on
+Boussinesqs principle of eddy viscosity, where the eddy viscosity may
+be computed with different closure models:
+
+    constant eddy viscosity predefined by the user
+    algebraic shear stress model (anisotropic / Elder)
+    k-e-turbulence model 
+
+Decoupled from the flow simulation the conservative transport of matter
+in solution or suspension may be computed by solving the depth-averaged
+advection diffusion equation.
+
+Michael Schroeder
+23. April 2014
