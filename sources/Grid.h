@@ -1,29 +1,59 @@
-// =================================================================================================
-//                             D R Y R E W  |  G R I D
-// =================================================================================================
-// This class implements a finite element grid.
-// =================================================================================================
+// /////////////////////////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 1992-2013  by  P.M. SCHROEDER
+// D R Y R E W
+// G R I D
 //
-// All rights reserved.
+// /////////////////////////////////////////////////////////////////////////////////////////////////
 //
-// This source code is part of the RISMO2D modelling software
-// As long as you have no contract (Source Code License Agreement
-// for the Rismo2D Software / Version 1.0 or any later version")
-// with the copyright holder, you are NOT ALLOWED to make any
-// changes to this source code.
+// FILES
 //
-// =================================================================================================
+// Grid.h   : definition file of the class.
+// Grid.cpp : implementation file of the class.
 //
-//    date               description
-// ----------   ------   ---------------------------------------------------------------------------
-// 01.01.1992     sc     first implementation / first concept
-// 16.02.2013     sc     rewetting of nodes in DryRewet() and RewetDry() adapted
+// -------------------------------------------------------------------------------------------------
 //
-// =================================================================================================
-
-// read this header file only once
+// DESCRIPTION
+//
+// This class implements a finite element grid and the included class DRYREW to manage
+// the flooding an drying of parts of the grid.
+//
+// -------------------------------------------------------------------------------------------------
+//
+// COPYRIGHT (C) 2011 - 2014  by  P.M. SCHROEDER  (sc)
+//
+// This program is free software; you can redistribute it and/or modify it under the terms of the
+// GNU General Public License as published by the Free Software Foundation; either version 2 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+// even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License along with this program; if
+// not, write to the
+//
+// Free Software Foundation, Inc.
+// 59 Temple Place
+// Suite 330
+// Boston
+// MA 02111-1307 USA
+//
+// -------------------------------------------------------------------------------------------------
+//
+// P.M. Schroeder
+// Walzbachtal / Germany
+// michael.schroeder@hnware.de
+//
+// -------------------------------------------------------------------------------------------------
+//
+// HISTORY
+//
+//    date              changes
+// ------------  ----  -----------------------------------------------------------------------------
+//  01.01.1992    sc    first implementation / first concept
+//  16.02.2013    sc    rewetting of nodes in DryRewet() and RewetDry() adapted
+//
+// /////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifndef GRID_INCL
 #define GRID_INCL

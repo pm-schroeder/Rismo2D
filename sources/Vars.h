@@ -1,28 +1,56 @@
-// ======================================================================================
-//                                      V A R S
-// ======================================================================================
+// /////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// V A R S
+//
+// /////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// FILES
+//
+// Vars.h   : definition file of the class.
+// Vars.cpp : implementation file of the class.
+//
+// -------------------------------------------------------------------------------------------------
+//
+// DESCRIPTION
+//
 // This class implements the variables at nodes.
-// ======================================================================================
 //
-// Copyright (C) 1992-2010  by  P.M. SCHROEDER
+// -------------------------------------------------------------------------------------------------
 //
-// All rights reserved.
+// COPYRIGHT (C) 2011 - 2014  by  P.M. SCHROEDER  (sc)
 //
-// This source code is part of the RISMO2D modelling software
-// As long as you have no contract (Source Code License Agreement
-// for the Rismo2D Software / Version 1.0 or any later version)
-// with the copyright holder, you are NOT ALLOWED to make any
-// changes to this source code.
+// This program is free software; you can redistribute it and/or modify it under the terms of the
+// GNU General Public License as published by the Free Software Foundation; either version 2 of the
+// License, or (at your option) any later version.
 //
-// ======================================================================================
+// This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+// even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// General Public License for more details.
 //
-//    date               description
-// ----------   ------   ----------------------------------------------------------------
-// 01.01.1992     sc     first implementation / first concept
+// You should have received a copy of the GNU General Public License along with this program; if
+// not, write to the
 //
-// ======================================================================================
-
-// read this header file only once ...
+// Free Software Foundation, Inc.
+// 59 Temple Place
+// Suite 330
+// Boston
+// MA 02111-1307 USA
+//
+// -------------------------------------------------------------------------------------------------
+//
+// P.M. Schroeder
+// Walzbachtal / Germany
+// michael.schroeder@hnware.de
+//
+// -------------------------------------------------------------------------------------------------
+//
+// HISTORY
+//
+//    date              changes
+// ------------  ----  -----------------------------------------------------------------------------
+//  01.01.1992    sc    First implementation of C++ class.
+//
+// /////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifndef VARS_INCL
 #define VARS_INCL

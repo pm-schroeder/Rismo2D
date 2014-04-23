@@ -1,33 +1,35 @@
-// ======================================================================================
+// /////////////////////////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 1992-2013  by  P.M. SCHROEDER
+// class EQS_UVS2D_AI
 //
-// All rights reserved.
+// /////////////////////////////////////////////////////////////////////////////////////////////////
 //
-// This source code is part of the RISMO2D modelling software
-// As long as you have no contract (Source Code License Agreement
-// for the Rismo2D Software / Version 1.0 or any later version")
-// with the copyright holder, you are NOT ALLOWED to make any
-// changes to this source code.
+// COPYRIGHT (C) 2011 - 2014  by  P.M. SCHROEDER  (sc)
 //
-// ======================================================================================
+// This program is free software; you can redistribute it and/or modify it under the terms of the
+// GNU General Public License as published by the Free Software Foundation; either version 2 of the
+// License, or (at your option) any later version.
 //
-// compute element stiffness matrix with anisotrop turbulence (Elder model)
-// solve for momentum equations (U,V) and continuity equation (S)
+// This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+// even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// General Public License for more details.
 //
-// methods                     description
-// -------------------------   -------------------------------------------------------
-// EQS_UVS2D::Coefs()
-// EQS_UVS2D::Region()         two-dimensional region elements
+// You should have received a copy of the GNU General Public License along with this program; if
+// not, write to the
 //
-// EQS_UVS2D::Region_40306()   two-dimensional region elements (Rismo version 4.03.06)
-// ======================================================================================
+// Free Software Foundation, Inc.
+// 59 Temple Place
+// Suite 330
+// Boston
+// MA 02111-1307 USA
 //
-//    date               description
-// ----------   ------   ----------------------------------------------------------------
-// 18.08.2012     sc     Anisotrop formulation of the method EQS_UVS2D_AI::Region().
-//                       Class EqsUVS2D_AI derived from class EqsUVS2D.
-// ======================================================================================
+// -------------------------------------------------------------------------------------------------
+//
+// P.M. Schroeder
+// Walzbachtal / Germany
+// michael.schroeder@hnware.de
+//
+// /////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include "Defs.h"
 #include "Report.h"

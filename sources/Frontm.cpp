@@ -1,32 +1,35 @@
-// ======================================================================================
+// /////////////////////////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 1992-2008  by  P.M. SCHROEDER
+// class FRONTM
 //
-// All rights reserved.
+// /////////////////////////////////////////////////////////////////////////////////////////////////
 //
-// This source code is part of the RISMO2D modelling software
-// As long as you have no contract (Source Code License Agreement
-// for the Rismo2D Software / Version 1.0 or any later version")
-// with the copyright holder, you are NOT ALLOWED to make any
-// changes to this source code.
+// COPYRIGHT (C) 2011 - 2014  by  P.M. SCHROEDER  (sc)
 //
-// ======================================================================================
+// This program is free software; you can redistribute it and/or modify it under the terms of the
+// GNU General Public License as published by the Free Software Foundation; either version 2 of the
+// License, or (at your option) any later version.
 //
-// ---------------------------------------------------------------------------------------
-// Solve simultaneous equations for Finite Element Problems.
-// This function is adapted from the frontal solving algorithm of HOOD
-// to solve systems of assembled equations stored as index matrix.
+// This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+// even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// General Public License for more details.
 //
-// This version uses diagonal pivoting.
+// You should have received a copy of the GNU General Public License along with this program; if
+// not, write to the
 //
-// July      1992:  implementation, Michael Schroeder
-// January   1994:  search for complete equations adapted
-// September 1994:  adaption to enable vectorization
-// October   1999:
-// September 2005:  introducing the new class FROMAT and adaption of
-//                  class CRSMAT to hold the factorized equation system
-// October   2005:  MPI parallelization
-// ---------------------------------------------------------------------------------------
+// Free Software Foundation, Inc.
+// 59 Temple Place
+// Suite 330
+// Boston
+// MA 02111-1307 USA
+//
+// -------------------------------------------------------------------------------------------------
+//
+// P.M. Schroeder
+// Walzbachtal / Germany
+// michael.schroeder@hnware.de
+//
+// /////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include "Defs.h"
 #include "Report.h"

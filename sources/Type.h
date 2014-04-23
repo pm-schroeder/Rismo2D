@@ -1,55 +1,69 @@
-// ======================================================================================
-//                                      T Y P E .h
-// ======================================================================================
+// /////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// T Y P E
+//
+// /////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// FILES
+//
+// Type.h   : definition file of the class.
+// Type.cpp : implementation file of the class.
+//
+// -------------------------------------------------------------------------------------------------
+//
+// DESCRIPTION
+//
 // This class computes the friction coefficient cf from different friction laws.
-// ======================================================================================
 //
-// Copyright (C) 1992-2012  by  P.M. SCHROEDER
+// -------------------------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-// 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+// COPYRIGHT (C) 2011 - 2014  by  P.M. SCHROEDER  (sc)
 //
-// Please feel free to contact me:   Dr. P.M. Schroeder
-//                                   Sperberweg 22-1
-//                                   75045 Walzbachtal
-//                                   Germany
+// This program is free software; you can redistribute it and/or modify it under the terms of the
+// GNU General Public License as published by the Free Software Foundation; either version 2 of the
+// License, or (at your option) any later version.
 //
-//                                   e-mail: michael.schroeder@hnware.de
+// This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+// even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// General Public License for more details.
 //
-// ======================================================================================
+// You should have received a copy of the GNU General Public License along with this program; if
+// not, write to the
 //
-//    date             description
-// ----------  ----  ------------------------------------------------------
-// 24.02.2000   sc   First implementation of C++ class.
-//  3.03.2004   sc   Complete documentation of the source code (Type.h).
-// 27.02.2005   sc   Some work on the import-method.
-// 21.05.2006   sc   Sediment parameter removed.
-//  1.08.2006   sc   Dispersion coefficient betaSf.
-// 11.02.2008   sc   No further use of Default-Manning-Value nDef. If the specified
-//                   roughness height k is less than flow depth, a Manning coefficient
-//                   is computed internally for consistent transition.
-//                   In later versions nDef will be removed later from the input files.
-//  2.05.2008   sc   Implementation of van Velzen's assumption for flow over roughness.
-//  9.05.2008   sc   Implementation of form roughness acoording to van Rijn (1993)
-// 13.10.2012   sc   roughness of walls (log law) is no longer set by material zones
-//                   thus rtype[2] and rcoef[2] are now rtype and rcoef
-//                   wall roughnees may be applied by slip flow boundary conditions
+// Free Software Foundation, Inc.
+// 59 Temple Place
+// Suite 330
+// Boston
+// MA 02111-1307 USA
 //
-// developers:
-// sc     P.M. Schroeder
-// ======================================================================================
+// -------------------------------------------------------------------------------------------------
 //
+// P.M. Schroeder
+// Walzbachtal / Germany
+// michael.schroeder@hnware.de
+//
+// -------------------------------------------------------------------------------------------------
+//
+// HISTORY
+//
+//    date              changes
+// ------------  ----  -----------------------------------------------------------------------------
+//  24.02.2000    sc    First implementation of C++ class.
+//  03.03.2004    sc    Complete documentation of the source code (Type.h).
+//  27.02.2005    sc    Some work on the import-method.
+//  21.05.2006    sc    Sediment parameter removed.
+//  01.08.2006    sc    Dispersion coefficient betaSf.
+//  11.02.2008    sc    No further use of Default-Manning-Value nDef. If the specified
+//                      roughness height k is less than flow depth, a Manning coefficient
+//                      is computed internally for consistent transition.
+//                      In later versions nDef will be removed later from the input files.
+//  02.05.2008    sc    Implementation of van Velzen's assumption for flow over roughness.
+//  09.05.2008    sc    Implementation of form roughness acoording to van Rijn (1993)
+//  13.10.2012    sc    roughness of walls (log law) is no longer set by material zones
+//                      thus rtype[2] and rcoef[2] are now rtype and rcoef
+//                      wall roughnees may be applied by slip flow boundary conditions
+//
+// /////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifndef TYPE_INCL
 #define TYPE_INCL

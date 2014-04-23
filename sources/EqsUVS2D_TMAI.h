@@ -1,31 +1,58 @@
-// ======================================================================================
-//                              E Q S _ U V S 2 D _ T M A I
-// ======================================================================================
-// This class implements a differential equation system for shallow water flow.
+// /////////////////////////////////////////////////////////////////////////////////////////////////
 //
-// This class is used for strongly time dependent flows. For this purpose, the
-// time integration has been differently implemented to the class EQS_UVS2D. 
-// ======================================================================================
+// E Q S _ U V S 2 D _ T M A I
 //
-// Copyright (C) 1992-2013  by  P.M. SCHROEDER
+// /////////////////////////////////////////////////////////////////////////////////////////////////
 //
-// All rights reserved.
+// FILES
 //
-// This source code is part of the RISMO2D modelling software
-// As long as you have no contract (Source Code License Agreement
-// for the Rismo2D Software / Version 1.0 or any later version")
-// with the copyright holder, you are NOT ALLOWED to make any
-// changes to this source code.
+// EqsUVS2D_TMAI.h   : definition file of the class.
+// EqsUVS2D_TMAI.cpp : implementation file of the class.
 //
-// ======================================================================================
+// -------------------------------------------------------------------------------------------------
 //
-//    date               description
-// ----------   ------   ----------------------------------------------------------------
-// 03.01.2013     sc     first implementation as derived class from EQS_UVSD_TM
+// DESCRIPTION
 //
-// ======================================================================================
-
-// read this header file only once
+// This class implements a differential equation system for shallow water flow with a modified
+// time discretization with better convergence behaviour if time steps are very small (H-LES)
+// using an anisotropic turbulence closure (Elder).
+//
+// -------------------------------------------------------------------------------------------------
+//
+// COPYRIGHT (C) 2011 - 2014  by  P.M. SCHROEDER  (sc)
+//
+// This program is free software; you can redistribute it and/or modify it under the terms of the
+// GNU General Public License as published by the Free Software Foundation; either version 2 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+// even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License along with this program; if
+// not, write to the
+//
+// Free Software Foundation, Inc.
+// 59 Temple Place
+// Suite 330
+// Boston
+// MA 02111-1307 USA
+//
+// -------------------------------------------------------------------------------------------------
+//
+// P.M. Schroeder
+// Walzbachtal / Germany
+// michael.schroeder@hnware.de
+//
+// -------------------------------------------------------------------------------------------------
+//
+// HISTORY
+//
+//    date              changes
+// ------------  ----  -----------------------------------------------------------------------------
+//  03.01.2013    sc    first implementation / first concept
+//
+// /////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifndef EQS_UVS2D_TMAI_INCL
 #define EQS_UVS2D_TMAI_INCL

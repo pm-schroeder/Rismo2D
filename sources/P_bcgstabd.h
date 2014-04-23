@@ -1,28 +1,56 @@
-// ======================================================================================
-//                                 P _ B C G S T A B
-// ======================================================================================
+// /////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// P _ B C G S T A B D
+//
+// /////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// FILES
+//
+// P_bcgstabd.h   : definition file of the class.
+// P_bcgstabd.cpp : implementation file of the class.
+//
+// -------------------------------------------------------------------------------------------------
+//
+// DESCRIPTION
+//
 // This class implements an iterative solver for linear equation systems (PARMS).
-// ======================================================================================
 //
-// Copyright (C) 1992-2008  by  P.M. SCHROEDER
+// -------------------------------------------------------------------------------------------------
 //
-// All rights reserved.
+// COPYRIGHT (C) 2011 - 2014  by  P.M. SCHROEDER  (sc)
 //
-// This source code is part of the RISMO2D modelling software
-// As long as you have no contract (Source Code License Agreement
-// for the Rismo2D Software / Version 1.0 or any later version")
-// with the copyright holder, you are NOT ALLOWED to make any
-// changes to this source code.
+// This program is free software; you can redistribute it and/or modify it under the terms of the
+// GNU General Public License as published by the Free Software Foundation; either version 2 of the
+// License, or (at your option) any later version.
 //
-// ======================================================================================
+// This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+// even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// General Public License for more details.
 //
-//    date               description
-// ----------   ------   ----------------------------------------------------------------
-// 01.01.2004     sc     first implementation / first concept
+// You should have received a copy of the GNU General Public License along with this program; if
+// not, write to the
 //
-// ======================================================================================
-
-// read this header file only once ...
+// Free Software Foundation, Inc.
+// 59 Temple Place
+// Suite 330
+// Boston
+// MA 02111-1307 USA
+//
+// -------------------------------------------------------------------------------------------------
+//
+// P.M. Schroeder
+// Walzbachtal / Germany
+// michael.schroeder@hnware.de
+//
+// -------------------------------------------------------------------------------------------------
+//
+// HISTORY
+//
+//    date              changes
+// ------------  ----  -----------------------------------------------------------------------------
+//  01.01.2004    sc    first implementation / first concept
+//
+// /////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifndef P_BCGSTABD_INCL
 #define P_BCGSTABD_INCL

@@ -1,28 +1,70 @@
-// ======================================================================================
-//                                  E Q S _ U V S 2 D
-// ======================================================================================
+// /////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// E Q S _ U V S 2 D
+//
+// /////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// FILES
+//
+// EqsUVS2D.h   : definition file of the class.
+// EqsUVS2D.cpp : implementation file of the class.
+//
+// -------------------------------------------------------------------------------------------------
+//
+// DESCRIPTION
+//
 // This class implements a differential equation system for shallow water flow.
-// ======================================================================================
 //
-// Copyright (C) 1992-2012  by  P.M. SCHROEDER
+// -------------------------------------------------------------------------------------------------
 //
-// All rights reserved.
+// COPYRIGHT (C) 2011 - 2014  by  P.M. SCHROEDER  (sc)
 //
-// This source code is part of the RISMO2D modelling software
-// As long as you have no contract (Source Code License Agreement
-// for the Rismo2D Software / Version 1.0 or any later version")
-// with the copyright holder, you are NOT ALLOWED to make any
-// changes to this source code.
+// This program is free software; you can redistribute it and/or modify it under the terms of the
+// GNU General Public License as published by the Free Software Foundation; either version 2 of the
+// License, or (at your option) any later version.
 //
-// ======================================================================================
+// This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+// even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// General Public License for more details.
 //
-//    date               description
-// ----------   ------   ----------------------------------------------------------------
-// 01.01.1992     sc     first implementation / first concept
+// You should have received a copy of the GNU General Public License along with this program; if
+// not, write to the
 //
-// ======================================================================================
-
-// read this header file only once
+// Free Software Foundation, Inc.
+// 59 Temple Place
+// Suite 330
+// Boston
+// MA 02111-1307 USA
+//
+// -------------------------------------------------------------------------------------------------
+//
+// P.M. Schroeder
+// Walzbachtal / Germany
+// michael.schroeder@hnware.de
+//
+// -------------------------------------------------------------------------------------------------
+//
+// HISTORY
+//
+//    date              changes
+// ------------  ----  -----------------------------------------------------------------------------
+//  01.09.1992    sc    first implementation / first concept
+//  01.11.1999    sc
+//  02.01.2010    ko    implementation of diffuse Q at Nodes (Source/Sink)
+//                      in Region/RegionAI
+//  14.01.2011    sc    experimental: implementation of methods Bound_pinc() and
+//                      Region_pinc() with partially integrated convective terms
+//  21.01.2011    sc    Error detected in Region(): Wrong initialization in formulation
+//                      of the element stiffness matrix (H-derivative of y-momentum):
+//                      #     ifdef kBoussinesq2D
+//                            ...
+//                      #     else
+//                            dfxx  =  0.0;
+//                            dfyx  =  0.0;   (should be dfxy = 0.0;)
+//                            ...
+//  18.08.2012    sc     The anisotrop method EQS_UVS2D::RegionAI is now implemented
+//
+// /////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifndef EQS_UVS2D_INCL
 #define EQS_UVS2D_INCL

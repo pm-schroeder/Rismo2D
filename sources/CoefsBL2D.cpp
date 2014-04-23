@@ -1,26 +1,35 @@
-// ======================================================================================
+// /////////////////////////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 1992-2010  by  P.M. SCHROEDER
+// class EQS_BL2D
 //
-// All rights reserved.
+// /////////////////////////////////////////////////////////////////////////////////////////////////
 //
-// This source code is part of the RISMO2D modelling software
-// As long as you have no contract (Source Code License Agreement
-// for the Rismo2D Software / Version 1.0 or any later version")
-// with the copyright holder, you are NOT ALLOWED to make any
-// changes to this source code.
+// COPYRIGHT (C) 2011 - 2014  by  P.M. SCHROEDER  (sc)
 //
-// ======================================================================================
+// This program is free software; you can redistribute it and/or modify it under the terms of the
+// GNU General Public License as published by the Free Software Foundation; either version 2 of the
+// License, or (at your option) any later version.
 //
-// ---------------------------------------------------------------------------------------
-// compute element stiffness matrix
+// This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+// even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// General Public License for more details.
 //
-// methods:   EQS_BL2D::Coefs()
-//            EQS_BL2D::Bound()   one-dimensional boundary elements
-//            EQS_BL2D::Region()  two-dimensional region elements
+// You should have received a copy of the GNU General Public License along with this program; if
+// not, write to the
 //
-// Michael Schroeder in Mai 2005
-// ---------------------------------------------------------------------------------------
+// Free Software Foundation, Inc.
+// 59 Temple Place
+// Suite 330
+// Boston
+// MA 02111-1307 USA
+//
+// -------------------------------------------------------------------------------------------------
+//
+// P.M. Schroeder
+// Walzbachtal / Germany
+// michael.schroeder@hnware.de
+//
+// /////////////////////////////////////////////////////////////////////////////////////////////////
 
 // #define DEBUG 1
 
