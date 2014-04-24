@@ -9,6 +9,10 @@
 // Project.h   : definition file of the class.
 // Project.cpp : implementation file of the class.
 //
+// Compute.cpp : method  PROJECT::Compute()
+// Cycle.cpp   : methods PROJECT::NextCycle()
+//                       PROJECT::PrintTheCycle()
+//
 // -------------------------------------------------------------------------------------------------
 //
 // DESCRIPTION

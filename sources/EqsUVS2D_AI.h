@@ -6,8 +6,11 @@
 //
 // FILES
 //
-// EqsUVS2D_AI.h   : definition file of the class.
-// EqsUVS2D_AI.cpp : implementation file of the class.
+// EqsUVS2D_AI.h     : definition file of the class.
+// EqsUVS2D_AI.cpp   : implementation file of the class.
+//
+// CoefsUVS2D_AI.cpp : methods EQS_UVS2D_AI::Coefs()
+//                             EQS_UVS2D_AI::Region()
 //
 // -------------------------------------------------------------------------------------------------
 //

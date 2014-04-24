@@ -6,8 +6,12 @@
 //
 // FILES
 //
-// EqsSL2D.h   : definition file of the class.
-// EqsSL2D.cpp : implementation file of the class.
+// EqsSL2D.h     : definition file of the class.
+// EqsSL2D.cpp   : implementation file of the class.
+//
+// CoefsSL2D.cpp : methods EQS_SL2D::Coefs()
+//                         EQS_SL2D::Bound()
+//                         EQS_SL2D::Region()
 //
 // -------------------------------------------------------------------------------------------------
 //

@@ -9,6 +9,11 @@
 // Report.h   : definition file of the class.
 // Report.cpp : implementation file of the class.
 //
+// Time.cpp   : methods REPORT::InitTheClock()
+//                      REPORT::CpuClock()
+//                      REPORT::ConvertTime()
+//                      REPORT::PrintTime()
+//
 // -------------------------------------------------------------------------------------------------
 //
 // DESCRIPTION

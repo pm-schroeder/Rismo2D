@@ -6,8 +6,12 @@
 //
 // FILES
 //
-// EqsBL2D.h   : definition file of the class.
-// EqsBL2D.cpp : implementation file of the class.
+// EqsBL2D.h     : definition file of the class.
+// EqsBL2D.cpp   : implementation file of the class.
+//
+// CoefsBL2D.cpp : methods EQS_BL2D::Coefs()
+//                         EQS_BL2D::Bound()
+//                         EQS_BL2D::Region()
 //
 // -------------------------------------------------------------------------------------------------
 //

@@ -6,8 +6,12 @@
 //
 // FILES
 //
-// EqsPPE2D.h   : definition file of the class.
-// EqsPPE2D.cpp : implementation file of the class.
+// EqsPPE2D.h     : definition file of the class.
+// EqsPPE2D.cpp   : implementation file of the class.
+//
+// CoefsPPE2D.cpp : methods EQS_PPE2D::Coefs()
+//                          EQS_PPE2D::Bound()
+//                          EQS_PPE2D::Region()
 //
 // -------------------------------------------------------------------------------------------------
 //

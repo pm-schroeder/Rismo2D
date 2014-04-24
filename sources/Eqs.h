@@ -6,8 +6,18 @@
 //
 // FILES
 //
-// Eqs.h   : definition file of the class.
-// Eqs.cpp : implementation file of the class.
+// Eqs.h        : definition file of the class.
+// Eqs.cpp      : implementation file of the class.
+//
+// IndexMat.cpp : methods EQS::KillCrsm()
+//                        EQS::SetIndexMat()
+//                        EQS::SortIndex()
+// Rotate.cpp   : method  EQS::Rotate2D()
+// SetEqno.cpp  : methods EQS::SetEqno()
+//                        EQS::LastEquation()
+//                        EQS::ResetEqOrder()
+// Solve.cpp    : method  EQS::Solve()
+// Update.cpp   : method  EQS::EQS::Update()
 //
 // -------------------------------------------------------------------------------------------------
 //

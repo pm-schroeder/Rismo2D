@@ -7,8 +7,30 @@
 //
 // FILES
 //
-// Grid.h   : definition file of the class.
-// Grid.cpp : implementation file of the class.
+// Grid.h         : definition file of the class.
+// Grid.cpp       : implementation file of the class.
+//
+// Arfact.cpp     : method  GRID::AreaFactors()
+// Check.cpp      : method  GRID::Check()
+// Connect.cpp    : method  GRID::Connection()
+// Courant.cpp    : method  GRID::ReportCuPe()
+// Dispersion.cpp : method  GRID::Dispersion()
+// DryRewet.cpp   : methods GRID::Dry()
+//                          GRID::Rewet()
+//                          GRID::ReportDry()
+//                          GRID::DryRewet()
+//                          GRID::RewetDry()
+// EddyDisp.cpp   : method  GRID::EddyDisp()
+// Init.cpp       : method  GRID::InitKD()
+// InitS.cpp      : method  GRID::InitS()
+// Lumped.cpp     : method  GRID::LumpedMassMatrix()
+// SlipFlow.cpp   : method  GRID::SetSlipFlow()
+// Smooth.cpp     : methods GRID::SmoothS()
+//                          GRID::SmoothKD()
+// Turbulence.cpp : method  GRID::Turbulence()
+// VeloGrad.cpp   : method  GRID::VeloGrad()
+//
+// Interpol.cpp   : method  DRYREW::interpolate()
 //
 // -------------------------------------------------------------------------------------------------
 //

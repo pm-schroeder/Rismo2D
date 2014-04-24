@@ -6,8 +6,17 @@
 //
 // FILES
 //
-// Type.h   : definition file of the class.
-// Type.cpp : implementation file of the class.
+// Type.h       : definition file of the class.
+// Type.cpp     : implementation file of the class.
+//
+// Friction.cpp : methods TYPE::bottom()
+//                        TYPE::friction()
+//                        TYPE::Dune()
+// Lindner.cpp  : methods TYPE::lindner()
+//                        TYPE::dragCoeff()
+//                        TYPE::cubeEquation()
+//                        TYPE::statisLindner()
+// Velzen.cpp   : method  TYPE::velzen()
 //
 // -------------------------------------------------------------------------------------------------
 //

@@ -8,7 +8,10 @@
 //
 // FILES
 //
-// Bcon.h  : definition file of the 3 classes BCON, BCONLINE and BCONSET.
+// Bcon.h       : definition file of the 3 classes BCON, BCONLINE and BCONSET.
+// Bcon.cpp     : implementation of the class BCON
+// Bconline.cpp : implementation of the class BCONLINE
+// Bconset.cpp  : implementation of the class BCONSET
 //
 // -------------------------------------------------------------------------------------------------
 //

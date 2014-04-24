@@ -6,8 +6,11 @@
 //
 // FILES
 //
-// EqsDisp.h   : definition file of the class.
-// EqsDisp.cpp : implementation file of the class.
+// EqsDisp.h     : definition file of the class.
+// EqsDisp.cpp   : implementation file of the class.
+//
+// CoefsDisp.cpp : methods EQS_DISP::Coefs()
+//                         EQS_DISP::Region()
 //
 // -------------------------------------------------------------------------------------------------
 //

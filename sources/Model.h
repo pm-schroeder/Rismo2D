@@ -6,8 +6,27 @@
 //
 // FILES
 //
-// Model.h   : definition file of the class.
-// Model.cpp : implementation file of the class.
+// Model.h         : definition file of the class.
+// Model.cpp       : implementation file of the class.
+//
+// Bound.cpp       : methods MODEL::Boundary()
+//                           MODEL::Getbound()
+// Contin.cpp      : method  MODEL::Continuity()
+// ContinBSL.cpp   : method  MODEL::ContinuityBSL()
+// Curv2D.cpp      : method  MODEL::Curv2D()
+// DoDryRew.cpp    : methods MODEL::DoDryRewet()
+//                           MODEL::MPI_Comm_Dry()
+// DoFriction.cpp  : method  MODEL::DoFriction()
+// LastNode.cpp    : method  MODEL::LastNode()
+// Locate.cpp      : method  MODEL::SetLocation()
+// Phi2D.cpp       : method  MODEL::Phi2D()
+// ReorderElem.cpp : method  MODEL::ReorderElem()
+// Rot2D.cpp       : method  MODEL::Rot2D()
+// SetBdKD.cpp     : methods MODEL::SetBoundKD()
+//                           MODEL::SetNodeKD()
+//                           MODEL::SmoothKDBound()
+// Transform.cpp   : methods MODEL::SetNormal()
+//                           MODEL::SetRotation()
 //
 // -------------------------------------------------------------------------------------------------
 //

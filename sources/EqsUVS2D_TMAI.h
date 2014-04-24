@@ -6,8 +6,12 @@
 //
 // FILES
 //
-// EqsUVS2D_TMAI.h   : definition file of the class.
-// EqsUVS2D_TMAI.cpp : implementation file of the class.
+// EqsUVS2D_TMAI.h     : definition file of the class.
+// EqsUVS2D_TMAI.cpp   : implementation file of the class.
+//
+// CoefsUVS2D_TMAI.cpp : methods EQS_UVS2D_TMAI::Coefs()
+//                               EQS_UVS2D_TMAI::Region()
+//                               EQS_UVS2D_TMAI::Region_dt()
 //
 // -------------------------------------------------------------------------------------------------
 //

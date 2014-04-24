@@ -6,8 +6,12 @@
 //
 // FILES
 //
-// EqsDz.h   : definition file of the class.
-// EqsDz.cpp : implementation file of the class.
+// EqsDz.h     : definition file of the class.
+// EqsDz.cpp   : implementation file of the class.
+//
+// CoefsDz.cpp : methods EQS_DZ::Coefs()
+//                       EQS_DZ::Bound()
+//                       EQS_DZ::region()
 //
 // -------------------------------------------------------------------------------------------------
 //

@@ -6,8 +6,11 @@
 //
 // FILES
 //
-// EqsK2D.h   : definition file of the class.
-// EqsK2D.cpp : implementation file of the class.
+// EqsK2D.h     : definition file of the class.
+// EqsK2D.cpp   : implementation file of the class.
+//
+// CoefsK2D.cpp : methods EQS_K2D::Coefs()
+//                        EQS_K2D::Region()
 //
 // -------------------------------------------------------------------------------------------------
 //

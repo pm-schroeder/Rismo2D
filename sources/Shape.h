@@ -6,8 +6,34 @@
 //
 // FILES
 //
-// Shape.h   : definition file of the class.
-// Shape.cpp : implementation file of the class.
+// Shape.h      : definition file of the class.
+// Shape.cpp    : implementation file of the class.
+//
+// Line.cpp     : methods SHAPE::shapeOfLine()
+//                        SHAPE::localLine()
+//                        SHAPE::lLine()
+//                        SHAPE::lLineDx()
+//                        SHAPE::qLine()
+//                        SHAPE::qLineDx()
+// Square.cpp   : methods SHAPE::shapeOfSquare()
+//                        SHAPE::localSquare()
+//                        SHAPE::lSquare()
+//                        SHAPE::lSquareDx()
+//                        SHAPE::lSquareDy()
+//                        SHAPE::qSquare()
+//                        SHAPE::qSquareDx()
+//                        SHAPE::qSquareDy()
+// Triangle.cpp : methods SHAPE::shapeOfTriangle()
+//                        SHAPE::localTriangle()
+//                        SHAPE::lTriangle()
+//                        SHAPE::lTriangleDx()
+//                        SHAPE::lTriangleDy()
+//                        SHAPE::bTriangle()
+//                        SHAPE::bTriangleDx()
+//                        SHAPE::bTriangleDy()
+//                        SHAPE::qTriangle()
+//                        SHAPE::qTriangleDx()
+//                        SHAPE::qTriangleDy()
 //
 // -------------------------------------------------------------------------------------------------
 //

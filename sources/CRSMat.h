@@ -6,8 +6,12 @@
 //
 // FILES
 //
-// CRSMat.h   : definition file of the class.
-// CRSMat.cpp : implementation file of the class.
+// CRSMat.h     : definition file of the class.
+// CRSMat.cpp   : implementation file of the class.
+//
+// Assemble.cpp : methods CRSMAT::AssembleEstifm_im()
+//                        CRSMAT::AssembleEqs_im()
+//                        CRSMAT::AssembleForce()
 //
 // -------------------------------------------------------------------------------------------------
 //
