@@ -23,6 +23,7 @@ be computed with different closure models:
 
     constant elementwise eddy viscosity predefined by the user
     algebraic shear stress model (anisotropic / Elder)
+    Prandtl's mixing layer model
     k-e-turbulence model
 
 Furthermore, a Horizontal Large Eddy Simulation (H-LES) based on the
