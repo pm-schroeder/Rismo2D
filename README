@@ -4,9 +4,9 @@ Method. Rismo2D was developed during a research project funded by the
 German Research Foundation (DFG) at the Institute of Hydraulic Enginee-
 ring and Water Resources Management - Aachen University:
 
-The development of a numerical computational method
-for near-natural streams
-DFG-Project Ro 365 / 31
+    The development of a numerical computational method
+                for near-natural streams
+                DFG-Project Ro 365 / 31
 
 Rismo2D computes the water elevation and the depth-averaged velocity
 for stationary or instationary streams. Based on a Finite Element
@@ -14,20 +14,31 @@ discretization the computation can be carried out for arbitrary water-
 courses with complex geometrical and hydraulical boundary conditions.
 
 Different laws may be used to account for bottom roughness. The friction
-of non-submerged flood plain vegetation may be computed by means of
-geometrical parameters.
+of submerged and non-submerged flood plain vegetation may be computed
+by means of geometrical parameters.
 
 The approximation of the (turbulent) Reynolds stresses is based on
 Boussinesqs principle of eddy viscosity, where the eddy viscosity may
 be computed with different closure models:
 
-    constant eddy viscosity predefined by the user
+    constant elementwise eddy viscosity predefined by the user
     algebraic shear stress model (anisotropic / Elder)
-    k-e-turbulence model 
+    k-e-turbulence model
 
-Decoupled from the flow simulation the conservative transport of matter
-in solution or suspension may be computed by solving the depth-averaged
-advection diffusion equation.
+Furthermore, a Horizontal Large Eddy Simulation (H-LES) based on the
+Smagorinsky model approach has been proved in some recent project
+studies. Within the H-LES subgrid turbulence model both horizontal
+velocity gradients (Prandtl's mixing length model) and bottom shear
+stresses (Elder model) are taken into account.
+
+After the solution of the flow field in one time step, the conservative
+transport of matter in solution or suspension may be computed decoupled
+by solving the depth-averaged advection diffusion equation. Also, the
+transport of sediment as bed load may be computed based on the formulas
+of Meyer-Peter-Mueller or van-Rijn. The computation of transport pro-
+cesses is within the stage of development, and limited to one-fractional
+transport. Bottom elevation changes are computed from the Exner equation
+and incorporated within the next time step.
 
 Michael Schroeder
 23. April 2014
