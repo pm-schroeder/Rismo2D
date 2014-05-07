@@ -426,7 +426,7 @@ void STATIST::Write( MODEL   *model,
                         this->HH[n],
                         this->VtVt[n] );
 
-      fprintf( id, " %14.6le %14.6le %14.6le\n",
+      fprintf( id, " %14.6le %14.6le %14.6le %14.6le %14.6le\n",
                         this->maxU[n],
                         this->maxV[n],
                         this->minU[n],
@@ -643,9 +643,9 @@ void STATIST::Sum( PROJECT *project, MODEL* model )
 //      if( sqrt( nd->v.V * nd->v.V ) < sqrt( this->minV_scalar[i] * this->maxV_scalar[i] )) this->minV_scalar[i] = nd->v.V;
 
       if( nd->v.U > this->maxU_scalar[i] ) this->maxU_scalar[i] = nd->v.U;
-      if( nd->v.U < this->maxU_scalar[i] ) this->minU_scalar[i] = nd->v.U;
+      if( nd->v.U < this->minU_scalar[i] ) this->minU_scalar[i] = nd->v.U;
       if( nd->v.V > this->maxV_scalar[i] ) this->maxV_scalar[i] = nd->v.V;
-      if( nd->v.V < this->maxV_scalar[i] ) this->minV_scalar[i] = nd->v.V;
+      if( nd->v.V < this->minV_scalar[i] ) this->minV_scalar[i] = nd->v.V;
 
     }
   }
