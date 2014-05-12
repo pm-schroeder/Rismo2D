@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // P R O J E C T
@@ -58,6 +59,34 @@
 //  28.10.2011    sc    cleaning up keys structure (RISKEY)
 //
 // /////////////////////////////////////////////////////////////////////////////////////////////////
+=======
+// ======================================================================================
+//                                   P R O J E C T
+// ======================================================================================
+// This class implements the project class.
+// ======================================================================================
+//
+// Copyright (C) 1992-2013  by  P.M. SCHROEDER
+//
+// All rights reserved.
+//
+// This source code is part of the RISMO2D modelling software.
+// As long as you have no contract (Source Code License Agreement
+// for the Rismo2D Software / Version 1.0 or any later version")
+// with the copyright holder, you are NOT ALLOWED to make any
+// changes to this source code.
+//
+// ======================================================================================
+//
+//    date               description
+// ----------   ------   ----------------------------------------------------------------
+// 01.01.1998     sc     first implementation / first concept
+// 13.10.2011     sc     cycles "..._dt" + "..._tr" removed, stationary flow computation
+//                       will be established by the key $STATIONARY im the tmiestep-file
+// 28.10.2011     sc     cleaning up keys structure (RISKEY)
+
+// ======================================================================================
+>>>>>>> 794315c574c6f10fb0d55e7bdf437568d47a0c71
 
 #include <string.h>
 
@@ -353,6 +382,15 @@ class PROJECT
   public:
     enum VARS
     {
+<<<<<<< HEAD
+      kUV=0,    kS,      kK,      kD,     kC,    kCB,    kQB,   kQBE,   kLS,      kSEDUV,
+      kDUVDT,   kDSDT,   kZ,      kH,     kUS,   kCF,    kRC,   kD90,   kD50,     kKD,
+      kHR,      kHD,     kHP,     kDP,    kSP,   kTAU,   kMAN,  kVT,    kEst,     kEXX,
+      kEYY,     kDUU,    kDUV,    kDVV,   kVSEC, kUVBOT, kDZ,   kRE,    kFR,      kPE,
+      kCU,      kPHI,    kROT,    kCURV,  kDZDS, kDZDN,  kDZMX, kDHDS,  kMEANUV,  kMEANS,
+      kMEANUS,  kMEANH,  kMEANVT, kVARU,  kVARV, kVARUV, kKINE, kSDEVH, kVARVT,   kKINER,
+      kFLDRATE, kKINRATIO, kSZ_VARS
+=======
       kUV=0,    kS,       kK,      kD,     kC,    kCB,    kQB,    kQBE,    kLS,      kSEDUV,
       kDUVDT,   kDSDT,    kZ,      kH,     kUS,   kCF,    kRC,    kD90,    kD50,     kKD,
       kHR,      kHD,      kHP,     kDP,    kSP,   kTAU,   kMAN,   kVT,     kEst,     kEXX,
@@ -361,6 +399,7 @@ class PROJECT
       kMEANUS,  kMEANH,   kMEANVT, kVARU,  kVARV, kVARUV, kKINE,  kSDEVH,  kVARVT,   kKINER,
       kFLDRATE, kKINRATIO,kMAXUV,  kMINUV, kMAXUS,kMINUS, kMAXTAU,kMAXU,   kMINU,    kMAXV,
       kMINV,    kSZ_VARS
+>>>>>>> 794315c574c6f10fb0d55e7bdf437568d47a0c71
     };
 
     int     nval;

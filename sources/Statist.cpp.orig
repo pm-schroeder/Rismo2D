@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // class STATIST
@@ -30,6 +31,21 @@
 // michael.schroeder@hnware.de
 //
 // /////////////////////////////////////////////////////////////////////////////////////////////////
+=======
+// ======================================================================================
+//
+// Copyright (C) 1992-2010  by  P.M. SCHROEDER
+//
+// All rights reserved.
+//
+// This source code is part of the RISMO2D modelling software
+// As long as you have no contract (�Source Code License Agreement
+// for the Rismo2D Software / Version 1.0 or any later version")
+// with the copyright holder, you are NOT ALLOWED to make any
+// changes to this source code.
+//
+// ======================================================================================
+>>>>>>> 794315c574c6f10fb0d55e7bdf437568d47a0c71
 
 #include "Defs.h"
 #include "Asciifile.h"
@@ -70,6 +86,13 @@ void STATIST::Init( int np )
 
   this->VtVt = new double [np];
 
+<<<<<<< HEAD
+  this->nwet = new int [np];
+
+  if(     !this->U   ||  !this->V    ||  !this->S   ||  !this->H
+      ||  !this->Vt  ||  !this->UU   ||  !this->VV  ||  !this->UV
+      ||  !this->HH  ||  !this->VtVt ||  !this->nwet )
+=======
   this->maxTau = new double [np];
   this->maxUs  = new double [np];
   this->minUs  = new double [np];
@@ -91,6 +114,7 @@ void STATIST::Init( int np )
       ||  !this->minUs               || !this->maxTau
       ||  !this->maxU_scalar         ||  !this->minU_scalar
       ||  !this->maxV_scalar         ||  !this->minV_scalar)
+>>>>>>> 794315c574c6f10fb0d55e7bdf437568d47a0c71
     REPORT::rpt.Error( "can not allocate memory - STATIST::STATIST (1)" );
 
 
@@ -108,6 +132,8 @@ void STATIST::Init( int np )
     this->UV[i]   = 0.0;
     this->HH[i]   = 0.0;
     this->VtVt[i] = 0.0;
+<<<<<<< HEAD
+=======
 
     this->maxTau[i] = 0.0;
     this->maxUs[i]  = 0.0;
@@ -121,6 +147,7 @@ void STATIST::Init( int np )
     this->maxV_scalar[i] = -999.9;
     this->minU_scalar[i] = 999.9;
     this->minV_scalar[i] = 999.9;
+>>>>>>> 794315c574c6f10fb0d55e7bdf437568d47a0c71
   }
 }
 
@@ -139,6 +166,8 @@ STATIST::~STATIST()
   delete[] HH;
   delete[] VtVt;
 
+<<<<<<< HEAD
+=======
   delete[] maxTau;
   delete[] maxUs;
   delete[] minUs;
@@ -152,6 +181,7 @@ STATIST::~STATIST()
   delete[] minU_scalar;
   delete[] minV_scalar;
 
+>>>>>>> 794315c574c6f10fb0d55e7bdf437568d47a0c71
   delete[] nwet;
 }
 
@@ -251,6 +281,8 @@ double STATIST::GetVtVt( int no )
   return VtVt[no] / nwet[no];
 }
 
+<<<<<<< HEAD
+=======
 double STATIST::GetMaxUs( int no )
 {
   return maxUs[no];
@@ -306,6 +338,7 @@ double STATIST::GetMinV_scalar( int no )
   return minV_scalar[no];
 }
 
+>>>>>>> 794315c574c6f10fb0d55e7bdf437568d47a0c71
 double STATIST::GetFldRate( int no )
 {
   if( nwet[no] > 1 )  return double(nwet[no]) / n;
@@ -373,23 +406,34 @@ void STATIST::Read( int np, char *statisticFile, SUBDOM *subdom )
 
     if( no >= 0 )
     {
+<<<<<<< HEAD
+      sscanf( textLine, " %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+                        &name, &this->nwet[no],
+                               &this->U[no],
+                               &this->V[no],
+=======
       sscanf( textLine, " %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
                         &name, &this->nwet[no],
                                &this->U[no],
                                &this->V[no],
                                &this->S[no],
+>>>>>>> 794315c574c6f10fb0d55e7bdf437568d47a0c71
                                &this->H[no],
                                &this->Vt[no],
                                &this->UU[no],
                                &this->VV[no],
                                &this->UV[no],
                                &this->HH[no],
+<<<<<<< HEAD
+                               &this->VtVt[no] );
+=======
                                &this->VtVt[no],
                                &this->maxU[no],
                                &this->maxV[no],
                                &this->minU[no],
                                &this->minV[no],
                                &this->maxTau[no]);
+>>>>>>> 794315c574c6f10fb0d55e7bdf437568d47a0c71
     }
   }
 
@@ -423,13 +467,27 @@ void STATIST::Write( MODEL   *model,
       REPORT::rpt.Error( kOpenFileFault, "%s %s (STATIST::Write #1)",
                                          "can not open statistic file", filename );
 
+<<<<<<< HEAD
+    fprintf( id, "# %d   Release %d   nwet,U,V,H,Vt,uu,vv,uv,hh,vtvt\n", this->n, release );
+=======
     fprintf( id, "# %d   Release %d   nwet,U,V,S,H,Vt,uu,vv,uv,hh,vtvt,maxU,maxV,minU,minV,maxTau\n", this->n, release );
+>>>>>>> 794315c574c6f10fb0d55e7bdf437568d47a0c71
     fprintf( id, "%d\n", np );
 
     for( int n=0; n<np; n++ )
     {
       NODE* nd = rg->Getnode(n);
 
+<<<<<<< HEAD
+      fprintf( id, "%8d %8d  %14.6le %14.6le %14.6le %14.6le",
+                   nd->Getname(), this->nwet[n],
+                                  this->U[n],
+                                  this->V[n],
+                                  this->H[n],
+                                  this->Vt[n] );
+
+      fprintf( id, " %14.6le %14.6le %14.6le %14.6le %14.6le\n",
+=======
       fprintf( id, "%8d %8d  %14.6le %14.6le %14.6le %14.6le %14.6le",
                    nd->Getname(), this->nwet[n],
                                   this->U[n],
@@ -439,11 +497,14 @@ void STATIST::Write( MODEL   *model,
                                   this->Vt[n] );
 
       fprintf( id, " %14.6le %14.6le %14.6le %14.6le %14.6le",
+>>>>>>> 794315c574c6f10fb0d55e7bdf437568d47a0c71
                         this->UU[n],
                         this->VV[n],
                         this->UV[n],
                         this->HH[n],
                         this->VtVt[n] );
+<<<<<<< HEAD
+=======
 
       fprintf( id, " %14.6le %14.6le %14.6le %14.6le %14.6le\n",
                         this->maxU[n],
@@ -451,6 +512,7 @@ void STATIST::Write( MODEL   *model,
                         this->minU[n],
                         this->minV[n],
                         this->maxTau[n] );
+>>>>>>> 794315c574c6f10fb0d55e7bdf437568d47a0c71
     }
 
     fclose( id );
@@ -605,7 +667,11 @@ void STATIST::Write( MODEL   *model,
 }
 
 
+<<<<<<< HEAD
+void STATIST::Sum( MODEL* model )
+=======
 void STATIST::Sum( PROJECT *project, MODEL* model )
+>>>>>>> 794315c574c6f10fb0d55e7bdf437568d47a0c71
 {
   this->n++;
 
@@ -618,6 +684,10 @@ void STATIST::Sum( PROJECT *project, MODEL* model )
     if( !isFS(nd->flag,NODE::kDry) )
     {
       this->nwet[i]++;
+<<<<<<< HEAD
+
+=======
+>>>>>>> 794315c574c6f10fb0d55e7bdf437568d47a0c71
       double H = nd->v.S - nd->z;
 
       this->U[i]    += nd->v.U;
@@ -632,6 +702,8 @@ void STATIST::Sum( PROJECT *project, MODEL* model )
       this->UV[i]   += nd->v.U * nd->v.V;
       this->HH[i]   += H * H;
       this->VtVt[i] += nd->vt * nd->vt;
+<<<<<<< HEAD
+=======
 
       double Us = sqrt( nd->v.U*nd->v.U + nd->v.V*nd->v.V );
 //      double tau = project->rho * H * nd->cf * Us;
@@ -666,6 +738,7 @@ void STATIST::Sum( PROJECT *project, MODEL* model )
       if( nd->v.V > this->maxV_scalar[i] ) this->maxV_scalar[i] = nd->v.V;
       if( nd->v.V < this->minV_scalar[i] ) this->minV_scalar[i] = nd->v.V;
 
+>>>>>>> 794315c574c6f10fb0d55e7bdf437568d47a0c71
     }
   }
 }
@@ -695,6 +768,8 @@ void STATIST::Reset( MODEL* model )
     this->HH[i]   = 0.0;
     this->VtVt[i] = 0.0;
 
+<<<<<<< HEAD
+=======
     this->maxTau[i] = 0.0;
     this->maxUs[i]  = 0.0;
     this->minUs[i]  = 0.0;
@@ -708,5 +783,6 @@ void STATIST::Reset( MODEL* model )
     this->minU_scalar[i]   = 999.9;
     this->minV_scalar[i]   = 999.9;
 
+>>>>>>> 794315c574c6f10fb0d55e7bdf437568d47a0c71
   }
 }

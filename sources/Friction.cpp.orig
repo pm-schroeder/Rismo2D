@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // class TYPE
@@ -31,6 +32,35 @@
 //
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 
+=======
+// ======================================================================================
+//
+// Copyright (C) 1992-2012  by  P.M. SCHROEDER
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+//
+// Please feel free to contact me:   Dr. P.M. Schroeder
+//                                   Sperberweg 22-1
+//                                   75045 Walzbachtal
+//                                   Germany
+//
+//                                   e-mail: michael.schroeder@hnware.de
+//
+// ======================================================================================
+//
+>>>>>>> 794315c574c6f10fb0d55e7bdf437568d47a0c71
 #include "Defs.h"
 #include "Type.h"
 
@@ -103,7 +133,10 @@ double TYPE::bottom( double  Us,        // scalar velocity
 
   if( cp < -0.9 )    // means: cp == -1.0
   {
+<<<<<<< HEAD
     // approximately set cwr = 1.5
+=======
+>>>>>>> 794315c574c6f10fb0d55e7bdf437568d47a0c71
     cp  =  cb  +  0.75 * H * dp[0] / sp[0] / sp[0];
   }
 
@@ -210,8 +243,11 @@ double TYPE::friction( int    rtype,        // roughness type
     // ----------------------------------------------------------------------------------
 
     case kNIKU:
-      // term = ka / log( 1.0  +  12.0 * h / rcoef ); //Michaels Version 4.05.20
+<<<<<<< HEAD
+      term = ka / log( 1.0  +  12.0 * h / rcoef );
+=======
       term = ka / log( (12.0 * h + rcoef) / rcoef );
+>>>>>>> 794315c574c6f10fb0d55e7bdf437568d47a0c71
       cf   = term * term;
 
       // -----------------------------------------------------------------------------------------

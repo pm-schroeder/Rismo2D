@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // class GRID
@@ -31,6 +32,20 @@
 //
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 
+=======
+// ======================================================================================
+//
+// Copyright (C) 1992-2010  by  P.M. SCHROEDER
+//
+// All rights reserved.
+//
+// This source code is part of the RISMO2D modelling software
+// As long as you have no contract (Source Code License Agreement
+// for the Rismo2D Software / Version 1.0 or any later version")
+// with the copyright holder, you are NOT ALLOWED to make any
+// changes to this source code.
+//
+>>>>>>> 794315c574c6f10fb0d55e7bdf437568d47a0c71
 // --------------------------------------------------------------------------------------
 // The method Turbulence() computes the eddy viscosity depending on
 // the value of turb = project->actualTurb:
@@ -161,8 +176,11 @@ void GRID::Turbulence( PROJECT* project )
 
   ////////////////////////////////////////////////////////////////////////////////////////
   // ##7 large eddy model with algebraic bottom shear stresses
+<<<<<<< HEAD
   //     The turbulent kinetic energy "K" and the eddy viscosity "vt" are computed as
   //     the sum of the algebraic shear stress model and the Large-Eddy model
+=======
+>>>>>>> 794315c574c6f10fb0d55e7bdf437568d47a0c71
 
   else if( isFS(turb, BCONSET::kVtLES)  &&  isFS(turb, BCONSET::kVtAlgebraic) )
   {
@@ -241,6 +259,37 @@ void GRID::Turbulence( PROJECT* project )
         double V = node[n].v.V;
         double H = node[n].v.S - node[n].z;
 
+<<<<<<< HEAD
+        double Utau2 = node[n].cf * (U*U + V*V);
+        double Utau  = sqrt( node[n].cf * (U*U + V*V) );
+        double cK    = 1.0 / sqrt( node[n].cf );
+
+        // LES
+        double L  = ls[n] / cnt[n];
+        double L2 = L * L;
+
+        double vt = ste[n] * H * Utau  +  L2 * sqrt( phi[n] );
+        double K  = (L2*phi[n]  +  Utau2*sqrt(cK*ste[n])) / sqrt(cm*cd);
+        // ... K  = (vt*vt/L/L/sqrt(cm*cd)  +  Utau*Utau*sqrt(cK*ste[n]/cm/cd);
+
+        // -----------------------------------------------------------------------------------------
+        // The following code is not consistent to the Large-Eddy model, because in the case
+        // ste[n] = 0 the computation of NODE::uu = NODE::vv = -2/3*K is different to the
+        // computed values in the LES model.
+
+        //double Utau = sqrt( node[n].cf * (U*U + V*V) );
+        //double cK   = 1.0 / sqrt( node[n].cf );
+        //double PKv  = cK * Utau*Utau*Utau / H;
+
+        // LES
+        //double L  = ls[n] / cnt[n];
+
+        //double vt = ste[n] * H * Utau  +  L * L * sqrt( phi[n] );
+
+        //double D  = vt * phi[n] + PKv;
+        //double K  = sqrt( vt * D / cm / cd );
+        // -----------------------------------------------------------------------------------------
+=======
         double Utau = sqrt( node[n].cf * (U*U + V*V) );
         double cK   = 1.0 / sqrt( node[n].cf );
 //        double PKv  = cK * Utau*Utau*Utau / H;
@@ -254,6 +303,7 @@ void GRID::Turbulence( PROJECT* project )
 //        double K  = sqrt( vt * D / cm / cd );
 
         double K = (L * L * phi[n]  +  Utau*Utau * sqrt(cK*ste[n]) ) / sqrt(cm * cd); // cm * cd statt cm/cd
+>>>>>>> 794315c574c6f10fb0d55e7bdf437568d47a0c71
 
         node[n].vt = vt;
         node[n].uu =

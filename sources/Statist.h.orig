@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // S T A T I S T
@@ -51,6 +52,33 @@
 //  01.01.1994    sc    first implementation / first concept
 //
 // /////////////////////////////////////////////////////////////////////////////////////////////////
+=======
+// ======================================================================================
+//                                    S T A T I S T
+// ======================================================================================
+// This class implements statistical functions for analysis of transient flow.
+// ======================================================================================
+//
+// Copyright (C) 1992-2008  by  P.M. SCHROEDER
+//
+// All rights reserved.
+//
+// This source code is part of the RISMO2D modelling software
+// As long as you have no contract (Source Code License Agreement
+// for the Rismo2D Software / Version 1.0 or any later version")
+// with the copyright holder, you are NOT ALLOWED to make any
+// changes to this source code.
+//
+// ======================================================================================
+//
+//    date               description
+// ----------   ------   ----------------------------------------------------------------
+// 01.01.1994     sc     first implementation / first concept
+//
+// ======================================================================================
+
+// read this header file only once ...
+>>>>>>> 794315c574c6f10fb0d55e7bdf437568d47a0c71
 
 #ifndef STATIST_INCL
 #define STATIST_INCL
@@ -80,6 +108,8 @@ class STATIST
     double *HH;        //        H*H
     double *VtVt;      //        Vt*Vt
 
+<<<<<<< HEAD
+=======
     double *maxTau;    // maximum of bottom friction
     double *maxUs;     // maximum of velocity
     double *minUs;     // minimum of velocity
@@ -94,6 +124,7 @@ class STATIST
     double *minV_scalar;      // minimum V
 
 
+>>>>>>> 794315c574c6f10fb0d55e7bdf437568d47a0c71
   public:
     STATIST();
     ~STATIST();
@@ -112,6 +143,8 @@ class STATIST
     double GetVarVt( int no );
     double GetVtVt( int no );
     double GetFldRate( int no );
+<<<<<<< HEAD
+=======
     double GetMaxTau( int no );
     double GetMaxUs( int no );
     double GetMinUs( int no );
@@ -124,12 +157,17 @@ class STATIST
     double GetMaxV_scalar( int no );
     double GetMinU_scalar( int no );
     double GetMinV_scalar( int no );
+>>>>>>> 794315c574c6f10fb0d55e7bdf437568d47a0c71
 
     void Init( int np );
     void Read( int np, char *fileName, SUBDOM *subdom );
     void Write( MODEL *model, int release, char *staFile,
                 char *rgFile, int timeStep, PROJECT *project );
+<<<<<<< HEAD
+    void Sum( MODEL* );
+=======
     void Sum( PROJECT*, MODEL* );
+>>>>>>> 794315c574c6f10fb0d55e7bdf437568d47a0c71
     void Reset( MODEL* );
 };
 
