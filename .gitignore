@@ -1,2 +1,6 @@
 .DS_Store
 ._.DS_Store
+debug/*
+release/*
+sources/RismoQt.pro.user
+sources/RismoQt.pro.user.fb03ed5.15

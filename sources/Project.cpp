@@ -312,8 +312,8 @@ PROJECT::PROJECT()
   vl->id = kMINUS;   vl->name = "minUs";   vl->unit = "m/s";    vl->dim = 1;  vl->vec = 1;  vl++;  // 65
   vl->id = kMAXTAU;  vl->name = "maxTau";  vl->unit = "N/m2";   vl->dim = 1;  vl->vec = 1;  vl++;  // 66
   vl->id = kMAXU;    vl->name = "maxU";    vl->unit = "m/s";    vl->dim = 1;  vl->vec = 1;  vl++;  // 67
-  vl->id = kMAXV;    vl->name = "maxV";    vl->unit = "m/s";    vl->dim = 1;  vl->vec = 1;  vl++;  // 68
-  vl->id = kMINU;    vl->name = "minU";    vl->unit = "m/s";    vl->dim = 1;  vl->vec = 1;  vl++;  // 69
+  vl->id = kMINU;    vl->name = "minU";    vl->unit = "m/s";    vl->dim = 1;  vl->vec = 1;  vl++;  // 68
+  vl->id = kMAXV;    vl->name = "maxV";    vl->unit = "m/s";    vl->dim = 1;  vl->vec = 1;  vl++;  // 69
   vl->id = kMINV;    vl->name = "minV";    vl->unit = "m/s";    vl->dim = 1;  vl->vec = 1;  vl++;  // 70
 
 
