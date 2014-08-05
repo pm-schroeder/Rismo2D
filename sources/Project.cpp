@@ -53,7 +53,7 @@
 #include "Project.h"
 
 
-double PROJECT::release = 40521.001;
+double PROJECT::release = kRelease;
 
 
 PROJECT::PROJECT()

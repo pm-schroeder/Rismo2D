@@ -74,6 +74,8 @@
 #include <time.h>
 #include <stdarg.h>
 
+#define kRelease     40521.002          // release
+
 #define PI           3.141592653589793
 
 #define false        0
@@ -82,10 +84,10 @@
 #define kZero        1.0e-40
 #define kEpsilon     1.0e-20
 
-#define kMaxDF       6         // maximum degree of freedom at nodes
-#define kSimDF       5         // simultaneous degree of freedom (maximum)
+#define kMaxDF       6                  // maximum degree of freedom at nodes
+#define kSimDF       5                  // simultaneous degree of freedom (maximum)
 
-#define kMaxCycles  36         // maximum number of cycles
+#define kMaxCycles  36                  // maximum number of cycles
 
 #define REALPR float
 

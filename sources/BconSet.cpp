@@ -363,6 +363,11 @@ void BCONSET::InitBcon( PROJECT* project, TIME* actualTime, double* preQ )
   // copy boundary conditions to nodes
   // -------------------------------------------------------------------------------------
 
+  int    dwCnt =  0;
+  double dwAve =  0.0;
+  double dwMin =  1.0e20;
+  double dwMax = -1.0e20;
+
   for( int i=0; i<nbc; i++ )
   {
     NODE* nd = rg->Getnode( bc[i].no );
@@ -452,6 +457,14 @@ void BCONSET::InitBcon( PROJECT* project, TIME* actualTime, double* preQ )
       double kw = bc[i].val->kw;        // roughness height
 
       nd->cfw = Loglaw( Us, dw, kw, project->kappa, project->vk, project->g );
+
+      double dwPlus = dw * sqrt(nd->cfw) * Us / project->vk;
+
+      dwAve += dwPlus;
+      if( dwPlus > dwMax ) dwMax = dwPlus;
+      if( dwPlus < dwMin ) dwMin = dwPlus;
+
+      dwCnt++;
     }
 
     if( isFS(bc[i].kind, BCON::kSetKD) )
@@ -473,7 +486,19 @@ void BCONSET::InitBcon( PROJECT* project, TIME* actualTime, double* preQ )
     }
   }
 
-  // -------------------------------------------------------------------------------------
+  // report the dimensionless wall distance --------------------------------------------------------
+  if( dwCnt > 0 )
+  {
+    dwAve /= dwCnt;
+    sprintf( text, "\n (BCONSET::InitBcon)     %s\n%s%6.1lf\n%s%6.1lf\n%s%6.1lf\n",
+                   "statistic of dimensionless wall distance",
+                   "                           average: ", dwAve,
+                   "                           minimum: ", dwMin,
+                   "                           maximum: ", dwMax );
+    REPORT::rpt.Output( text, 2 );
+  }
+
+  // -----------------------------------------------------------------------------------------------
   // loop on all gauges to adapt the natural outflow boundary condition
 
   // set the targeted water elevation at gauges in PROJECT::gaugeSo[]
