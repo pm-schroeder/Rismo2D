@@ -1,7 +1,7 @@
 $RISMO2D 40300
 
 # ==================================================================================================
-# RISMO2D-STARTDATEI ERZEUGT VON TIEGRIS AM Mon Aug 12 18:38:02 2013
+# RISMO2D-STARTDATEI ERZEUGT VON TIEGRIS AM Tue Aug  5 17:35:54 2014
 # ==================================================================================================
 
 $TITLE    Aachener Meandermodell
@@ -86,6 +86,10 @@ $STA_RESTFILE  <name>_<no>-<tm>.sta
 #      varVt   [m4/s2]  = variance of eddy viscosity
 #      kinEr   [m2/s2]  = turbulent kinetic energy of subgrid
 #      fldRate [-]      = flooding rate
+#      kinRatio[-]      = Ratio of  kinE / ( kinE + kinEr)
+#      maxUV   [m/s]    = Maximum flow velocity
+#      maxUs   [m/s]    = Maximum of velocity
+#      maxTau  [N/m2]   = Maximum of bottom friction
 
 #      ----------------- roughness parameter
 #      cf      [-]      = friction coefficient (total friction)
