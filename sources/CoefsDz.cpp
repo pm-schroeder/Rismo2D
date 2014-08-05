@@ -51,28 +51,30 @@ int EQS_DZ::Coefs( ELEM*    elem,
                    double** estifm,
                    double*  force )
 {
-  if( isFS(elem->flag, ELEM::kDry) ) return false;
+  if( isFS(elem->flag, ELEM::kDry) ) return 0;
 
   // -------------------------------------------------------------------------------------
 
   if( coefs == kBottomEvol )
   {
     if( isFS(elem->flag,ELEM::kBound) )
-      Bound( elem, project, estifm, force, elem->GetQShape() );
+      return 0;
+//      Bound( elem, project, estifm, force, elem->GetQShape() );
     else
       Region( elem, project, estifm, force, elem->GetQShape() );
   }
   else if( coefs == kBottomEvol_L )
   {
     if( isFS(elem->flag,ELEM::kBound) )
-      Bound( elem, project, estifm, force, elem->GetLShape() );
+      return 0;
+//      Bound( elem, project, estifm, force, elem->GetLShape() );
     else
       Region( elem, project, estifm, force, elem->GetLShape() );
   }
 
   // -------------------------------------------------------------------------------------
 
-  return true;
+  return 1;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -268,9 +270,9 @@ void EQS_DZ::Region( ELEM*    elem,
     // -----------------------------------------------------------------------------------
     // compute values of linear shape function at GP g
 
-    double dmdx[kMaxNodes2D], dmdy[kMaxNodes2D];
-
     double* m = lShape->f[g];
+
+    double dmdx[kMaxNodes2D], dmdy[kMaxNodes2D];
 
     for( int i=0; i<ncn; i++ )
     {
@@ -283,6 +285,17 @@ void EQS_DZ::Region( ELEM*    elem,
     // compute values of specified shape function at GP g
 
     double* n = qShape->f[g];
+
+    dfdxPtr = qShape->dfdx[g];
+    dfdyPtr = qShape->dfdy[g];
+
+    double dndx[kMaxNodes2D], dndy[kMaxNodes2D];
+
+    for( int i=0; i<nnd; i++ )
+    {
+      dndx[i] = trafo[0][0] * dfdxPtr[i] + trafo[0][1] * dfdyPtr[i];
+      dndy[i] = trafo[1][0] * dfdxPtr[i] + trafo[1][1] * dfdyPtr[i];
+    }
 
 
     // -----------------------------------------------------------------------------------
@@ -306,6 +319,8 @@ void EQS_DZ::Region( ELEM*    elem,
     double sx = 0.0;
     double sy = 0.0;
     double Qb = 0.0;
+    double dQbdx = 0.0;
+    double dQbdy = 0.0;
 
     for( int i=0; i<nnd; i++ )
     {
@@ -320,6 +335,8 @@ void EQS_DZ::Region( ELEM*    elem,
 
       double ndqb = node->v.Qb;
       Qb     +=    n[i] * adz[i] * ndqb;
+      dQbdx  += dndx[i] * adz[i] * ndqb;
+      dQbdy  += dndy[i] * adz[i] * ndqb;
     }
 
 
@@ -378,13 +395,15 @@ void EQS_DZ::Region( ELEM*    elem,
     // compute right side
     // -----------------------------------------------------------------------------------
 
-    double f  =  weight * (por*dzdt - EDs);
-    double fx = -weight * Qb * sx;
-    double fy = -weight * Qb * sy;
+//    double f  =  weight * (por*dzdt  -  EDs);
+//    double fx = -weight * Qb * sx;
+//    double fy = -weight * Qb * sy;
+    double f  =  weight * (por*dzdt  -  EDs  +  dQbdx*sx  +  dQbdy*sy);
 
     for( int i=0; i<ncn; i++ )
     {
-      force[i] -= m[i] * f  +  dmdx[i] * fx  +  dmdy[i] * fy;
+//      force[i] -= m[i] * f  +  dmdx[i] * fx  +  dmdy[i] * fy;
+      force[i] -= m[i] * f;
     }
 
 

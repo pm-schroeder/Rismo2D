@@ -269,18 +269,18 @@ char* REPORT::License()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
-void REPORT::Copyright( int release, int screen )
+void REPORT::Copyright( double release, int screen )
 {
   char text[100];
-  char chrel[7];
-  sprintf( chrel, "%6d", release );
+  char chrel[20];
+  sprintf( chrel, "%-9.3lf", release );
 
 # ifdef _MPI_
-  sprintf( text, "[RISMO_2D - Release %c%c.%c%c.%c%c (MPI) - Copyright (C) 1992-2013, P.M. Schroeder]\n\n",
-                 chrel[0], chrel[1], chrel[2], chrel[3], chrel[4], chrel[5] );
+  sprintf( text, "[RISMO_2D # Release %c.%c%c.%c%c-%c%c%c (MPI) # Copyright (C) 1992-2014, P.M. Schroeder]\n\n",
+           chrel[0], chrel[1], chrel[2], chrel[3], chrel[4], chrel[6], chrel[7], chrel[8] );
 # else
-  sprintf( text, "[RISMO_2D - Release %c%c.%c%c.%c%c - Copyright (C) 1992-2013, P.M. Schroeder]\n\n",
-                 chrel[0], chrel[1], chrel[2], chrel[3], chrel[4], chrel[5] );
+  sprintf( text, "[RISMO_2D # Release %c.%c%c.%c%c-%c%c%c # Copyright (C) 1992-2014, P.M. Schroeder]\n\n",
+           chrel[0], chrel[1], chrel[2], chrel[3], chrel[4], chrel[6], chrel[7], chrel[8] );
 # endif
 
   if( screen )

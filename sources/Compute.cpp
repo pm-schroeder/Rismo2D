@@ -800,7 +800,7 @@ void PROJECT::Compute()
     }
 
     // do statistics ---------------------------------------------------------------------
-    if( statistics )  statist->Sum( M2D );
+    if( statistics )  statist->Sum( this, M2D );
 
 
     // write results file ----------------------------------------------------------------
@@ -846,7 +846,7 @@ void PROJECT::Compute()
         else
           fileName[0] = '\0';
 
-        statist->Write( M2D, release, name.outputStatistFile, fileName, iTM, this );
+        statist->Write( M2D, (int)(release), name.outputStatistFile, fileName, iTM, this );
       }
 
       if( name.geometryFile[0] )
@@ -856,11 +856,14 @@ void PROJECT::Compute()
     }
 
     // write time series -----------------------------------------------------------------
+   static bool tmser_first_call[50];
+
     for( int its=0; its<ntmser; its++ )
     {
       if( tmser[its].ntm == 0  ||  (tmser[its].ntm > iTM && tmser[its].tmlist[iTM]) )
       {
-        M2D->OutputSeries( this, iTM, &tmser[its] );
+        M2D->OutputSeries( this, iTM, &tmser[its], tmser_first_call[its]);
+        tmser_first_call[its] = true;
       }
     }
 

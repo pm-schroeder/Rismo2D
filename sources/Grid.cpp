@@ -216,7 +216,7 @@ void GRID::InputRegion( char* fileName, SUBDOM* subdom )
       nd->y     = y;
       nd->z     = z;
       nd->zor   = z;
-      nd->zero  = z;
+      nd->zero  = z - 1000.0;
       nd->noel  = 0;
     }
   }
@@ -1200,7 +1200,7 @@ void GRID::OutputData( PROJECT* project, int timeStep, char* time )
       return;
     }
 
-    fprintf( id, "# %22s   Release %d   U,V,S,dUdt,dVdt,dSdt,K,D,C,qb,Zb\n", time, project->release );
+    fprintf( id, "# %22s   Release %d   U,V,S,dUdt,dVdt,dSdt,K,D,C,qb,Zb\n", time, (int)(project->release) );
     fprintf( id, "%d  %d\n", np, ne );
 
     // write nodal values ----------------------------------------------------------------
@@ -1255,7 +1255,8 @@ void GRID::OutputData( PROJECT* project, int timeStep, char* time )
     fwrite( "Release",                          sizeof(char),  len, id );
 
     len = 1;
-    fwrite( &project->release,                  sizeof(int),   len, id );
+    int rel = (int)(project->release);
+    fwrite( &rel,                               sizeof(int),   len, id );
 
     len = 22;
     fwrite( time,                               sizeof(char),  len, id );

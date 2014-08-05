@@ -112,7 +112,7 @@ class REPORT
     void    Open( char* filename, int level, int pid );
     void    Close();
 
-    void    Setlevel( int lv )  { level = lv; };
+    void    Setlevel( int lv )  { level = lv; }
 
     void    Error( const char*, ... );
     void    Error( const int, const char*, ... );
@@ -133,7 +133,7 @@ class REPORT
     void    ScreenLine2( int level );
 
     char*   License();
-    void    Copyright( int release, int screen );
+    void    Copyright( double release, int screen );
 
 
   private:

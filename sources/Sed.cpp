@@ -117,7 +117,7 @@ double SED::Erode( NODE* nd )
 {
   int no = nd->Getno();
 
-  if( isFS(slope,kSLOPE_Max)  &&  dzmx[no]>maxSlope )
+  if( isFS(slope,kSLOPE_Max)  &&  dzmx[no] > maxSlope )
     return 0.0;
 
   else

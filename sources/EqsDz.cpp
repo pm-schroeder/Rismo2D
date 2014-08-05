@@ -84,6 +84,7 @@ void EQS_DZ::Execute( PROJECT* project, int shape )
 
   // bed evolution -----------------------------------------------------------------------
   dzdt  = (double*) MEMORY::memo.Array_nd( rgnp );
+  for( int n=0; n<rgnp; n++ )  dzdt[n] = 0.0;
 
   // reduction factor to account for transport on rigid bed ------------------------------
   etaQb = (double*) MEMORY::memo.Array_nd( rgnp );
@@ -393,8 +394,10 @@ void EQS_DZ::Execute( PROJECT* project, int shape )
     case 3:
     {
       // set up equation numbers and allocate memory -------------------------------------
-      project->fix[0]   = 0;
-      project->elemKind = ELEM::kBound | ELEM::kRegion;
+//      project->fix[0]   = 0;
+//      project->elemKind = ELEM::kBound | ELEM::kRegion;
+      project->fix[0]   = BCON::kInlet;
+      project->elemKind = ELEM::kRegion;
 
       SetEqno( model, 1, 0, 0, project->fix, project->elemKind );
 
@@ -409,6 +412,7 @@ void EQS_DZ::Execute( PROJECT* project, int shape )
       for( int it=0; it<project->actualCycit; it++ )
       {
         for( int e=0; e<neq; e++ )  X[e] = 0.0;
+
         // solve equation system ---------------------------------------------------------
         diverged_cg = Solve( model, neq, B, X, project );
 
@@ -428,20 +432,20 @@ void EQS_DZ::Execute( PROJECT* project, int shape )
         dt = MorphTime( project, rgnp, dzdt );
 
         // account for rigid bed condition -----------------------------------------------
-        for( int n=0; n<rgnp; n++ )
-        {
-          NODE* nd = rg->Getnode(n);
-          int   no = nd->Getno();
+//        for( int n=0; n<rgnp; n++ )
+//        {
+//          NODE* nd = rg->Getnode(n);
+//          int   no = nd->Getno();
 
-          if( isFS(nd->flag, NODE::kCornNode) )
-          {
-            if( dzdt[no] < 0.0 )     // in case of erosion ...
-            {
-              etaQb[no] = -sed->Erode(nd) / dzdt[no] / dt;
-              if( etaQb[no] > 1.0 )  etaQb[no] = 1.0;
-            }
-          }
-        }
+//          if( isFS(nd->flag, NODE::kCornNode) )
+//          {
+//            if( dzdt[no] < 0.0 )     // in case of erosion ...
+//            {
+//              etaQb[no] = -sed->Erode(nd) / dzdt[no] / dt;
+//              if( etaQb[no] > 1.0 )  etaQb[no] = 1.0;
+//            }
+//          }
+//        }
 
         // statistics of correction vector -----------------------------------------------
         int    nc     = 0;
