@@ -1,5 +1,5 @@
 .DS_Store
 ._.DS_Store
-sources/*.pro.user
+*.pro.user
 debug/*
 release/*
