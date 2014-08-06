@@ -487,15 +487,24 @@ void BCONSET::InitBcon( PROJECT* project, TIME* actualTime, double* preQ )
   }
 
   // report the dimensionless wall distance --------------------------------------------------------
-  if( dwCnt > 0 )
+
+  if( project->subdom.pid == 0 )
   {
-    dwAve /= dwCnt;
-    sprintf( text, "\n (BCONSET::InitBcon)     %s\n%s%6.1lf\n%s%6.1lf\n%s%6.1lf\n",
-                   "statistic of dimensionless wall distance",
-                   "                           average: ", dwAve,
-                   "                           minimum: ", dwMin,
-                   "                           maximum: ", dwMax );
-    REPORT::rpt.Output( text, 2 );
+    dwCnt = project->subdom.Mpi_sum( dwCnt );
+    dwAve = project->subdom.Mpi_sum( dwAve );
+    dwMin = project->subdom.Mpi_min( dwMin );
+    dwMax = project->subdom.Mpi_max( dwMax );
+
+    if( dwCnt > 0 )
+    {
+      dwAve /= dwCnt;
+      sprintf( text, "\n (BCONSET::InitBcon)     %s\n%s%6.1lf\n%s%6.1lf\n%s%6.1lf\n",
+                     "statistic of dimensionless wall distance",
+                     "                           average: ", dwAve,
+                     "                           minimum: ", dwMin,
+                     "                           maximum: ", dwMax );
+      REPORT::rpt.Output( text, 2 );
+    }
   }
 
   // -----------------------------------------------------------------------------------------------
