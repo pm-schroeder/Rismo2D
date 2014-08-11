@@ -687,7 +687,7 @@ void GRID::Turbulence( PROJECT* project )
 
     double* phi = project->M2D->Phi2D();
 
-    for( int n=0; n<np; n++ )double dl = sqrt( el->area() );
+    for( int n=0; n<np; n++ )
     {
       if( cnt[n] )
       {
