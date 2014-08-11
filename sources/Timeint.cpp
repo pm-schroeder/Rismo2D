@@ -2291,7 +2291,6 @@ void TIMEINT::Input_40100( ASCIIFILE *file )
 
               // read water elevation (S) and coordinates (x,y)
               case BCON::kOutlet:
-                bcl->gct[k].nocg = 0;
                 sscanf( textLine, "$TM_LINE %s %d %lf %lf %lf %d %lf",
                         key, &no,
                         &bcl->S[k], &bcl->x[k], &bcl->y[k],

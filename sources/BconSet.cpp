@@ -488,13 +488,13 @@ void BCONSET::InitBcon( PROJECT* project, TIME* actualTime, double* preQ )
 
   // report the dimensionless wall distance --------------------------------------------------------
 
+  dwCnt = project->subdom.Mpi_sum( dwCnt );
+  dwAve = project->subdom.Mpi_sum( dwAve );
+  dwMin = project->subdom.Mpi_min( dwMin );
+  dwMax = project->subdom.Mpi_max( dwMax );
+
   if( project->subdom.pid == 0 )
   {
-    dwCnt = project->subdom.Mpi_sum( dwCnt );
-    dwAve = project->subdom.Mpi_sum( dwAve );
-    dwMin = project->subdom.Mpi_min( dwMin );
-    dwMax = project->subdom.Mpi_max( dwMax );
-
     if( dwCnt > 0 )
     {
       dwAve /= dwCnt;

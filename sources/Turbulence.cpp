@@ -197,21 +197,23 @@ void GRID::Turbulence( PROJECT* project )
         NODE** nd  = el->nd;
         int    nnd = el->Getnnd();
 
-        double xmin = nd[0]->x;
-        double xmax = nd[0]->x;
-        double ymin = nd[0]->y;
-        double ymax = nd[0]->y;
+//        double xmin = nd[0]->x;
+//        double xmax = nd[0]->x;
+//        double ymin = nd[0]->y;
+//        double ymax = nd[0]->y;
 
-        for( int i=1; i<nnd; i++ )
-        {
-          if( nd[i]->x < xmin )  xmin = nd[i]->x;
-          if( nd[i]->x > xmax )  xmax = nd[i]->x;
+//        for( int i=1; i<nnd; i++ )
+//        {
+//          if( nd[i]->x < xmin )  xmin = nd[i]->x;
+//          if( nd[i]->x > xmax )  xmax = nd[i]->x;
 
-          if( nd[i]->y < ymin )  ymin = nd[i]->y;
-          if( nd[i]->y > ymax )  ymax = nd[i]->y;
-        }
+//          if( nd[i]->y < ymin )  ymin = nd[i]->y;
+//          if( nd[i]->y > ymax )  ymax = nd[i]->y;
+//        }
 
-        double dl = sqrt( (xmax-xmin)*(ymax-ymin) );
+//        double dl = sqrt( (xmax-xmin)*(ymax-ymin) );
+
+        double dl = sqrt( el->area() );
 
         for( int i=0; i<nnd; i++ )
         {
@@ -685,7 +687,7 @@ void GRID::Turbulence( PROJECT* project )
 
     double* phi = project->M2D->Phi2D();
 
-    for( int n=0; n<np; n++ )
+    for( int n=0; n<np; n++ )double dl = sqrt( el->area() );
     {
       if( cnt[n] )
       {
@@ -736,21 +738,23 @@ void GRID::Turbulence( PROJECT* project )
         NODE** nd  = el->nd;
         int    nnd = el->Getnnd();
 
-        double xmin = nd[0]->x;
-        double xmax = nd[0]->x;
-        double ymin = nd[0]->y;
-        double ymax = nd[0]->y;
+//        double xmin = nd[0]->x;
+//        double xmax = nd[0]->x;
+//        double ymin = nd[0]->y;
+//        double ymax = nd[0]->y;
 
-        for( int i=1; i<nnd; i++ )
-        {
-          if( nd[i]->x < xmin )  xmin = nd[i]->x;
-          if( nd[i]->x > xmax )  xmax = nd[i]->x;
+//        for( int i=1; i<nnd; i++ )
+//        {
+//          if( nd[i]->x < xmin )  xmin = nd[i]->x;
+//          if( nd[i]->x > xmax )  xmax = nd[i]->x;
 
-          if( nd[i]->y < ymin )  ymin = nd[i]->y;
-          if( nd[i]->y > ymax )  ymax = nd[i]->y;
-        }
+//          if( nd[i]->y < ymin )  ymin = nd[i]->y;
+//          if( nd[i]->y > ymax )  ymax = nd[i]->y;
+//        }
 
-        double dl = sqrt( (xmax-xmin)*(ymax-ymin) );
+//        double dl = sqrt( (xmax-xmin)*(ymax-ymin) );
+
+        double dl = sqrt( el->area() );
 
         for( int i=0; i<nnd; i++ )
         {

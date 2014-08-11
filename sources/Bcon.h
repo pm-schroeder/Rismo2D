@@ -105,6 +105,14 @@ class BCVAL
         int    nocg;          // name of controlling gauge
         double So;            // targeted water level
         double dS;            // iterated difference to the specified outlet BCVAL::S
+
+        GAUGECT()
+        {
+          node = 0;
+          nocg = 0;
+          So = 0.0;
+          dS = 0.0;
+        }
     };
 
     GAUGECT gct;

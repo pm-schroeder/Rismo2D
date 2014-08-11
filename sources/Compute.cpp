@@ -154,6 +154,9 @@ void PROJECT::Compute()
     }
   }
 
+  REPORT::rpt.Message( 1, "\n\n%-25s%d%-25s%\n\n",
+                          " (PROJECT::Compute)", ngauge, " gauges found." );
+
   gaugeS  = new double[maxgauge];
   gaugeSo = new double[maxgauge];
 
