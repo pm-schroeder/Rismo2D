@@ -61,6 +61,7 @@ int EQS_UVS2D::Coefs( ELEM*    elem,
   {
     Region( elem, project, estifm, force );
   }
+
   return 1;
 }
 
@@ -642,11 +643,9 @@ void EQS_UVS2D::Region( ELEM*    elem,
 
       f   =  H * dUdt;                                 // time
       f  +=  H * (U * dUdx  +  V * dUdy);              // convection
-      fx  =  0.0;
-      fy  =  0.0;
 
-      fx +=   H * vt * (dUdx + dUdx);                   // eddy viscosity
-      fy +=   H * vt * (dUdy + dVdx);
+      fx  =   H * vt * (dUdx + dUdx);                  // eddy viscosity
+      fy  =   H * vt * (dUdy + dVdx);
 
       // -------------------------------------------------------------------------------------------
       // The following depth-averaged Boussinesq approach leads to instabilities in LES.
@@ -654,13 +653,13 @@ void EQS_UVS2D::Region( ELEM*    elem,
       // fy +=  vt * (U * dHdy + V * dHdx);
       // -------------------------------------------------------------------------------------------
 
-      fx -=  H * uu;                                    // turbulence
+      fx -=  H * uu;                                   // turbulence
       fy -=  H * uv;
 
-      f  +=  H * gravity * dadx;                        // gravity
+      f  +=  H * gravity * dadx;                       // gravity
       fx -=  H * H * gravity / 2.0;
 
-      f  +=  cf * Ures * U;                             // bottom friction
+      f  +=  cf * Ures * U;                            // bottom friction
 
       // ------------------------------------------------ dispersion
       // fx += H * Duu;
@@ -730,8 +729,9 @@ void EQS_UVS2D::Region( ELEM*    elem,
 
       f  = dHdt  +  H * (dUdx + dVdy)  +  U * dHdx  +  V * dHdy;
 
+      f += SS;      // Source or Sink
+
       f *= weight;
-      f += SS * weight;   // Source or Sink
 
       forcePtr = force + startS;
 
@@ -1088,7 +1088,6 @@ void EQS_UVS2D::Region( ELEM*    elem,
     if( isFS(bcon->kind, BCON::kInlet) )
     {
       // set equation row dfU to zero --------------------------------------------------------------
-
       if( estifm )
       {
         for( int j=0; j<maxEleq; j++ )
@@ -1097,9 +1096,7 @@ void EQS_UVS2D::Region( ELEM*    elem,
         }
       }
 
-
       // compute flow in normal direction at node i ------------------------------------------------
-
       double Un    = node->v.U * bcon->niox  +  node->v.V * bcon->nioy;
       double H     = node->v.S - node->z;
       double specQ = bcon->val->U;

@@ -118,7 +118,9 @@ SOURCES += \
     CoefsUVS2D_TM.cpp \
     EqsUVS2D_TM.cpp \
     EqsUVS2D_TMAI.cpp \
-    CoefsUVS2D_TMAI.cpp
+    CoefsUVS2D_TMAI.cpp \
+    CoefsUVS2D_ME.cpp \
+    EqsUVS2D_ME.cpp
 
 HEADERS += \
     Vars.h \
@@ -171,7 +173,8 @@ HEADERS += \
     EqsUVS2D_AI.h \
     EqsUVS2D_TM.h \
     EqsUVS2D_TMAI.h \
-    Times.h
+    Times.h \
+    EqsUVS2D_ME.h
 
 #INCLUDEPATH += /usr/include/mpi
 
