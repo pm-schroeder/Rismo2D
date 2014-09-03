@@ -45,12 +45,11 @@ double GRID::ReportCuPe( double dt, double vk )
   double maxCu_x, maxCu_y;
   double maxPe_x, maxPe_y;
 
-
   // report Courant- and Peclet-Number: Cu and Pe ------------------------------------------
 
-  int*    counter = (int*)    MEMORY::memo.Array_nd( np );
-  double* xnd     = (double*) MEMORY::memo.Array_nd( np );
-  double* ynd     = (double*) MEMORY::memo.Array_nd( np );
+  int*    counter = (int*)    MEMORY::memo.Array_nd( np, "GRID::ReportCuPe(1)" );
+  double* xnd     = (double*) MEMORY::memo.Array_nd( np, "GRID::ReportCuPe(2)" );
+  double* ynd     = (double*) MEMORY::memo.Array_nd( np, "GRID::ReportCuPe(3)" );
 
   for( int i=0; i<np; i++ )
   {
@@ -58,7 +57,6 @@ double GRID::ReportCuPe( double dt, double vk )
     xnd[i]     = 0.0;
     ynd[i]     = 0.0;
   }
-
 
   for( int e=0; e<ne; e++ )
   {
@@ -98,7 +96,6 @@ double GRID::ReportCuPe( double dt, double vk )
     }
   }
 
-
   maxCu_x = 0.0;      maxCu_y = 0.0;
   maxPe_x = 0.0;      maxPe_y = 0.0;
 
@@ -130,7 +127,6 @@ double GRID::ReportCuPe( double dt, double vk )
     if( Pe > maxPe_y ) maxPe_y = Pe;
   }
 
-
   REPORT::rpt.Message( 1, "\n\n%-25s%s\n",
                           " (GRID::ReportCuPe)", "maximum of       CU           Pe");
 
@@ -139,11 +135,9 @@ double GRID::ReportCuPe( double dt, double vk )
   REPORT::rpt.Message( 1, " %s %9.1le     %9.1le\n",
                           "                        y-direction: ", maxCu_y, maxPe_y );
 
-
   MEMORY::memo.Detach( counter );
   MEMORY::memo.Detach( xnd );
   MEMORY::memo.Detach( ynd );
-
 
   if( maxCu_x > maxCu_y )  return maxCu_x;
   else                     return maxCu_y;

@@ -83,22 +83,23 @@ class MEMORY
 
     int           m_array;
 
-    ITEM**        m_temp;     // teporary used arrays
-    unsigned int* m_size;     // size of arrays
-    unsigned int* m_flag;     // flag to mark arrays ...
+    ITEM**        m_temp;          // teporary used arrays
+    unsigned int* m_size;          // size of arrays
+    unsigned int* m_flag;          // flag to mark arrays ...
+    char**        m_method;        // method that has allocated the array
     enum {
-      kUsed    =  1,          // ... in use
-      kDelete  =  2,          // ... can be deleted
+      kUsed    =  1,               // ... in use
+      kDelete  =  2,               // ... can be deleted
       kNd      =  4,
       kEl      =  8,
       kEq      = 16,
-      kImatrix = 32,          // ... 2-dimensional int array
-      kDmatrix = 64           // ... 2-dimensional double array
+      kImatrix = 32,               // ... 2-dimensional int array
+      kDmatrix = 64                // ... 2-dimensional double array
     };
-                              // maximum size of arrays ...
-    unsigned int m_max_nnd;   // length of list: GRID::np
-    unsigned int m_max_nel;   //                 GRID::ne
-    unsigned int m_max_neq;   //                 EQS::neq
+                                   // maximum size of arrays ...
+    unsigned int m_max_nnd;        // length of list: GRID::np
+    unsigned int m_max_nel;        //                 GRID::ne
+    unsigned int m_max_neq;        //                 EQS::neq
 
 
   // =====================================================================================
@@ -117,11 +118,11 @@ class MEMORY
     // -----------------------------------------------------------------------------------
     // return a pointer to an available array with size m_nd, m_el or m_eq ...
 
-    void*    Array_nd( unsigned int nnd );
-    void*    Array_el( unsigned int nel );
-    void*    Array_eq( unsigned int neq );
+    void*    Array_nd( unsigned int nnd, char *method =0 );
+    void*    Array_el( unsigned int nel, char *method =0 );
+    void*    Array_eq( unsigned int neq, char *method =0 );
 
-    void*    Array( unsigned int n, unsigned int flag =0 );
+    void*    Array( unsigned int n, unsigned int flag, char *method );
 
     void     Detach( void* ptr );
     void     Delete( void* ptr );

@@ -79,8 +79,11 @@
 #include "EqsUVS2D.h"
 #include "EqsUVS2D_TM.h"
 #include "EqsUVS2D_AI.h"
-#include "EqsUVS2D_LV.h"
 #include "EqsUVS2D_TMAI.h"
+#include "EqsUVS2D_ME.h"
+#include "EqsUVS2D_ME_TM.h"
+#include "EqsUVS2D_ME_AI.h"
+#include "EqsUVS2D_ME_TMAI.h"
 #include "Sed.h"
 #include "Solver.h"
 #include "Scale.h"
@@ -96,16 +99,17 @@ class STATIST;
 
 // cycles ------------------------------------------------------------------------------------------
 
-#define kUVSCyc           1  // 2D: UVS quadratic/linear, steady+unsteady flow
-#define kUVS_TMCyc        2  // 2D: UVS quadratic/linear, unsteady flow, time prediction
+#define kUVSCyc           1  // 2D: UVS Taylor-Hood element, steady+unsteady flow
+#define kUVS_TMCyc        2  // 2D: UVS Taylor-Hood element, unsteady flow, time prediction
 
-#define kUVS_LVCyc        4  // 2D: UVS linear/constant, steady flow
+#define kUVS_MECyc        4  // 2D: UVS MINI element, steady+unsteady flow
+#define kUVS_ME_TMCyc     5  // 2D: UVS MINI element, unsteady flow, time prediction
 
 #define kDispCurv2D      20  // compute dispersion from streamline curvature
 
 #define kSurfaceCyc      30  // initialize water surface elevation
 #define kSmoothS         31  // smoothing of free surface
-#define kSurfaceToVol    35  // compute surface in volumes from nodes
+#define kCornerToVol     35  // compute surfkCornerToVols from nodes
 
 #define kDivCyc          40  // zero-divergence cycle, quadratic/linear
 
@@ -360,7 +364,7 @@ class PROJECT
       kCU,      kPHI,     kROT,    kCURV,  kDZDS, kDZDN,  kDZMX,  kDHDS,   kMEANUV,  kMEANS,
       kMEANUS,  kMEANH,   kMEANVT, kVARU,  kVARV, kVARUV, kKINE,  kSDEVH,  kVARVT,   kKINER,
       kFLDRATE, kKINRATIO,kMAXUV,  kMINUV, kMAXUS,kMINUS, kMAXTAU,kMAXU,   kMINU,    kMAXV,
-      kMINV,    kSZ_VARS
+      kMINV,    kXYZ,     kSZ_VARS
     };
 
     int     nval;
@@ -404,20 +408,23 @@ public:
     // ----------------------------------- differential equation systems -----------------
     EQS*           eqs;
 
-    EQS_SL2D       eqs_sl2d;            // equation system for suspended transport
-    EQS_BL2D       eqs_bl2d;            // equation system for bed load transport
-    EQS_DZ         eqs_dz;              // equation system for bottom evolution
-    EQS_DISP       eqs_disp;            // equation system for dispersion coefficients
-    EQS_K2D        eqs_k2d;             // equation system for k
-    EQS_D2D        eqs_d2d;             // equation system for epsilon
-    EQS_KD2D       eqs_kd2d;            // equation system for k-epsilon
-    EQS_KL2D       eqs_kl2d;            // equation system for k
-    EQS_PPE2D      eqs_ppe2d;           // equation system for divergence free flow field
-    EQS_UVS2D      eqs_uvs2d;           // equation system for shallow water flow
-    EQS_UVS2D_TM   eqs_uvs2d_tm;        // equation system for shallow water flow
-    EQS_UVS2D_AI   eqs_uvs2d_ai;        // equation system for shallow water flow
-    EQS_UVS2D_LV   eqs_uvs2d_lv;
-    EQS_UVS2D_TMAI eqs_uvs2d_tmai;      // equation system for shallow water flow
+    EQS_SL2D          eqs_sl2d;         // equation system for suspended transport
+    EQS_BL2D          eqs_bl2d;         // equation system for bed load transport
+    EQS_DZ            eqs_dz;           // equation system for bottom evolution
+    EQS_DISP          eqs_disp;         // equation system for dispersion coefficients
+    EQS_K2D           eqs_k2d;          // equation system for k
+    EQS_D2D           eqs_d2d;          // equation system for epsilon
+    EQS_KD2D          eqs_kd2d;         // equation system for k-epsilon
+    EQS_KL2D          eqs_kl2d;         // equation system for k
+    EQS_PPE2D         eqs_ppe2d;        // equation system for divergence free flow field
+    EQS_UVS2D         eqs_uvs2d;        // equation system for shallow water flow
+    EQS_UVS2D_TM      eqs_uvs2d_tm;     // equation system for shallow water flow
+    EQS_UVS2D_AI      eqs_uvs2d_ai;     // equation system for shallow water flow
+    EQS_UVS2D_TMAI    eqs_uvs2d_tmai;   // equation system for shallow water flow
+    EQS_UVS2D_ME      eqs_uvs2d_me;
+    EQS_UVS2D_ME_TM   eqs_uvs2d_me_tm;
+    EQS_UVS2D_ME_AI   eqs_uvs2d_me_ai;
+    EQS_UVS2D_ME_TMAI eqs_uvs2d_me_tmai;
 
     int            errLevel;
 

@@ -43,6 +43,10 @@
 
 #include "EqsUVS2D_ME.h"
 
+//#define kDebug
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void EQS_UVS2D_ME::Bound( ELEM*    elem,
                           PROJECT* project,
@@ -54,14 +58,15 @@ void EQS_UVS2D_ME::Bound( ELEM*    elem,
   int    ncn     = lShape->nnd;
   int    nnd     = elem->GetQShape()->nnd;
 
-  int    startV  = nnd;
-  int    startS  = 2 * nnd;
+//int eqidU = 0;
+  int eqidV = nnd;
+  int eqidS = 2 * nnd;
 
   double gravity = project->g;
 
   if( force )
   {
-    for( int i=0; i<maxEleq; i++ )  force[i] = 0.0;
+    for( int i=0; i<maxEleq; i++ ) force[i] = 0.0;
   }
 
   if( estifm )
@@ -92,21 +97,22 @@ void EQS_UVS2D_ME::Bound( ELEM*    elem,
   }
 
 
-  NODE* node[3];
+  NODE *node[3];
 
   node[0] = elem->nd[0];      // corner nodes
   node[1] = elem->nd[1];
+  node[2] = elem->nd[2];      // midside node
 
 
-  // row index for force vector and element stiffness matrix -----------------------------
+  // row index for force vector and element stiffness matrix ---------------------------------------
 
-  int r0U = 0;        int r1U = 1;
-  int r0V = startV;   int r1V = startV + 1;
+  int r0U = 0;       int r1U = 1;
+  int r0V = eqidV;   int r1V = eqidV + 1;
 
 
-  // column index for element stiffness matrix -------------------------------------------
+  // column index for element stiffness matrix -----------------------------------------------------
 
-  int c0H = startS;   int c1H = startS + 1;
+  int c0H = eqidS;   int c1H = eqidS + 1;
 
 
   for( int g=0; g<lShape->ngp; g++ )   // loop on GAUSS points
@@ -115,29 +121,29 @@ void EQS_UVS2D_ME::Bound( ELEM*    elem,
     double *dm = lShape->dfdx[g];
 
 
-    // test midside node for boundary condition outFlow ----------------------------------
+    // test midside node for boundary condition outFlow --------------------------------------------
 
     double H;
 
     if( isFS(node[2]->bc.kind, BCON::kOutlet) )
     {
-      // use experimental downstream flow depth ... --------------------------------------
+      // use experimental downstream flow depth ... ------------------------------------------------
       double H0 = node[0]->bc.val->S - node[0]->z;
       double H1 = node[1]->bc.val->S - node[1]->z;
 
-      if( H0 <= 0.0 )  H0 = project->hmin;
-      if( H1 <= 0.0 )  H1 = project->hmin;
+      if( H0 <= 0.0 ) H0 = project->hmin;
+      if( H1 <= 0.0 ) H1 = project->hmin;
 
       H = m[0] * H0  +  m[1] * H1;
     }
     else
     {
-     // ... or compute flow depth at gauss point -----------------------------------------
+     // ... or compute flow depth at gauss point ---------------------------------------------------
       double H0 = node[0]->v.S - node[0]->z;
       double H1 = node[1]->v.S - node[1]->z;
 
-      if( H0 <= 0.0 )  H0 = project->hmin;
-      if( H1 <= 0.0 )  H1 = project->hmin;
+      if( H0 <= 0.0 ) H0 = project->hmin;
+      if( H1 <= 0.0 ) H1 = project->hmin;
 
       H = m[0] * H0  +  m[1] * H1;
     }
@@ -145,7 +151,7 @@ void EQS_UVS2D_ME::Bound( ELEM*    elem,
 //  if( H <= 0.0 )  H = project->hmin;
 
 
-    // -----------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
     // compute normal vector
     // since the normal is not reduced to unit length it
     // implies the transformation of the integrand
@@ -156,14 +162,14 @@ void EQS_UVS2D_ME::Bound( ELEM*    elem,
     double len = sqrt( nx*nx + ny*ny );
 
 
-    // weight of Gauss point j -----------------------------------------------------------
+    // weight of Gauss point j ---------------------------------------------------------------------
 
     double weight = lShape->weight[g];
 
     double U    = 0.0;
     double V    = 0.0;
     double Ures = 0.0;
-    double cf   = 0.0;
+    double cfw  = 0.0;
 
     if( solidFlag )
     {
@@ -172,11 +178,11 @@ void EQS_UVS2D_ME::Bound( ELEM*    elem,
 
       Ures = sqrt( U * U  +  V * V );
 
-      cf = m[0]*node[0]->cfw + m[1]*node[1]->cfw;
+      cfw = m[0]*node[0]->cfw + m[1]*node[1]->cfw;
     }
 
 
-    // -----------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
 
     if( force )
     {
@@ -184,23 +190,23 @@ void EQS_UVS2D_ME::Bound( ELEM*    elem,
       double fV = weight * H * ( gravity*H/2.0 * ny );
 
 
-      // wall roughness ------------------------------------------------------------------
+      // wall roughness ----------------------------------------------------------------------------
 
       if( solidFlag )
       {
-        fU += weight * len * H * cf * U * Ures;
-        fV += weight * len * H * cf * V * Ures;
+        fU += weight * len * H * cfw * U * Ures;
+        fV += weight * len * H * cfw * V * Ures;
       }
 
 
-      // add fU, fV to force vector ------------------------------------------------------
+      // add fU, fV to force vector ----------------------------------------------------------------
 
       force[r0U] -= m[0] * fU;        force[r0V] -= m[0] * fV;
       force[r1U] -= m[1] * fU;        force[r1V] -= m[1] * fV;
     }
 
 
-    // compute estifm, if no flow depth specified ----------------------------------------
+    // compute estifm, if no flow depth specified --------------------------------------------------
 
     if( estifm )
     {
@@ -219,18 +225,18 @@ void EQS_UVS2D_ME::Bound( ELEM*    elem,
 
       if( solidFlag )
       {
-        dfUdH += weight * len * cf * U * Ures;
-        dfVdH += weight * len * cf * V * Ures;
+        dfUdH += weight * len * cfw * U * Ures;
+        dfVdH += weight * len * cfw * V * Ures;
 
         double iUres;
         if ( Ures > 1.0e-8 )  iUres = 1.0 / Ures;
         else                  iUres = 0.0;
 
-        dfUdU += weight * len * cf * H * (U * U * iUres  +  Ures);
-        dfUdV += weight * len * cf * H * (U * V * iUres);
+        dfUdU += weight * len * cfw * H * (U * U * iUres  +  Ures);
+        dfUdV += weight * len * cfw * H * (U * V * iUres);
 
-        dfVdU += weight * len * cf * H * (U * V * iUres);
-        dfVdV += weight * len * cf * H * (V * V * iUres  +  Ures);
+        dfVdU += weight * len * cfw * H * (U * V * iUres);
+        dfVdV += weight * len * cfw * H * (V * V * iUres  +  Ures);
       }
 
       estifm[r0U][r0U] += m[0] * dfUdU * m[0];
@@ -272,12 +278,12 @@ void EQS_UVS2D_ME::Bound( ELEM*    elem,
   }
 
 
-  // apply transformation ----------------------------------------------------------------
+  // apply transformation --------------------------------------------------------------------------
 
-  Rotate2D( nnd, elem->nd, 3, estifm, force );
+  Rotate2D( ncn, eqidV, elem->nd, estifm, force );
 
 
-  // -------------------------------------------------------------------------------------
+  // -----------------------------------------------------------------------------------------------
   // In case of experimental boundary forces on inlet set equation row to zero.
   // Accounting for boundary forces is done in method EQS_UVS2D::Region().
 
@@ -287,7 +293,7 @@ void EQS_UVS2D_ME::Bound( ELEM*    elem,
 
     if( isFS(bcon->kind, BCON::kInlet) )
     {
-      // remove  equation row dfU and force vector ---------------------------------------
+      // remove  equation row dfU and force vector -------------------------------------------------
 
       if( estifm )
       {
@@ -302,13 +308,14 @@ void EQS_UVS2D_ME::Bound( ELEM*    elem,
   }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void EQS_UVS2D_ME::Region( ELEM     *elem,
                            PROJECT  *project,
                            double  **estifm,
                            double   *force )
 {
-  // -------------------------------------------------------------------------------------
+  // -----------------------------------------------------------------------------------------------
   // initializations
 
   SHAPE *lShape = elem->GetLShape();
@@ -320,7 +327,6 @@ void EQS_UVS2D_ME::Region( ELEM     *elem,
 
   int nnd = elem->GetQShape()->nnd;     // number of nodes
   int ncn = lShape->nnd;                // number of corner nodes
-
   int nbn = bShape->nnd;                // number of nodes for bubble shape function
 
   double gravity = project->g;
@@ -328,14 +334,6 @@ void EQS_UVS2D_ME::Region( ELEM     *elem,
 //int eqidU = 0;
   int eqidV = nnd;
   int eqidS = 2 * nnd;
-
-  // index to bubble nodes (bid) and equations (uid, vis, sid)
-  int *bid;
-
-  if( elem->shape == kTri ) bid = tri_id;
-  else                      bid = quad_id;
-
-  if( isFS(elem->nd[ncn]->flag, NODE::kRotat) )  CF( elem->nd[ncn]->flag, NODE::kRotat );
 
   if( force )
   {
@@ -351,7 +349,7 @@ void EQS_UVS2D_ME::Region( ELEM     *elem,
   }
 
 
-  // -------------------------------------------------------------------------------------
+  // -----------------------------------------------------------------------------------------------
   // compute coordinates relative to first node
 
   double x[kMaxNodes2D], y[kMaxNodes2D];
@@ -359,7 +357,7 @@ void EQS_UVS2D_ME::Region( ELEM     *elem,
   x[0] = elem->nd[0]->x;
   y[0] = elem->nd[0]->y;
 
-  for( int i=1; i<nnd; i++ )
+  for( int i=1; i<ncn; i++ )
   {
     x[i] = elem->nd[i]->x - x[0];
     y[i] = elem->nd[i]->y - y[0];
@@ -368,7 +366,7 @@ void EQS_UVS2D_ME::Region( ELEM     *elem,
   x[0] = y[0] = 0.0;
 
 
-  // -------------------------------------------------------------------------------------
+  // -----------------------------------------------------------------------------------------------
   // use GAUSS point integration to solve momentum equations for x- and
   // y-direction (U and V) and continuity equation (H)
 
@@ -376,8 +374,8 @@ void EQS_UVS2D_ME::Region( ELEM     *elem,
 
   for( int g=0; g<ngp; g++ )
   {
-    // -----------------------------------------------------------------------------------
-    // form JACOBIAN transformation matrix with quadratic shape functions
+    // ---------------------------------------------------------------------------------------------
+    // form JACOBIAN transformation matrix with linear shape functions
 
     double* dfdxPtr = lShape->dfdx[g];
     double* dfdyPtr = lShape->dfdy[g];
@@ -390,12 +388,12 @@ void EQS_UVS2D_ME::Region( ELEM     *elem,
     area += weight;
 
 
-    // -----------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
     // compute values of linear shape functions at GP g
 
-    double* m = lShape->f[g];
+    double *m = lShape->f[g];
 
-    double dmdx[kMaxNodes2D], dmdy[kMaxNodes2D];
+    double  dmdx[kMaxNodes2D], dmdy[kMaxNodes2D];
 
     for( int i=0; i<ncn; i++ )
     {
@@ -404,7 +402,7 @@ void EQS_UVS2D_ME::Region( ELEM     *elem,
     }
 
 
-    // -----------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
     // compute values of bubble shape functions at GP g
 
     double *b = bShape->f[g];
@@ -413,17 +411,15 @@ void EQS_UVS2D_ME::Region( ELEM     *elem,
 
     for( int i=0; i<nbn; i++ )
     {
-      int k = bid[i];
+      double dfdx = bShape->dfdx[g][i];
+      double dfdy = bShape->dfdy[g][i];
 
-      double dfdx = bShape->dfdx[g][k];
-      double dfdy = bShape->dfdy[g][k];
-
-      dbdx[k] = trafo[0][0] * dfdx + trafo[0][1] * dfdy;
-      dbdy[k] = trafo[1][0] * dfdx + trafo[1][1] * dfdy;
+      dbdx[i] = trafo[0][0] * dfdx + trafo[0][1] * dfdy;
+      dbdy[i] = trafo[1][0] * dfdx + trafo[1][1] * dfdy;
     }
 
 
-    // ------------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------------------
     // compute flow parameters and their derivatives at GP g
     //             horizontal velocities: U and V
     //             flow depth           : H
@@ -450,6 +446,9 @@ void EQS_UVS2D_ME::Region( ELEM     *elem,
     double uv   = 0.0;
     double vv   = 0.0;
 
+    double dUdt = 0.0;
+    double dVdt = 0.0;
+
     for( int i=0; i<ncn; i++ )
     {
       NODE *node = elem->nd[i];
@@ -462,7 +461,7 @@ void EQS_UVS2D_ME::Region( ELEM     *elem,
 
       double ndSS;
 
-      // -----------------------------------------------------------------------------------
+      // -------------------------------------------------------------------------------------------
       // Source or Sink
       //
       // ndSS = -Q * ncn / A;
@@ -479,7 +478,7 @@ void EQS_UVS2D_ME::Region( ELEM     *elem,
       {
         ndSS = 0.0;
       }
-      // ---------------------------------------------------------------------------------
+      // -------------------------------------------------------------------------------------------
 
       H    +=    m[i] * ndH;
       dHdx += dmdx[i] * ndH;
@@ -497,44 +496,50 @@ void EQS_UVS2D_ME::Region( ELEM     *elem,
       uu   +=    m[i] * node->uu;
       uv   +=    m[i] * node->uv;
       vv   +=    m[i] * node->vv;
+
+      dUdt +=    m[i] * node->v.dUdt;
+      dVdt +=    m[i] * node->v.dVdt;
     }
 
 //  if( H <= 0.0 )  H = project->hmin;
 
 
-    // -----------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
 
     double U    = 0.0;
-    double dUdt = 0.0;
     double dUdx = 0.0;
     double dUdy = 0.0;
 
     double V    = 0.0;
-    double dVdt = 0.0;
     double dVdx = 0.0;
     double dVdy = 0.0;
 
-    for( int i=0; i<nbn; i++ )
+    for( int i=0; i<ncn; i++ )
     {
-      int k = bid[i];
-
-      NODE*  node = elem->nd[k];
+      NODE*  node = elem->nd[i];
 
       double ndU  = node->v.U;
       double ndV  = node->v.V;
 
-      U    +=    b[k] * ndU;
-      dUdt +=    b[k] * node->v.dUdt;
-      dUdx += dbdx[k] * ndU;
-      dUdy += dbdy[k] * ndU;
+      U    +=    b[i] * ndU;
+      dUdx += dbdx[i] * ndU;
+      dUdy += dbdy[i] * ndU;
 
-      V    +=    b[k] * ndV;
-      dVdt +=    b[k] * node->v.dVdt;
-      dVdx += dbdx[k] * ndV;
-      dVdy += dbdy[k] * ndV;
+      V    +=    b[i] * ndV;
+      dVdx += dbdx[i] * ndV;
+      dVdy += dbdy[i] * ndV;
     }
 
-    // compute dispersion coefficients ---------------------------------------------------
+    U    +=    b[ncn] * elem->U;
+    dUdx += dbdx[ncn] * elem->U;
+    dUdy += dbdy[ncn] * elem->U;
+
+    V    +=    b[ncn] * elem->V;
+    dVdx += dbdx[ncn] * elem->V;
+    dVdy += dbdy[ncn] * elem->V;
+
+
+    // compute dispersion coefficients -------------------------------------------------------------
 
     double Dxx = 0.0;
     double Dxy = 0.0;
@@ -553,7 +558,7 @@ void EQS_UVS2D_ME::Region( ELEM     *elem,
     }
 
 
-    // compute eddy viscosity ------------------------------------------------------------
+    // compute eddy viscosity ----------------------------------------------------------------------
 
     double vt = 0.0;
 
@@ -572,12 +577,12 @@ void EQS_UVS2D_ME::Region( ELEM     *elem,
     }
 
 
-    // add kinematic viscosity to eddy viscosity  ----------------------------------------
+    // add kinematic viscosity to eddy viscosity  --------------------------------------------------
 
     vt += project->vk;
 
 
-    // -----------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
     // compute UVH-equation and coefficients of NEWTON-RAPHSON matrix
 
     double Ures = sqrt( U*U + V*V );           // absolute velocity
@@ -589,7 +594,7 @@ void EQS_UVS2D_ME::Region( ELEM     *elem,
       double *forcePtr;
 
 
-      // ---------------------------------------------------------------------------------
+      // -------------------------------------------------------------------------------------------
       // compute x-momentum
 
       f   = H * dUdt;                                  // time
@@ -601,13 +606,13 @@ void EQS_UVS2D_ME::Region( ELEM     *elem,
       fx -= H * uu;                                    // turbulence
       fy -= H * uv;
 
-      f  -= H * gravity * dadx;                        // gravity
+      f  += H * gravity * dadx;                        // gravity
       fx -= H * H * gravity / 2.0;
 
       f  += cf * Ures * U;                             // bottom friction
 
-      fx +=  H * ( U*U*Dxx - 2.0*U*V*Dxy + V*V*Dyy );  // dispersion
-      fy +=  H * ( U*V*(Dxx-Dyy) + (U*U-V*V)*Dxy );
+      fx += H * ( U*U*Dxx - 2.0*U*V*Dxy + V*V*Dyy );   // dispersion
+      fy += H * ( U*V*(Dxx-Dyy) + (U*U-V*V)*Dxy );
 
       f  *= weight;
       fx *= weight;
@@ -617,12 +622,11 @@ void EQS_UVS2D_ME::Region( ELEM     *elem,
 
       for( int i=0; i<nbn; i++ )
       {
-        int k = bid[i];
-        forcePtr[i] -= b[k] * f  +  dbdx[k] * fx  +  dbdy[k] * fy;
+        forcePtr[i] -= b[i] * f  +  dbdx[i] * fx  +  dbdy[i] * fy;
       }
 
 
-      // ---------------------------------------------------------------------------------
+      // -------------------------------------------------------------------------------------------
       // compute y-momentum
 
       f   = H * dVdt;                                  // time
@@ -634,13 +638,13 @@ void EQS_UVS2D_ME::Region( ELEM     *elem,
       fx -= H * uv;                                    // turbulence
       fy -= H * vv;
 
-      f  +=  H * gravity * dady;                       // gravity
-      fy -=  H * H * gravity / 2.0;
+      f  += H * gravity * dady;                        // gravity
+      fy -= H * H * gravity / 2.0;
 
       f  += cf * Ures * V;                             // bottom friction
 
-      fx +=  H * ( U*V*(Dxx-Dyy) + (U*U-V*V)*Dxy );    // dispersion
-      fy +=  H * ( V*V*Dxx + 2.0*U*V*Dxy + U*U*Dyy );
+      fx += H * ( U*V*(Dxx-Dyy) + (U*U-V*V)*Dxy );     // dispersion
+      fy += H * ( V*V*Dxx + 2.0*U*V*Dxy + U*U*Dyy );
 
       f  *= weight;
       fx *= weight;
@@ -650,12 +654,11 @@ void EQS_UVS2D_ME::Region( ELEM     *elem,
 
       for( int i=0; i<nbn; i++ )
       {
-        int k = bid[i];
-        forcePtr[i] -= b[k] * f  +  dbdx[k] * fx  +  dbdy[k] * fy;
+        forcePtr[i] -= b[i] * f  +  dbdx[i] * fx  +  dbdy[i] * fy;
       }
 
 
-      // ---------------------------------------------------------------------------------
+      // -------------------------------------------------------------------------------------------
       // compute continuity equation
 
       f  = dHdt  +  H * (dUdx + dVdy)  +  U * dHdx  +  V * dHdy;
@@ -678,7 +681,7 @@ void EQS_UVS2D_ME::Region( ELEM     *elem,
       double df__, df_x, df_y, dfx_, dfy_, dfxx, dfxy, dfyx, dfyy;
 
 
-      // ---------------------------------------------------------------------------------
+      // -------------------------------------------------------------------------------------------
       // compute components of NEWTON-RAPHSON Jacobi matrix
 
       double iUres;
@@ -687,7 +690,7 @@ void EQS_UVS2D_ME::Region( ELEM     *elem,
       else                iUres = 0.0;
 
 
-      // --- U-derivative of x-momentum --------------------------------------------------
+      // --- U-derivative of x-momentum ------------------------------------------------------------
 
       df__  =  weight * H * relaxThdt_UV;
 
@@ -705,27 +708,23 @@ void EQS_UVS2D_ME::Region( ELEM     *elem,
 
       for( int i=0; i<nbn; i++ )
       {
-        int k = bid[i];
-
-        t[i]  = df__ * b[k]  +  df_x * dbdx[k]  +  df_y * dbdy[k];
-        tx[i] = dfx_ * b[k]  +  dfxx * dbdx[k];
-        ty[i] = dfy_ * b[k]                     +  dfyy * dbdy[k];
+        t[i]  = df__ * b[i]  +  df_x * dbdx[i]  +  df_y * dbdy[i];
+        tx[i] = dfx_ * b[i]  +  dfxx * dbdx[i];
+        ty[i] = dfy_ * b[i]                     +  dfyy * dbdy[i];
       }
 
       for( int i=0; i<nbn; i++ )
       {
-        int k = bid[i];
-
         double *estifmPtr = estifm[i];
 
         for( int j=0; j<nbn; j++ )
         {
-          estifmPtr[j] += b[k]*t[j] + dbdx[k]*tx[j] + dbdy[k]*ty[j];
+          estifmPtr[j] += b[i]*t[j] + dbdx[i]*tx[j] + dbdy[i]*ty[j];
         }
       }
 
 
-      // --- V-derivative of x-momentum --------------------------------------------------
+      // --- V-derivative of x-momentum ------------------------------------------------------------
 
       df__  =  weight * H * dUdy;
 
@@ -738,27 +737,23 @@ void EQS_UVS2D_ME::Region( ELEM     *elem,
 
       for( int i=0; i<nbn; i++ )
       {
-        int k = bid[i];
-
-        t[i]  = df__ * b[k];
-        tx[i] = dfx_ * b[k];
-        ty[i] = dfy_ * b[k]  +  dfyx * dbdx[k];
+        t[i]  = df__ * b[i];
+        tx[i] = dfx_ * b[i];
+        ty[i] = dfy_ * b[i]  +  dfyx * dbdx[i];
       }
 
       for( int i=0; i<nbn; i++ )
       {
-        int k = bid[i];
-
-        double *estifmPtr = estifm[i];
+        double *estifmPtr = estifm[i] + eqidV;
 
         for( int j=0; j<nbn; j++ )
         {
-          estifmPtr[eqidV + j] += b[k]*t[j] + dbdx[k]*tx[j] + dbdy[k]*ty[j];
+          estifmPtr[j] += b[i]*t[j] + dbdx[i]*tx[j] + dbdy[i]*ty[j];
         }
       }
 
 
-      // --- H-derivative of x-momentum --------------------------------------------------
+      // --- H-derivative of x-momentum ------------------------------------------------------------
 
       df__  =  weight * dUdt;
       df__ +=  weight * (U * dUdx + V * dUdy);
@@ -784,18 +779,16 @@ void EQS_UVS2D_ME::Region( ELEM     *elem,
 
       for( int i=0; i<nbn; i++ )
       {
-        int k = bid[i];
-
-        double *estifmPtr = estifm[i];
+        double *estifmPtr = estifm[i] + eqidS;
 
         for( int j=0; j<ncn; j++ )
         {
-          estifmPtr[eqidS + j] += b[k]*t[j] + dbdx[k]*tx[j] + dbdy[k]*ty[j];
+          estifmPtr[j] += b[i]*t[j] + dbdx[i]*tx[j] + dbdy[i]*ty[j];
         }
       }
 
 
-      // --- U-derivative of y-momentum --------------------------------------------------
+      // --- U-derivative of y-momentum ------------------------------------------------------------
 
       df__  =  weight * H * dVdx;
 
@@ -808,27 +801,23 @@ void EQS_UVS2D_ME::Region( ELEM     *elem,
 
       for( int i=0; i<nbn; i++ )
       {
-        int k = bid[i];
-
-        t[i]  = df__ * b[k];
-        tx[i] = dfx_ * b[k]  +  dfxy * dbdy[k];
-        ty[i] = dfy_ * b[k];
+        t[i]  = df__ * b[i];
+        tx[i] = dfx_ * b[i]  +  dfxy * dbdy[i];
+        ty[i] = dfy_ * b[i];
       }
 
       for( int i=0; i<nbn; i++ )
       {
-        int k = bid[i];
-
         double *estifmPtr = estifm[eqidV + i];
 
         for( int j=0; j<nbn; j++ )
         {
-          estifmPtr[j] += b[k]*t[j] + dbdx[k]*tx[j] + dbdy[k]*ty[j];
+          estifmPtr[j] += b[i]*t[j] + dbdx[i]*tx[j] + dbdy[i]*ty[j];
         }
       }
 
 
-      // --- V-derivative of y-momentum --------------------------------------------------
+      // --- V-derivative of y-momentum ------------------------------------------------------------
 
       df__  =  weight * H * relaxThdt_UV;
 
@@ -846,27 +835,23 @@ void EQS_UVS2D_ME::Region( ELEM     *elem,
 
       for( int i=0; i<nbn; i++ )
       {
-        int k = bid[i];
-
-        t[i]  = df__ * b[k]  +  df_x * dbdx[k]  +  df_y * dbdy[k];
-        tx[i] = dfx_ * b[k]  +  dfxx * dbdx[k];
-        ty[i] = dfy_ * b[k]  +  dfyy * dbdy[k];
+        t[i]  = df__ * b[i]  +  df_x * dbdx[i]  +  df_y * dbdy[i];
+        tx[i] = dfx_ * b[i]  +  dfxx * dbdx[i];
+        ty[i] = dfy_ * b[i]                     +  dfyy * dbdy[i];
       }
 
       for( int i=0; i<nbn; i++ )
       {
-        int k = bid[i];
-
-        double *estifmPtr = estifm[eqidV + i];
+        double *estifmPtr = estifm[eqidV + i] + eqidV;
 
         for( int j=0; j<nbn; j++ )
         {
-          estifmPtr[eqidV + j] += b[k]*t[j] + dbdx[k]*tx[j] + dbdy[k]*ty[j];
+          estifmPtr[j] += b[i]*t[j] + dbdx[i]*tx[j] + dbdy[i]*ty[j];
         }
       }
 
 
-      // H-derivative of y-momentum ------------------------------------------------------
+      // H-derivative of y-momentum ----------------------------------------------------------------
 
       df__  =  weight * dVdt;
       df__ +=  weight * (U * dVdx + V * dVdy);
@@ -892,27 +877,23 @@ void EQS_UVS2D_ME::Region( ELEM     *elem,
 
       for( int i=0; i<nbn; i++ )
       {
-        int k = bid[i];
-
-        double *estifmPtr = estifm[eqidV + i];
+        double *estifmPtr = estifm[eqidV + i] + eqidS;
 
         for( int j=0; j<ncn; j++ )
         {
-          estifmPtr[eqidS + j] += b[k]*t[j] + dbdx[k]*tx[j] + dbdy[k]*ty[j];
+          estifmPtr[j] += b[i]*t[j] + dbdx[i]*tx[j] + dbdy[i]*ty[j];
         }
       }
 
 
-      // U-derivative of continuity ------------------------------------------------------
+      // U-derivative of continuity ----------------------------------------------------------------
 
       df__ = weight * dHdx;
       df_x = weight * H;
 
       for( int i=0; i<nbn; i++ )
       {
-        int k = bid[i];
-
-        t[i] = df__ * b[k]  +  df_x * dbdx[k];
+        t[i] = df__ * b[i]  +  df_x * dbdx[i];
       }
 
       for( int i=0; i<ncn; i++ )
@@ -926,61 +907,64 @@ void EQS_UVS2D_ME::Region( ELEM     *elem,
       }
 
 
-      // V-derivative of continuity ------------------------------------------------------
+      // V-derivative of continuity ----------------------------------------------------------------
 
       df__ = weight * dHdy;
       df_y = weight * H;
 
       for( int i=0; i<nbn; i++ )
       {
-        int k = bid[i];
-
-        t[i] = df__ * b[k] + df_y * dbdy[k];
+        t[i] = df__ * b[i] + df_y * dbdy[i];
       }
 
       for( int i=0; i<ncn; i++ )
       {
-        double *estifmPtr = estifm[eqidS + i];
+        double *estifmPtr = estifm[eqidS + i] + eqidV;
 
         for( int j=0; j<nbn; j++ )
         {
-          estifmPtr[eqidV + j] += m[i]*t[j];
+          estifmPtr[j] += m[i]*t[j];
         }
       }
 
 
-      // H-derivative of continuity ------------------------------------------------------
+      // H-derivative of continuity ----------------------------------------------------------------
 
       df__  = weight * relaxThdt_H;
       df__ += weight * (dUdx + dVdy);
       df_x  = weight * U;
       df_y  = weight * V;
 
-      for( int j=0; j<ncn; j++ )
+      for( int i=0; i<ncn; i++ )
       {
-        t[j] = df__ * m[j]  +  df_x * dmdx[j]  +  df_y * dmdy[j];
+        t[i] = df__ * m[i]  +  df_x * dmdx[i]  +  df_y * dmdy[i];
       }
 
       for( int i=0; i<ncn; i++ )
       {
-        double *estifmPtr = estifm[eqidS + i];
+        double *estifmPtr = estifm[eqidS + i] + eqidS;
 
         for( int j=0; j<ncn; j++ )
         {
-          estifmPtr[eqidS + j] += m[i]*t[j];
+          estifmPtr[j] += m[i]*t[j];
         }
       }
     }
   } // END of loop over all GAUSS points
 
 
-  // -------------------------------------------------------------------------------------
+  // -----------------------------------------------------------------------------------------------
   // apply transformation
 
-  Rotate2D( nnd, elem->nd, 3, estifm, force );
+  Rotate2D( ncn, eqidV, elem->nd, estifm, force );
 
 
-  // -------------------------------------------------------------------------------------
+  // -----------------------------------------------------------------------------------------------
+  // eliminate the two equation at the bubble node
+  Eliminate( elem, estifm, force, ncn, nbn, eqidV, eqidS );
+
+
+  // -----------------------------------------------------------------------------------------------
   // insert experimental upstream boundary forces at nodes with inflow
   // boundary condition  (qfix = constant):
 
@@ -1005,7 +989,7 @@ void EQS_UVS2D_ME::Region( ELEM     *elem,
 
       if( H <= 0.0 )
       {
-        H     = project->hmin;
+        H = project->hmin;
         specQ = 0.0;
       }
 
@@ -1015,132 +999,283 @@ void EQS_UVS2D_ME::Region( ELEM     *elem,
       // stiffness matrix
       if( estifm )
       {
-        estifm[i][i]      = area * H;
-        estifm[i][sid[i]] = area * Un;
+        estifm[i][i]         = area * H;
+        estifm[i][eqidS + i] = area * Un;
       }
     }
   }
+}
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  // -------------------------------------------------------------------------------------
-  // eliminate momentum equation V for element centers (partial Gauss elimination)
-
-  double* VPtr = estifm[vid[ncn]];
+void EQS_UVS2D_ME::Eliminate( ELEM* elem, double** estifm, double* force,
+                              int ncn, int nbn, int eqidV, int eqidS )
+{
+# ifdef kDebug
+  char dbgFile[80];
+  sprintf( dbgFile, "estifm_%05d", elem->Getname() );
+  FILE *id = fopen( dbgFile, "w" );
 
   for( int i=0; i<nbn; i++ )
   {
+    fprintf( id, "%5d", i+1 );
+    for( int j=0; j<nbn; j++ ) fprintf( id, "\t%12.6le", estifm[i][j] );
+    for( int j=0; j<nbn; j++ ) fprintf( id, "\t%12.6le", estifm[i][eqidV+j] );
+    for( int j=0; j<ncn; j++ ) fprintf( id, "\t%12.6le", estifm[i][eqidS+j] );
+    fprintf( id, "\t%12.6le\n", force[i] );
+  }
+  for( int i=0; i<nbn; i++ )
+  {
+    fprintf( id, "%5d", eqidV+i+1 );
+    for( int j=0; j<nbn; j++ ) fprintf( id, "\t%12.6le", estifm[eqidV+i][j] );
+    for( int j=0; j<nbn; j++ ) fprintf( id, "\t%12.6le", estifm[eqidV+i][eqidV+j] );
+    for( int j=0; j<ncn; j++ ) fprintf( id, "\t%12.6le", estifm[eqidV+i][eqidS+j] );
+    fprintf( id, "\t%12.6le\n", force[eqidV+i] );
+  }
+  for( int i=0; i<ncn; i++ )
+  {
+    fprintf( id, "%5d", eqidS+i+1 );
+    for( int j=0; j<nbn; j++ ) fprintf( id, "\t%12.6le", estifm[eqidS+i][j] );
+    for( int j=0; j<nbn; j++ ) fprintf( id, "\t%12.6le", estifm[eqidS+i][eqidV+j] );
+    for( int j=0; j<ncn; j++ ) fprintf( id, "\t%12.6le", estifm[eqidS+i][eqidS+j] );
+    fprintf( id, "\t%12.6le\n", force[eqidS+i] );
+  }
+# endif
+
+  // -----------------------------------------------------------------------------------------------
+  // Eliminate momentum equation U for element centers by means of partial Gauss elimination.
+  // Note: Momentum and continuity equation start at eqidU = 0,
+  //                                                 eqidV = nnd and
+  //                                                 eqidS = 2 * nnd.
+  //       The equation id of the bubble (center) node in estifm and force is ncn = nbn - 1.
+
+  double *UPtr = estifm[ncn];
+
+  // The elimination equation UPtr is added to each x-momentum equation excluding
+  // the elimination equation itself [i = 0 ... ncn-1].
+  for( int i=0; i<ncn; i++ )
+  {
     double  factor;
-    double* MPtr;
+    double *MPtr;
 
-    // eliminate in x-momentum equation
+    // eliminate in x-momentum equation estifm[eqidU + i]
 
-    MPtr = estifm[uid[i]];
+    MPtr = estifm[i];                                  // pointer to equation [eqidU + i]
 
-    factor = MPtr[vid[ncn]] / VPtr[vid[ncn]];
+    factor = MPtr[ncn] / UPtr[ncn];                    // pivot in bubble column
 
-    force[uid[i]] -= factor * force[vid[ncn]];
+    force[i] -= factor * force[ncn];                   // eliminate on right hand side
 
-    for( int j=0; j<nbn; j++ )
+    for( int j=0; j<ncn; j++ )                         // eliminate on left hand side
     {
-      MPtr[uid[j]] -= factor * VPtr[uid[j]];
-      MPtr[vid[j]] -= factor * VPtr[vid[j]];
+      MPtr[        j] -= factor * UPtr[j];
+      MPtr[eqidV + j] -= factor * UPtr[eqidV + j];
+      MPtr[eqidS + j] -= factor * UPtr[eqidS + j];
     }
 
-    MPtr[vid[ncn]] = 0.0;
+    MPtr[        ncn]  = 0.0;                          // eliminated column
+    MPtr[eqidV + ncn] -= factor * UPtr[eqidV + ncn];   // bubble equation
+    //MPtr[eqidS + ncn] does not exist!
   }
 
+  // The elimination equation UPtr is added to each y-momentum equation [i = 0 ... ncn].
   for( int i=0; i<nbn; i++ )
   {
     double  factor;
-    double* MPtr;
+    double *MPtr;
 
-    // eliminate in y-momentum equation
+    // eliminate in y-momentum equation estifm[eqidV + i]
 
-    MPtr = estifm[vid[i]];
+    MPtr = estifm[eqidV + i];
 
-    factor = MPtr[vid[ncn]] / VPtr[vid[ncn]];
+    factor = MPtr[ncn] / UPtr[ncn];
 
-    force[vid[i]] -= factor * force[vid[ncn]];
-
-    for( int j=0; j<nbn; j++ )
-    {
-      MPtr[uid[j]] -= factor * VPtr[uid[j]];
-      MPtr[vid[j]] -= factor * VPtr[vid[j]];
-    }
-
-    MPtr[vid[ncn]] = 0.0;
-  }
-
-
-  // save elimination equation -----------------------------------------------------------
-
-  double* VElimEqPtr = VElimEq[elem->Getno()];
-
-  for( int i=0; i<nbn; i++ )
-  {
-    VElimEqPtr[i]     = VPtr[uid[i]];
-    VElimEqPtr[i+nbn] = VPtr[vid[i]];
-  }
-
-  VElimEqPtr[2*nbn]   = VPtr[vid[ncn]];   // diagonal entry
-  VElimEqPtr[2*nbn+1] = force[vid[ncn]];  // RHS
-
-
-  // -------------------------------------------------------------------------------------
-  // eliminate momentum equation U for element centers (partial Gauss elimination)
-
-  double* UPtr = estifm[uid[ncn]];
-
-  for( int i=0; i<nbn; i++ )
-  {
-    double  factor;
-    double* MPtr;
-
-    // eliminate in x-momentum equation
-
-    MPtr = estifm[uid[i]];
-
-    factor = MPtr[uid[ncn]] / UPtr[uid[ncn]];
-
-    force[uid[i]] -= factor * force[uid[ncn]];
+    force[eqidV + i] -= factor * force[ncn];
 
     for( int j=0; j<ncn; j++ )
     {
-      MPtr[uid[j]] -= factor * UPtr[uid[j]];
-      MPtr[vid[j]] -= factor * UPtr[vid[j]];
+      MPtr[        j] -= factor * UPtr[j];
+      MPtr[eqidV + j] -= factor * UPtr[eqidV + j];
+      MPtr[eqidS + j] -= factor * UPtr[eqidS + j];
     }
 
-    MPtr[uid[3]] = 0.0;
+    MPtr[        ncn]  = 0.0;                          // eliminated column
+    MPtr[eqidV + ncn] -= factor * UPtr[eqidV + ncn];   // bubble equation
+    //MPtr[eqidS + ncn] does not exist!
+  }
 
+  // The elimination equation UPtr is added to each continuity equation [i = 0 ... ncn].
+  for( int i=0; i<ncn; i++ )
+  {
+    double  factor;
+    double *MPtr;
 
-    // eliminate in y-momentum equation
+    // eliminate in y-momentum equation estifm[eqidV + i]
 
-    MPtr = estifm[vid[i]];
+    MPtr = estifm[eqidS + i];
 
-    factor = MPtr[uid[ncn]] / UPtr[uid[ncn]];
+    factor = MPtr[ncn] / UPtr[ncn];
 
-    force[vid[i]] -= factor * force[uid[ncn]];
+    force[eqidS + i] -= factor * force[ncn];
 
     for( int j=0; j<ncn; j++ )
     {
-      MPtr[uid[j]] -= factor * UPtr[uid[j]];
-      MPtr[vid[j]] -= factor * UPtr[vid[j]];
+      MPtr[        j] -= factor * UPtr[j];
+      MPtr[eqidV + j] -= factor * UPtr[eqidV + j];
+      MPtr[eqidS + j] -= factor * UPtr[eqidS + j];
     }
 
-    MPtr[uid[ncn]] = 0.0;
+    MPtr[        ncn]  = 0.0;                          // eliminated column
+    MPtr[eqidV + ncn] -= factor * UPtr[eqidV + ncn];
+    //MPtr[eqidS + ncn] does not exist!
   }
 
 
-  // save elimination equation -----------------------------------------------------------
+  // save elimination equation which is needed to solve for the center node ------------------------
 
-  double* UElimEqPtr = UElimEq[elem->Getno()];
+  double *UElimEqPtr = UElimEq[elem->Getno()];
 
+  for( int i=0; i<ncn; i++ )
+  {
+    UElimEqPtr[        i] = UPtr[        i];
+    UElimEqPtr[nbn   + i] = UPtr[eqidV + i];
+    UElimEqPtr[2*nbn + i] = UPtr[eqidS + i];
+  }
+
+  UElimEqPtr[        ncn] = UPtr[        ncn];    // pivot
+  UElimEqPtr[nbn   + ncn] = UPtr[eqidV + ncn];    // LHS
+  UElimEqPtr[2*nbn + ncn] = force[ncn];           // RHS
+
+
+  // -----------------------------------------------------------------------------------------------
+  // Eliminate momentum equation V for element centers by means of partial Gauss elimination.
+
+  double *VPtr = estifm[eqidV + ncn];
+
+  // The elimination equation VPtr is added to each x-momentum equation excluding
+  // the former elimination equation [i = 0 ... ncn-1].
+  for( int i=0; i<ncn; i++ )
+  {
+    double  factor;
+    double *MPtr;
+
+    // eliminate in x-momentum equation estifm[eqidU + i]
+
+    MPtr = estifm[i];                                  // pointer to equation [eqidU + i]
+
+    factor = MPtr[eqidV + ncn] / VPtr[eqidV + ncn];    // pivot in bubble column
+
+    force[i] -= factor * force[eqidV + ncn];           // eliminate on right hand side
+
+    for( int j=0; j<ncn; j++ )                         // eliminate on left hand side
+    {
+      MPtr[        j] -= factor * VPtr[j];
+      MPtr[eqidV + j] -= factor * VPtr[eqidV + j];
+      MPtr[eqidS + j] -= factor * VPtr[eqidS + j];
+    }
+
+    MPtr[        ncn] -= factor * VPtr[ncn];
+    MPtr[eqidV + ncn]  = 0.0;                          // eliminated column
+    //MPtr[eqidS + ncn] does not exist!
+  }
+
+  // The elimination equation VPtr is added to each y-momentum equation excluding
+  // the elimination equation itself [i = 0 ... ncn-1].
+  for( int i=0; i<ncn; i++ )
+  {
+    double  factor;
+    double *MPtr;
+
+    // eliminate in y-momentum equation estifm[eqidV + i]
+
+    MPtr = estifm[eqidV + i];
+
+    factor = MPtr[eqidV + ncn] / VPtr[eqidV + ncn];
+
+    force[eqidV + i] -= factor * force[eqidV + ncn];
+
+    for( int j=0; j<ncn; j++ )
+    {
+      MPtr[        j] -= factor * VPtr[j];
+      MPtr[eqidV + j] -= factor * VPtr[eqidV + j];
+      MPtr[eqidS + j] -= factor * VPtr[eqidS + j];
+    }
+
+    MPtr[        ncn] -= factor * VPtr[ncn];
+    MPtr[eqidV + ncn]  = 0.0;                          // eliminated column
+    //MPtr[eqidS + ncn] does not exist!
+  }
+
+  // The elimination equation VPtr is added to each continuity equation [i = 0 ... ncn-1].
+  for( int i=0; i<ncn; i++ )
+  {
+    double  factor;
+    double *MPtr;
+
+    // eliminate in y-momentum equation estifm[eqidV + i]
+
+    MPtr = estifm[eqidS + i];
+
+    factor = MPtr[eqidV + ncn] / VPtr[eqidV + ncn];
+
+    force[eqidS + i] -= factor * force[eqidV + ncn];
+
+    for( int j=0; j<ncn; j++ )
+    {
+      MPtr[        j] -= factor * VPtr[j];
+      MPtr[eqidV + j] -= factor * VPtr[eqidV + j];
+      MPtr[eqidS + j] -= factor * VPtr[eqidS + j];
+    }
+
+    MPtr[        ncn] -= factor * VPtr[ncn];
+    MPtr[eqidV + ncn]  = 0.0;                          // eliminated column
+    //MPtr[eqidS + ncn] does not exist!
+  }
+
+
+  // save elimination equation which is needed to solve for the center node ------------------------
+
+  double *VElimEqPtr = VElimEq[elem->Getno()];
+
+  for( int i=0; i<ncn; i++ )
+  {
+    VElimEqPtr[        i] = VPtr[        i];
+    VElimEqPtr[nbn   + i] = VPtr[eqidV + i];
+    VElimEqPtr[2*nbn + i] = VPtr[eqidS + i];
+  }
+
+  VElimEqPtr[        ncn] = VPtr[        ncn];    // LHS
+  VElimEqPtr[nbn   + ncn] = VPtr[eqidV + ncn];    // pivot
+  VElimEqPtr[2*nbn + ncn] = force[eqidV + ncn];   // RHS
+
+
+# ifdef kDebug
+  fprintf( id, "\n\n\n" );
   for( int i=0; i<nbn; i++ )
   {
-    UElimEqPtr[i]     = UPtr[uid[i]];
-    UElimEqPtr[i+nbn] = UPtr[vid[i]];
+    fprintf( id, "%5d", i+1 );
+    for( int j=0; j<nbn; j++ ) fprintf( id, "\t%12.6le", estifm[i][j] );
+    for( int j=0; j<nbn; j++ ) fprintf( id, "\t%12.6le", estifm[i][eqidV+j] );
+    for( int j=0; j<ncn; j++ ) fprintf( id, "\t%12.6le", estifm[i][eqidS+j] );
+    fprintf( id, "\t%12.6le\n", force[i] );
+  }
+  for( int i=0; i<nbn; i++ )
+  {
+    fprintf( id, "%5d", eqidV+i+1 );
+    for( int j=0; j<nbn; j++ ) fprintf( id, "\t%12.6le", estifm[eqidV+i][j] );
+    for( int j=0; j<nbn; j++ ) fprintf( id, "\t%12.6le", estifm[eqidV+i][eqidV+j] );
+    for( int j=0; j<ncn; j++ ) fprintf( id, "\t%12.6le", estifm[eqidV+i][eqidS+j] );
+    fprintf( id, "\t%12.6le\n", force[eqidV+i] );
+  }
+  for( int i=0; i<ncn; i++ )
+  {
+    fprintf( id, "%5d", eqidS+i+1 );
+    for( int j=0; j<nbn; j++ ) fprintf( id, "\t%12.6le", estifm[eqidS+i][j] );
+    for( int j=0; j<nbn; j++ ) fprintf( id, "\t%12.6le", estifm[eqidS+i][eqidV+j] );
+    for( int j=0; j<ncn; j++ ) fprintf( id, "\t%12.6le", estifm[eqidS+i][eqidS+j] );
+    fprintf( id, "\t%12.6le\n", force[eqidS+i] );
   }
 
-  UElimEqPtr[2*nbn]   = UPtr[uid[ncn]];   // diagonal entry
-  UElimEqPtr[2*nbn+1] = force[uid[ncn]];  // RHS
+  fclose( id );
+# endif
 }

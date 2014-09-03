@@ -31,10 +31,10 @@
 //
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 
-// -----------------------------------------------------------------------------
-// compute values of all shape functions at Gauss point g and its weighT
+// -------------------------------------------------------------------------------------------------
+// compute values of all shape functions at Gauss point g and its weight
 // element type: TRIANGLE
-// -----------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
 
 #include "Defs.h"
 #include "Shape.h"
@@ -48,21 +48,21 @@ void SHAPE::shapeOfTriangle()
 
   for( int g=0; g<ngp; g++ )
   {
-    switch( ngp )
+    switch( degree )
     {
-      case 4:
+      case 3:
         xgp = loc_TRI3[g][0];
         ygp = loc_TRI3[g][1];
         weight[g] = weight_TRI3[g];
         break;
 
-      case 7:
+      case 5:
         xgp = loc_TRI5[g][0];
         ygp = loc_TRI5[g][1];
         weight[g] = weight_TRI5[g];
         break;
 
-      case 13:
+      case 7:
         xgp = loc_TRI7[g][0];
         ygp = loc_TRI7[g][1];
         weight[g] = weight_TRI7[g];
@@ -82,17 +82,14 @@ void SHAPE::shapeOfTriangle()
         break;
 
       // hyperbolic shape function,  corner nodes: 0,1,2
-      //                             center node:  6
+      //                             center node:  3
       case 4:
-        for( int i=0; i<3; i++ )
+        for( int i=0; i<4; i++ )
         {
           f[g][i]    = bTriangle( i, xgp, ygp );
           dfdx[g][i] = bTriangleDx( i, xgp, ygp );
           dfdy[g][i] = bTriangleDy( i, xgp, ygp );
         }
-        f[g][6]    = bTriangle( 6, xgp, ygp );
-        dfdx[g][6] = bTriangleDx( 6, xgp, ygp );
-        dfdy[g][6] = bTriangleDy( 6, xgp, ygp );
         break;
 
       // quadratic shape function,  corner nodes: 0,1,2
@@ -125,15 +122,13 @@ void SHAPE::shapeOfTriangle()
         break;
 
       // hyperbolic shape function,  corner nodes: 0,1,2
-      //                             center node:  6
+      //                             center node:  3
       case 4:
-        for( int i=0; i<3; i++ )
+        for( int i=0; i<4; i++ )
         {
           dndx[n][i] = bTriangleDx( i, x, y );
           dndy[n][i] = bTriangleDy( i, x, y );
         }
-        dndx[n][6] = bTriangleDx( 6, x, y );
-        dndy[n][6] = bTriangleDy( 6, x, y );
         break;
 
       // quadratic shape function,  corner nodes: 0,1,2
@@ -150,37 +145,58 @@ void SHAPE::shapeOfTriangle()
 }
 
 
-// function to obtain local coordinates of nodes -------------------------------
+// function to obtain local coordinates of nodes ---------------------------------------------------
 
 int SHAPE::localTriangle( int node, double *xi, double *eta )
 {
-  switch( node )
+  switch( nnd )
   {
-    case  0:                                      // corner nodes
-      *xi = 0.0;      *eta = 0.0;       break;
-    case  1:
-      *xi = 1.0;      *eta = 0.0;       break;
-    case  2:
-      *xi = 0.0;      *eta = 1.0;       break;
+    case 3:
+    case 6:
+      switch( node )
+      {
+        case  0:                                      // corner nodes
+          *xi = 0.0;      *eta = 0.0;       break;
+        case  1:
+          *xi = 1.0;      *eta = 0.0;       break;
+        case  2:
+          *xi = 0.0;      *eta = 1.0;       break;
 
-    case  3:                                      // midside nodes
-      *xi = 0.5;      *eta = 0.0;       break;
-    case  4:
-      *xi = 0.5;      *eta = 0.5;       break;
-    case  5:
-      *xi = 0.0;      *eta = 0.5;       break;
+        case  3:                                      // midside nodes
+          *xi = 0.5;      *eta = 0.0;       break;
+        case  4:
+          *xi = 0.5;      *eta = 0.5;       break;
+        case  5:
+          *xi = 0.0;      *eta = 0.5;       break;
 
-    case  6:                                      // center node
-      *xi = 1.0/3.0;  *eta = 1.0/3.0;   break;
+        default:
+          return -1;
+      }
+      break;
 
-    default:
-      return -1;
+    case 4:
+      switch( node )
+      {
+        case  0:                                      // corner nodes
+          *xi = 0.0;      *eta = 0.0;       break;
+        case  1:
+          *xi = 1.0;      *eta = 0.0;       break;
+        case  2:
+          *xi = 0.0;      *eta = 1.0;       break;
+        case  3:                                      // center node
+          *xi = 1.0/3.0;  *eta = 1.0/3.0;   break;
+
+        default:
+          return -1;
+      }
+      break;
   }
+
   return 0;
 }
 
 
-// function to compute values of a linear shape function (triangle) ------------
+// function to compute values of a linear shape function (triangle) --------------------------------
 
 double SHAPE::lTriangle( int node, double x, double y )
 {
@@ -234,16 +250,16 @@ double SHAPE::lTriangleDy( int node )
 }
 
 
-//function to compute values of a bubble shape function (triangle) -------------
+// function to compute values of a bubble shape function (triangle) -------------
 
 double SHAPE::bTriangle( int node, double x, double y )
 {
   switch( node )
   {
-    case 0:  return (1.0 - 9.0 * x * y) * (1.0 - x - y);
+    case 0:  return (1.0 - x - y) * (1.0 - 9.0 * x * y);
     case 1:  return x * (1.0 - 9.0 * (1.0 - x - y) * y);
     case 2:  return y * (1.0 - 9.0 * (1.0 - x - y) * x);
-    case 6:  return 27.0 * (1.0 - x - y) * x * y;
+    case 3:  return 27.0 * (1.0 - x - y) * x * y;
   }
 
   return 0.0;
@@ -256,10 +272,10 @@ double SHAPE::bTriangleDx( int node, double x, double y )
 {
   switch( node )
   {
-    case 0:  return -1.0 + 9.0 * (-y  +  2.0 * x * y  +  y * y);
-    case 1:  return  1.0 + 9.0 * (-y  +  2.0 * x * y  +  y * y);
-    case 2:  return        9.0 * (-y  +  2.0 * x * y  +  y * y);
-    case 6:  return      -27.0 * (-y  +  2.0 * x * y  +  y * y);
+    case 0:  return -1.0 + 9.0 * y * (2.0 * x  +  y  -  1);
+    case 1:  return  1.0 + 9.0 * y * (2.0 * x  +  y  -  1);
+    case 2:  return        9.0 * y * (2.0 * x  +  y  -  1);
+    case 3:  return      -27.0 * y * (2.0 * x  +  y  -  1);
   }
 
   return 0.0;
@@ -272,10 +288,10 @@ double SHAPE::bTriangleDy( int node, double x, double y )
 {
   switch( node )
   {
-    case 0:  return -1.0 + 9.0 * (-x  +  2.0 * x * y  +  x * x);
-    case 1:  return        9.0 * (-x  +  2.0 * x * y  +  x * x);
-    case 2:  return  1.0 + 9.0 * (-x  +  2.0 * x * y  +  x * x);
-    case 6:  return      -27.0 * (-x  +  2.0 * x * y  +  x * x);
+    case 0:  return -1.0 + 9.0 * x * (2.0 * y  +  x  -  1);
+    case 1:  return        9.0 * x * (2.0 * y  +  x  -  1);
+    case 2:  return  1.0 + 9.0 * x * (2.0 * y  +  x  -  1);
+    case 3:  return      -27.0 * x * (2.0 * y  +  x  -  1);
   }
 
   return 0.0;

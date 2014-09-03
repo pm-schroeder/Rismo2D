@@ -73,7 +73,7 @@ void MODEL::DoFriction( PROJECT* project )
 
   // allocations and initializations -----------------------------------------------------
 
-  int* counter  = (int*) MEMORY::memo.Array_nd( np );
+  int* counter = (int*) MEMORY::memo.Array_nd( np, "MODEL::DoFriction(1)" );
 
   for( i=0; i<np; i++ )
   {

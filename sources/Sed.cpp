@@ -260,7 +260,7 @@ void SED::Slope( PROJECT* project,
           double ty  = sy[no];
 
           double xc, yc;
-          elem->center( &xc, &yc );
+          elem->Center( &xc, &yc );
 
           double dx = xc - elem->nd[n]->x;
           double dy = yc - elem->nd[n]->y;
@@ -319,7 +319,7 @@ void SED::Slope( PROJECT* project,
           double ty  = sy[no];
 
           double xc, yc;
-          elem->center( &xc, &yc );
+          elem->Center( &xc, &yc );
 
           double dx = xc - elem->nd[n]->x;
           double dy = yc - elem->nd[n]->y;

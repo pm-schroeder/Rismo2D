@@ -20,6 +20,9 @@
 //                        SHAPE::lSquare()
 //                        SHAPE::lSquareDx()
 //                        SHAPE::lSquareDy()
+//                        SHAPE::bSquare()
+//                        SHAPE::bSquareDx()
+//                        SHAPE::bSquareDy()
 //                        SHAPE::qSquare()
 //                        SHAPE::qSquareDx()
 //                        SHAPE::qSquareDy()
@@ -103,8 +106,8 @@ class SHAPE
     static double loc_1D[4][4];         // location of 1D-GP (1, 3, 5, 7th-order)
     static double weight_1D[4][4];      // weight of Gauss points
 
-    static double loc_TRI3[4][2];       // location of triangular GP (3rd-order)
-    static double weight_TRI3[4];
+    static double loc_TRI3[6][2];       // location of triangular GP (3rd-order)
+    static double weight_TRI3[6];
 
     static double loc_TRI5[7][2];       // location of triangular GP (5th-order)
     static double weight_TRI5[7];
@@ -112,8 +115,8 @@ class SHAPE
     static double loc_TRI7[13][2];      // location of triangular GP (7th-order)
     static double weight_TRI7[13];
 
-    static void     gp();
-    static void     types( int );
+    static void   gp();
+    static void   types( int );
 
   public:
     int    dim;                         // dimension
@@ -165,20 +168,24 @@ class SHAPE
     double bTriangleDx( int, double, double );        // and derivatives
     double bTriangleDy( int, double, double );
 
-    double qTriangle( int, double, double);           // quadratic shape
-    double qTriangleDx( int, double, double);         // and derivatives
-    double qTriangleDy( int, double, double);
+    double qTriangle( int, double, double );          // quadratic shape
+    double qTriangleDx( int, double, double );        // and derivatives
+    double qTriangleDy( int, double, double );
 
     // square.cpp --------------------------------------------------------------------------
     void   shapeOfSquare();
     int    localSquare( int, double*, double* );      // compute local coordinates
 
-    double lSquare( int, double, double );            // compute value of linear shape
-    double lSquareDx( int, double );                  // and its derivatives
+    double lSquare( int, double, double );            // linear shape
+    double lSquareDx( int, double );                  // and derivatives
     double lSquareDy( int, double );
 
-    double qSquare( int, double, double );            // compute value of quadratic shape
-    double qSquareDx( int, double, double );          // and its derivatives
+    double bSquare( int, double, double );            // bubble shape (5 node quad)
+    double bSquareDx( int, double, double );          // and derivatives
+    double bSquareDy( int, double, double );
+
+    double qSquare( int, double, double );            // quadratic shape
+    double qSquareDx( int, double, double );          // and derivatives
     double qSquareDy( int, double, double );
 };
 

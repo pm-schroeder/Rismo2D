@@ -89,7 +89,7 @@ BCON* BCONSET::GetBcon( int no )
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
-void BCONSET::InitBcon( PROJECT* project, TIME* actualTime, double* preQ )
+void BCONSET::InitBcon(PROJECT *project, TIME *actualTime, double *preQ, int order )
 {
   char text[200];
 
@@ -183,7 +183,7 @@ void BCONSET::InitBcon( PROJECT* project, TIME* actualTime, double* preQ )
   {
     // transfer boundary conditions from lines to nodes
     // nbc counts the number of nodes with boundary in bc
-    nbc = bcLine[i].GenBcon( model, actualTime, nbc, bc, preQ );
+    nbc = bcLine[i].GenBcon( model, actualTime, nbc, bc, preQ, order );
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////
@@ -337,7 +337,7 @@ void BCONSET::InitBcon( PROJECT* project, TIME* actualTime, double* preQ )
   // -------------------------------------------------------------------------------------
   // determine the area of node patches and store it into the array "patchArea"
 
-  double* patchArea = (double*) MEMORY::memo.Array_nd( rg->Getnp() );
+  double* patchArea = (double*) MEMORY::memo.Array_nd( rg->Getnp(), "BCONSET::GetBcon(1)" );
 
   for( int i=0; i<rg->Getnp(); i++ )  patchArea[i] = 0.0;
 

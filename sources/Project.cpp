@@ -315,6 +315,7 @@ PROJECT::PROJECT()
   vl->id = kMINU;    vl->name = "minU";    vl->unit = "m/s";    vl->dim = 1;  vl->vec = 1;  vl++;  // 68
   vl->id = kMAXV;    vl->name = "maxV";    vl->unit = "m/s";    vl->dim = 1;  vl->vec = 1;  vl++;  // 69
   vl->id = kMINV;    vl->name = "minV";    vl->unit = "m/s";    vl->dim = 1;  vl->vec = 1;  vl++;  // 70
+  vl->id = kXYZ;     vl->name = "XYZ";     vl->unit = "m";      vl->dim = 3;  vl->vec = 1;  vl++;  // 71
 
 
   vpdata = 0;
@@ -761,7 +762,6 @@ void PROJECT::Input_00000( ASCIIFILE* file )
 
   vpdata = 11;
   vpcomp =  9;
-
   vpoutlist[0] = kUV;
   vpoutlist[1] = kS;
   vpoutlist[2] = kK;
@@ -772,10 +772,11 @@ void PROJECT::Input_00000( ASCIIFILE* file )
   vpoutlist[7] = kTAU;
   vpoutlist[8] = kVT;
 
-  vedata = 1;
-  vecomp = 1;
-
-  veoutlist[0] = kS;
+  vedata = 7;
+  vecomp = 3;
+  veoutlist[0] = kXYZ;
+  veoutlist[1] = kUV;
+  veoutlist[2] = kS;
 
   // -------------------------------------------------------------------------------------
 
@@ -1643,9 +1644,9 @@ void PROJECT::Input_30900( ASCIIFILE* file )
                 vpcomp++;
                 vpdata += valist[i].vec;
 
-                if(    valist[i].id == kS  || valist[i].id == kDZ
+                if(    valist[i].id == kS  || valist[i].id == kUV  || valist[i].id == kDZ
                     || valist[i].id == kRC || valist[i].id == kD90 || valist[i].id == kD50
-                    || valist[i].id == kDP || valist[i].id == kSP )
+                    || valist[i].id == kDP || valist[i].id == kSP  || valist[i].id == kXYZ )
                 {
                   veoutlist[vecomp] = i;
                   vecomp++;
@@ -2091,7 +2092,6 @@ void PROJECT::Input_30900( ASCIIFILE* file )
   {
     vpdata = 11;
     vpcomp =  9;
-
     vpoutlist[0] = kUV;
     vpoutlist[1] = kS;
     vpoutlist[2] = kK;
@@ -2101,11 +2101,15 @@ void PROJECT::Input_30900( ASCIIFILE* file )
     vpoutlist[6] = kUS;
     vpoutlist[7] = kTAU;
     vpoutlist[8] = kVT;
+  }
 
-    vedata = 1;
-    vecomp = 1;
-
-    veoutlist[0] = kS;
+  if( vecomp == 0 )           // use default values for UCD-output
+  {
+    vedata = 7;
+    vecomp = 3;
+    veoutlist[0] = kXYZ;
+    veoutlist[1] = kUV;
+    veoutlist[2] = kS;
   }
 
   REPORT::rpt.Message( 3, "\n   variables for output in AVS-UCD-Files\n" );

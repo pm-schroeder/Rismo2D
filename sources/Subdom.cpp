@@ -591,7 +591,7 @@ void SUBDOM::Input( char* subdomFileName, char* regionFileName, GRID* region )
   // -------------------------------------------------------------------------------------
   // free allocated memory (1)
 
-  for( int i=0; i<=kMaxNodes2D; i++ )  MEMORY::memo.Delete( con[i] );
+  for( int i=0; i<=kMaxNodes2D; i++ )  MEMORY::memo.Detach( con[i] );
 
   delete[] sdnd;
   delete[] sdel;

@@ -236,7 +236,7 @@ void EQS::LastEquation( MODEL* model, long elemKind )
 
   // allocate temporary memory for counter vector ----------------------------------------
 
-  int* counter = (int*) MEMORY::memo.Array_eq( neq );
+  int* counter = (int*) MEMORY::memo.Array_eq( neq, "EQS::LastEquation(1)" );
 
 
   // initialize counter array ------------------------------------------------------------
@@ -386,7 +386,7 @@ void EQS::LastEquation( MODEL* model, long elemKind )
 
 void EQS::ResetEqOrder( MODEL* model )
 {
-  int* eqOrd = (int*) MEMORY::memo.Array_eq( neq );
+  int* eqOrd = (int*) MEMORY::memo.Array_eq( neq, "EQS::ResetEqOrder(1)" );
 
 
   ////////////////////////////////////////////////////////////////////////////////////////

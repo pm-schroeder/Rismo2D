@@ -50,7 +50,7 @@ void GRID::EddyDisp()
 
   // allocate temporary memory for counter vector ----------------------------------------
 
-  int* counter = (int*) MEMORY::memo.Array_nd( np );
+  int* counter = (int*) MEMORY::memo.Array_nd( np, "GRID::EddyDisp(1)" );
 
 
   // initialization ----------------------------------------------------------------------

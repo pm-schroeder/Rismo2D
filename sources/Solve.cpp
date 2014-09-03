@@ -312,7 +312,7 @@ int EQS::Solve( MODEL*   model,
 #       endif
       }
 
-      MEMORY::memo.Detach( rhs );
+      if( rhs ) MEMORY::memo.Detach( rhs );
 
       iterCountCG += slv->iterCountCG;
       break;

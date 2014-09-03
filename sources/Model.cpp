@@ -2020,12 +2020,20 @@ void MODEL::UCDOutput( FILE*    id,
         {
           switch( project->veoutlist[i] )
           {
-            case PROJECT::kS:
-              fprintf( id, " %14.6le", el->P );
+            case PROJECT::kXYZ:
+            {
+              double x, y, z;
+              el->Center( &x, &y, &z );
+              fprintf( id, " %14.6le %14.6le %14.6le", x, y, z );
               break;
+            }
 
             case PROJECT::kUV:
-              fprintf( id, " %14.6le %14.6le", el->U, el->V );
+              fprintf( id, " %14.6le %14.6le %14.6le", el->U, el->V, 0.0 );
+              break;
+
+            case PROJECT::kS:
+              fprintf( id, " %14.6le", el->P );
               break;
 
             case PROJECT::kDZ:

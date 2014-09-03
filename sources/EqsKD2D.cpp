@@ -1174,7 +1174,7 @@ void EQS_KD2D::Validate( PROJECT* project, int np, NODE** node,
   double minRe = 10.0;
 
   // for each node: determine the maximum Reynolds number from surrounding nodes
-  double* maxRe = (double*) MEMORY::memo.Array_nd( np );
+  double* maxRe = (double*) MEMORY::memo.Array_nd( np, "EQS_KD2D::Validate(1)" );
 
   for( int n=0; n<np; n++ )
   {

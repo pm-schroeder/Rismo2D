@@ -138,8 +138,8 @@ void EQS_BL2D::Execute( PROJECT* project, int shape )
     //      B = right hand side of equation system
     //      X = solution of equation system
 
-    double* B = (double*) MEMORY::memo.Array_nd( rgnp );
-    double* X = (double*) MEMORY::memo.Array_nd( rgnp );
+    double* B = (double*) MEMORY::memo.Array_nd( rgnp, "EQS_BL2D::Execute(1)" );
+    double* X = (double*) MEMORY::memo.Array_nd( rgnp, "EQS_BL2D::Execute(2)" );
 
     // set boundary conditions -----------------------------------------------------------
     sed->Bcon( project, model );

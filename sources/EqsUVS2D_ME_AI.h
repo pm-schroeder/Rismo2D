@@ -1,26 +1,25 @@
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 //
-// E Q S _ U V S 2 D _ LV
+// E Q S _ U V S 2 D _ M E _ A I
 //
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // FILES
 //
-// EqsUVS2D_LV.h     : definition file of the class.
-// EqsUVS2D_LV.cpp   : implementation file of the class.
+// EqsUVS2D_ME_AI.h     : definition file of the class.
+// EqsUVS2D_ME_AI.cpp   : implementation file of the class.
 //
-// CoefsUVS2D_LV.cpp : methods EQS_UVS2D_LV::Coefs()
-//                             EQS_UVS2D_LV::Bound()
-//                             EQS_UVS2D_LV::Region()
-//                             EQS_UVS2D_LV::RegionBT()
-//                             EQS_UVS2D_LV::RegionAI()
+// CoefsUVS2D_ME_AI.cpp : methods EQS_UVS2D_ME_AI::Coefs()
+//                                EQS_UVS2D_ME_AI::Bound()
+//                                EQS_UVS2D_ME_AI::Region()
 //
 // -------------------------------------------------------------------------------------------------
 //
 // DESCRIPTION
 //
-// This class implements a differential equation system for shallow water flow with linear
-// shape functions for velocities and constant shape functions for the water elevation.
+// This class implements a differential equation system for shallow water flow. The element
+// shape functions are based on the MINI-element with a bubble shape functions for velocities
+// and linear shape functions for the water elevation.
 //
 // -------------------------------------------------------------------------------------------------
 //
@@ -55,14 +54,14 @@
 //
 //    date              changes
 // ------------  ----  -----------------------------------------------------------------------------
-//  01.01.200x    sc    first implementation / first concept
+//  01.08.2014    sc    first implementation / first concept
 //
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef EQS_UVS2D_LV_INCL
-#define EQS_UVS2D_LV_INCL
+#ifndef EQS_UVS2D_ME_AI_INCL
+#define EQS_UVS2D_ME_AI_INCL
 
-#include "Eqs.h"
+#include "EqsUVS2D_ME.h"
 
 
 class  DRYREW;
@@ -73,28 +72,21 @@ class  PROJECT;
 class  TIMEINT;
 
 
-class EQS_UVS2D_LV : public EQS
+class EQS_UVS2D_ME_AI : public EQS_UVS2D_ME
 {
   protected:
-    double** UElimEq;
-    double** VElimEq;
-    double** PElimEq;
+    double **UElimEq;
+    double **VElimEq;
+
     double   relaxThdt_UV;
     double   relaxThdt_H;
 
   public:
-    EQS_UVS2D_LV();
-    ~EQS_UVS2D_LV();
-
-    void Execute( PROJECT*, int );
-    int  Coefs( ELEM*, PROJECT*, double**, double* );
+    EQS_UVS2D_ME_AI();
+    virtual ~EQS_UVS2D_ME_AI();
 
   protected:
-    void Bound( ELEM*, PROJECT*, double**, double*, int, int, int, int, int );
-    void Region( ELEM*, PROJECT*, double**, double* );
-    void RegionBT( ELEM*, PROJECT*, double**, double* );
-    void RegionAI( ELEM*, PROJECT*, double**, double* );
-    int  PToNode( PROJECT* );
+    virtual void Region( ELEM*, PROJECT*, double**, double* );
 };
 
 #endif

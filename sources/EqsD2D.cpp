@@ -192,8 +192,8 @@ void EQS_D2D::Execute( PROJECT* project, int steadyFlow, int linearShape )
       if( B )  MEMORY::memo.Detach( B );
       if( X )  MEMORY::memo.Detach( X );
 
-      B = (double*) MEMORY::memo.Array_eq( neq );
-      X = (double*) MEMORY::memo.Array_eq( neq );
+      B = (double*) MEMORY::memo.Array_eq( neq, "EQS_D2D::Execute(1)" );
+      X = (double*) MEMORY::memo.Array_eq( neq, "EQS_D2D::Execute(2)" );
     }
 
     // solve equations with frontal solving algorithm ------------------------------------

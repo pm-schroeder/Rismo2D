@@ -151,7 +151,7 @@ class EQS
     void         SortIndex( int, int*, int** );
 
     // Rotate.cpp ------------------------------------------------------------------------
-    void         Rotate2D( int, NODE**, int, double**, double* );
+    void         Rotate2D( int, int, NODE**, double**, double* );
 
     // SetEqno.cpp -----------------------------------------------------------------------
     void         SetEqno( MODEL*, int, int, int, unsigned int*, int );

@@ -252,7 +252,7 @@ void EQS::ExportVEC( const char* filename, double* vec, PROJECT* project )
 void EQS::ScaleDiag( double* B, PROJECT* project )
 {
   // set diagonal vector diag[] ----------------------------------------------------------
-  double* diag = (double*) MEMORY::memo.Array_eq( neq );
+  double* diag = (double*) MEMORY::memo.Array_eq( neq, "EQS::ScaleDiag(1)" );
 
   for( int i=0; i<neq; i++ )  diag[i] = crsm->m_A[i][0];
 

@@ -242,10 +242,10 @@ class BCONLINE : public BCON
     BCONLINE();
     ~BCONLINE();
 
-    int   GenBcon( MODEL *model, TIME *at, int b, BCON *bcon, double *preQ );
+    int   GenBcon( MODEL *model, TIME *at, int b, BCON *bcon, double *preQ, int order );
     int   FindInterval( double x, double y, int n, double *xar, double *yar, double *l );
     BCON* FindBcon( int no, int b, BCON *bcon );
-    int   Inlet( MODEL *model, TIME *at, int b, BCON *bcon );
+    int   Inlet( MODEL *model, TIME *at, int b, BCON *bcon, int order );
     int   Outlet( MODEL *model, TIME *at, int b, BCON *bcon, double *preQ );
     int   Further( MODEL *model, TIME *at, int b, BCON *bcon, long *ki );
 };
@@ -300,7 +300,7 @@ class BCONSET
 
     // Bconset.cpp -----------------------------------------------------------------------
     BCON*  GetBcon( int );
-    void   InitBcon( PROJECT* project, TIME* actualTime, double* =NULL );
+    void   InitBcon( PROJECT* project, TIME* actualTime, double* =NULL, int order =2 );
     double Loglaw( double Us, double dw, double kw, double ka, double vk, double g );
 };
 

@@ -100,8 +100,8 @@ void EQS_UVS2D_TMAI::Region( ELEM*    elem,
 
   TYPE* type = TYPE::Getid( elem->type );
 
-  int startV = nnd;
-  int startS = 2 * nnd;
+  int eqidV  = nnd;
+  int eqidS  = 2 * nnd;
 
   if( force )
   {
@@ -438,7 +438,7 @@ void EQS_UVS2D_TMAI::Region( ELEM*    elem,
       fx *= weight;
       fy *= weight;
 
-      forcePtr = force + startV;
+      forcePtr = force + eqidV;
 
       for( int j=0; j<nnd; j++ )
       {
@@ -455,7 +455,7 @@ void EQS_UVS2D_TMAI::Region( ELEM*    elem,
       f += SS;                                              // Source or Sink
       f *= weight;
 
-      forcePtr = force + startS;
+      forcePtr = force + eqidS;
 
       for( int j=0; j<ncn; j++ )
       {
@@ -534,7 +534,7 @@ void EQS_UVS2D_TMAI::Region( ELEM*    elem,
 
       for( int j=0; j<nnd; j++ )
       {
-        estifmPtr = estifm[j] + startV;
+        estifmPtr = estifm[j] + eqidV;
 
         for( int k=0; k<nnd; k++ )
         {
@@ -570,7 +570,7 @@ void EQS_UVS2D_TMAI::Region( ELEM*    elem,
 
       for( int j=0; j<nnd; j++ )
       {
-        estifmPtr = estifm[j] + startS;
+        estifmPtr = estifm[j] + eqidS;
 
         for( int k=0; k<ncn; k++ )
         {
@@ -597,7 +597,7 @@ void EQS_UVS2D_TMAI::Region( ELEM*    elem,
 
       for( int j=0; j<nnd; j++ )
       {
-        estifmPtr = estifm[j + startV];
+        estifmPtr = estifm[j + eqidV];
 
         for( int k=0; k<nnd; k++ )
         {
@@ -634,7 +634,7 @@ void EQS_UVS2D_TMAI::Region( ELEM*    elem,
 
       for( int j=0; j<nnd; j++ )
       {
-        estifmPtr = estifm[j + startV] + startV;
+        estifmPtr = estifm[j + eqidV] + eqidV;
 
         for( int k=0; k<nnd; k++ )
         {
@@ -670,7 +670,7 @@ void EQS_UVS2D_TMAI::Region( ELEM*    elem,
 
       for( int j=0; j<nnd; j++ )
       {
-        estifmPtr = estifm[j + startV] + startS;
+        estifmPtr = estifm[j + eqidV] + eqidS;
 
         for( int k=0; k<ncn; k++ )
         {
@@ -691,7 +691,7 @@ void EQS_UVS2D_TMAI::Region( ELEM*    elem,
 
       for( int j=0; j<ncn; j++ )
       {
-        estifmPtr = estifm[j + startS];
+        estifmPtr = estifm[j + eqidS];
 
         for( int k=0; k<nnd; k++ )
         {
@@ -712,7 +712,7 @@ void EQS_UVS2D_TMAI::Region( ELEM*    elem,
 
       for( int j=0; j<ncn; j++ )
       {
-        estifmPtr = estifm[j + startS] + startV;
+        estifmPtr = estifm[j + eqidS] + eqidV;
 
         for( int k=0; k<nnd; k++ )
         {
@@ -735,7 +735,7 @@ void EQS_UVS2D_TMAI::Region( ELEM*    elem,
 
       for( int j=0; j<ncn; j++ )
       {
-        estifmPtr = estifm[j + startS] + startS;
+        estifmPtr = estifm[j + eqidS] + eqidS;
 
         for( int k=0; k<ncn; k++ )
         {
@@ -749,7 +749,7 @@ void EQS_UVS2D_TMAI::Region( ELEM*    elem,
 
   // apply transformation --------------------------------------------------------------------------
 
-  Rotate2D( nnd, elem->nd, 3, estifm, force );
+  Rotate2D( nnd, eqidV, elem->nd, estifm, force );
 
 
   // -----------------------------------------------------------------------------------------------
@@ -800,8 +800,8 @@ void EQS_UVS2D_TMAI::Region( ELEM*    elem,
 
       if( estifm )
       {
-        estifm[i][i]          = area * H;
-        estifm[i][i + startS] = area * Un;
+        estifm[i][i]         = area * H;
+        estifm[i][i + eqidS] = area * Un;
       }
     }
   }
@@ -822,8 +822,8 @@ void EQS_UVS2D_TMAI::Region( ELEM*    elem,
       NODE* lnode = elem->nd[l];
       NODE* rnode = elem->nd[r];
 
-      int nofeqHl = startS + l;    // dfH at left corner node
-      int nofeqHr = startS + r;    // dfH at right corner node
+      int nofeqHl = eqidS + l;    // dfH at left corner node
+      int nofeqHr = eqidS + r;    // dfH at right corner node
 
 
       // set equation row dfU to zero --------------------------------------------------------------
@@ -889,8 +889,8 @@ void EQS_UVS2D_TMAI::Region_dt( ELEM*    elem,
 
   TYPE* type = TYPE::Getid( elem->type );
 
-  int startV = nnd;
-  int startS = 2 * nnd;
+  int eqidV  = nnd;
+  int eqidS  = 2 * nnd;
 
   if( force )
   {
@@ -1201,7 +1201,7 @@ void EQS_UVS2D_TMAI::Region_dt( ELEM*    elem,
       fx *= weight;
       fy *= weight;
 
-      forcePtr = force + startV;
+      forcePtr = force + eqidV;
 
       for( int j=0; j<nnd; j++ )
       {
@@ -1216,7 +1216,7 @@ void EQS_UVS2D_TMAI::Region_dt( ELEM*    elem,
       f += SS;                                              // Source or Sink
       f *= weight;
 
-      forcePtr = force + startS;
+      forcePtr = force + eqidS;
 
       for( int j=0; j<ncn; j++ )
       {
@@ -1243,7 +1243,7 @@ void EQS_UVS2D_TMAI::Region_dt( ELEM*    elem,
 
       for( int j=0; j<nnd; j++ )
       {
-        double* estifmPtr = estifm[j + startV] + startV;
+        double* estifmPtr = estifm[j + eqidV] + eqidV;
 
         for( int k=0; k<nnd; k++ )
         {
@@ -1256,7 +1256,7 @@ void EQS_UVS2D_TMAI::Region_dt( ELEM*    elem,
 
       for( int j=0; j<ncn; j++ )
       {
-        double * estifmPtr = estifm[j + startS] + startS;
+        double * estifmPtr = estifm[j + eqidS] + eqidS;
 
         for( int k=0; k<ncn; k++ )
         {
@@ -1270,7 +1270,7 @@ void EQS_UVS2D_TMAI::Region_dt( ELEM*    elem,
 
   // apply transformation --------------------------------------------------------------------------
 
-  Rotate2D( nnd, elem->nd, 3, estifm, force );
+  Rotate2D( nnd, eqidV, elem->nd, estifm, force );
 
 
   // -----------------------------------------------------------------------------------------------
@@ -1321,8 +1321,8 @@ void EQS_UVS2D_TMAI::Region_dt( ELEM*    elem,
 
       if( estifm )
       {
-        estifm[i][i]          = area * H;
-        estifm[i][i + startS] = area * Un;
+        estifm[i][i]         = area * H;
+        estifm[i][i + eqidS] = area * Un;
       }
     }
   }
@@ -1343,8 +1343,8 @@ void EQS_UVS2D_TMAI::Region_dt( ELEM*    elem,
       NODE* lnode = elem->nd[l];
       NODE* rnode = elem->nd[r];
 
-      int nofeqHl = startS + l;    // dfH at left corner node
-      int nofeqHr = startS + r;    // dfH at right corner node
+      int nofeqHl = eqidS + l;    // dfH at left corner node
+      int nofeqHr = eqidS + r;    // dfH at right corner node
 
 
       // set equation row dfU to zero --------------------------------------------------------------

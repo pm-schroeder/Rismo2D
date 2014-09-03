@@ -63,7 +63,7 @@ void CRSMAT::AssembleEstifm_im( EQS*     eqs,
   // -------------------------------------------------------------------------------------
   // assemble elements
 
-  for( int e=0; e<model->ne; e++ )                     // loop on elements
+  for( int e=0; e<model->ne; e++ )           // loop on elements
   {
     ELEM* el = model->elem[e];
 
@@ -82,9 +82,9 @@ void CRSMAT::AssembleEstifm_im( EQS*     eqs,
     // -----------------------------------------------------------------------------------
     // insert element stiffness matrix (estifm)
 
-    for( i=0; i<nnd; i++ )                  // loop on nodes
+    for( i=0; i<nnd; i++ )                   // loop on nodes
     {
-      for( j=0; j<dfcn; j++ )               // loop on node-equations
+      for( j=0; j<dfcn; j++ )                // loop on node-equations
       {
         rind = i + j*nnd;
         row  = eqs->GetEqno( el->nd[i], j );
@@ -94,9 +94,9 @@ void CRSMAT::AssembleEstifm_im( EQS*     eqs,
           APtr      = m_A[row];
           estifmPtr = estifm[rind];
 
-          for( k=0; k<nnd; k++ )            // loop on nodes
+          for( k=0; k<nnd; k++ )             // loop on nodes
           {
-            for( l=0; l<dfcn; l++ )         // loop on node-equations
+            for( l=0; l<dfcn; l++ )          // loop on node-equations
             {
               cind = k + l*nnd;
               col  = eqs->GetEqno( el->nd[k], l );

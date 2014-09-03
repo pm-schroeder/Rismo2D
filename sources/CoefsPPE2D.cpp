@@ -72,9 +72,9 @@ void EQS_PPE2D::Bound( ELEM*    elem,
   SHAPE* lShape = elem->GetLShape();
   SHAPE* qShape = elem->GetQShape();
 
-  int nnd    = qShape->nnd;
-  int startY = nnd;
-  int startP = 2 * nnd;
+  int nnd   = qShape->nnd;
+  int eqidY = nnd;
+  int eqidP = 2 * nnd;
 
   if( force ) for( i=0; i<maxEleq; i++ ) force[i] = 0.0;
 
@@ -103,13 +103,13 @@ void EQS_PPE2D::Bound( ELEM*    elem,
 
   // row index -----------------------------------------------------------------------------------
 
-  int r0X = 0;            int r1X = 1;                int r2X = 2;
-  int r0Y = startY;       int r1Y = startY + 1;       int r2Y = startY + 2;
+  int r0X = 0;           int r1X = 1;               int r2X = 2;
+  int r0Y = eqidY;       int r1Y = eqidY + 1;       int r2Y = eqidY + 2;
 
 
   // column index --------------------------------------------------------------------------------
 
-  int c0P = startP;       int c1P = startP + 1;
+  int c0P = eqidP;       int c1P = eqidP + 1;
 
 
   for( j=0; j<qShape->ngp; j++ )       // loop on GAUSS points
@@ -158,7 +158,7 @@ void EQS_PPE2D::Bound( ELEM*    elem,
 
   // apply transformation ------------------------------------------------------------------------
 
-  Rotate2D( nnd, elem->nd, 3, estifm, force );
+  Rotate2D( nnd, eqidY, elem->nd, estifm, force );
 }
 
 
@@ -206,8 +206,8 @@ void EQS_PPE2D::Region( ELEM*    elem,
   }
 
 
-  int startY = nnd;
-  int startP = 2 * nnd;
+  int eqidY = nnd;
+  int eqidP = 2 * nnd;
 
   NODE** nd = elem->nd;
 
@@ -327,7 +327,7 @@ void EQS_PPE2D::Region( ELEM*    elem,
 // #  f = weight * ( dhdt + duhdx + dvhdy );
 
 
-      forcePtr = force + startP;
+      forcePtr = force + eqidP;
 
       for( j=0; j<ncn; j++ )
       {
@@ -352,7 +352,7 @@ void EQS_PPE2D::Region( ELEM*    elem,
           estifmPtr[k] += n[j] * weight * n[k];
         }
 
-        estifmPtr = estifm[j] + startP;
+        estifmPtr = estifm[j] + eqidP;
 
         for( k=0; k<ncn; k++ )
         {
@@ -365,14 +365,14 @@ void EQS_PPE2D::Region( ELEM*    elem,
 
       for( j=0; j<nnd; j++ )
       {
-        estifmPtr = estifm[j + startY] + startY;
+        estifmPtr = estifm[j + eqidY] + eqidY;
 
         for( k=0; k<nnd; k++ )
         {
           estifmPtr[k] += n[j] * weight * n[k];
         }
 
-        estifmPtr = estifm[j + startY] + startP;
+        estifmPtr = estifm[j + eqidY] + eqidP;
 
         for( k=0; k<ncn; k++ )
         {
@@ -390,7 +390,7 @@ void EQS_PPE2D::Region( ELEM*    elem,
       for( j=0; j<ncn; j++ )
       {
         // ----------------------------
-        estifmPtr = estifm[j + startP];
+        estifmPtr = estifm[j + eqidP];
 
         for( k=0; k<nnd; k++ )
         {
@@ -399,7 +399,7 @@ void EQS_PPE2D::Region( ELEM*    elem,
         }
 
         // -------------------------------------
-        estifmPtr = estifm[j + startP] + startY;
+        estifmPtr = estifm[j + eqidP] + eqidY;
 
         for( k=0; k<nnd; k++ )
         {
@@ -421,5 +421,5 @@ void EQS_PPE2D::Region( ELEM*    elem,
 
   // apply transformation ------------------------------------------------------------------------
 
-  Rotate2D( nnd, nd, 3, estifm, force );
+  Rotate2D( nnd, eqidY, nd, estifm, force );
 }

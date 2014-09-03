@@ -86,7 +86,7 @@ void EQS_DISP::Execute( PROJECT* project )
   // compute secondary flow from curvature of stream lines
 
   double* rho = project->M2D->Curv2D();                // curvatur of streamlines
-  double* wgt = (double*) MEMORY::memo.Array_nd(np);
+  double* wgt = (double*) MEMORY::memo.Array_nd( np, "EQS_DISP::Execute(1)" );
 
   double minUSf   = project->minUSf;
   double maxTanSf = project->maxTanSf;
@@ -158,8 +158,8 @@ void EQS_DISP::Execute( PROJECT* project )
 
   if( project->mueSf > 0.0 )
   {
-    double* X = (double*) MEMORY::memo.Array_eq(neq);
-    double* B = (double*) MEMORY::memo.Array_eq(neq);
+    double* X = (double*) MEMORY::memo.Array_eq( neq, "EQS_DISP::Execute(2)" );
+    double* B = (double*) MEMORY::memo.Array_eq( neq, "EQS_DISP::Execute(3)");
 
     for( int n=0; n<neq; n++ )  X[n] = B[n] = 0.0;
 
@@ -203,8 +203,8 @@ void EQS_DISP::Execute( PROJECT* project )
   }
 
   // smooth secondary flow and  force betaSf -------------------------------------------------------
-  double *V = (double*) MEMORY::memo.Array_eq(np);
-  double *W = (double*) MEMORY::memo.Array_eq(np);
+  double *V = (double*) MEMORY::memo.Array_eq( np, "EQS_DISP::Execute(4)" );
+  double *W = (double*) MEMORY::memo.Array_eq( np, "EQS_DISP::Execute(5)" );
 
   int smoothpasses = 5;
 

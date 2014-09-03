@@ -44,25 +44,28 @@
 #include "Bcon.h"
 
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 BCONLINE::BCONLINE() : BCON()
 {
   ndat = 0;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 BCONLINE::~BCONLINE()
 {
 }
 
-
-// ---------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////
 // generate boundary conditions for lines
 
 int BCONLINE::GenBcon( MODEL  *model,
                        TIME   *actualTime,
                        int     b,
                        BCON   *bcon,
-                       double *preQ )
+                       double *preQ,
+                       int     order )
 {
   char text[120];
 
@@ -73,17 +76,13 @@ int BCONLINE::GenBcon( MODEL  *model,
   REPORT::rpt.Output( text, 3 );
 
 
-  // initialize node flags ---------------------------------------------------------------
-
+  // initialize node flags -------------------------------------------------------------------------
   for( int i=0; i<rg->Getnp(); i++ )
   {
     rg->Getnode(i)->mark = false;
   }
 
-
-  // -------------------------------------------------------------------------------------
-  // complement inlet and outlet boundary conditions
-
+  // complement inlet and outlet boundary conditions -----------------------------------------------
   if( isFS(kind, BCON::kQTInlet) )  SF( kind, BCON::kQInlet );
   if( isFS(kind, BCON::kQInlet) )   SF( kind, BCON::kInlet );
 
@@ -91,7 +90,7 @@ int BCONLINE::GenBcon( MODEL  *model,
   if( isFS(kind, BCON::kSTOutlet) ) SF( kind, BCON::kOutlet );
 
 
-  // -------------------------------------------------------------------------------------
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
   // Work on user specified boundary conditions along control lines. Boundary conditions
   // have been read from the timestep file (TIMEINT::Input_XXXXXX()). The user might
   // have specified boundary conditions over "count" lines per timestep.
@@ -128,21 +127,19 @@ int BCONLINE::GenBcon( MODEL  *model,
   //    BCON::kSetKD,       count>=1:
   //    BCON::kSetC,        count>=1:
   //    BCON::kRateC,       count>=1:
-  // -------------------------------------------------------------------------------------
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
 
-  ////////////////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
   // BCON::kInlet
-  ////////////////////////////////////////////////////////////////////////////////////////
 
   if( isFS(kind, BCON::kInlet) )
   {
-    b = Inlet( model, actualTime, b, bcon );
+    b = Inlet( model, actualTime, b, bcon, order );
   }
 
 
-  ////////////////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
   // BCON::kOutlet
-  ////////////////////////////////////////////////////////////////////////////////////////
 
   else if( isFS(kind, BCON::kOutlet) )
   {
@@ -150,9 +147,8 @@ int BCONLINE::GenBcon( MODEL  *model,
   }
 
 
-  ////////////////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
   // further boundary conditions ...
-  ////////////////////////////////////////////////////////////////////////////////////////
 
   long ki = kind;
 
@@ -161,12 +157,12 @@ int BCONLINE::GenBcon( MODEL  *model,
     b = Further( model, actualTime, b, bcon, &ki );
   }
 
-
-  ////////////////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
 
   return b;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int BCONLINE::FindInterval( double  x,
                             double  y,
@@ -230,6 +226,7 @@ int BCONLINE::FindInterval( double  x,
   return -1;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 BCON* BCONLINE::FindBcon( int no, int b, BCON* bcon )
 {
@@ -247,10 +244,9 @@ BCON* BCONLINE::FindBcon( int no, int b, BCON* bcon )
   return bc;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////////////////////////
-
-int BCONLINE::Inlet( MODEL* model, TIME* actualTime, int b, BCON* bcon )
+int BCONLINE::Inlet( MODEL* model, TIME* actualTime, int b, BCON* bcon, int order )
 {
   int  firstMiss = true;
   char text[120];
@@ -258,16 +254,15 @@ int BCONLINE::Inlet( MODEL* model, TIME* actualTime, int b, BCON* bcon )
   GRID* ct = model->control;
   GRID* rg = model->region;
 
-  ////////////////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
   // BCON::kQInlet
-  ////////////////////////////////////////////////////////////////////////////////////////
 
   if( isFS(kind, BCON::kQInlet) )
   {
     double Qspec  = U[0];
     double Sspec  = S[0];
 
-    // determine discharge for actual time -----------------------------------------------
+    // determine discharge for actual time ---------------------------------------------------------
     if( isFS(kind, BCON::kQTInlet) )
     {
       double L;
@@ -281,19 +276,21 @@ int BCONLINE::Inlet( MODEL* model, TIME* actualTime, int b, BCON* bcon )
       }
     }
 
-    // compute a specific discharge profile ----------------------------------------------
-    double q[3];
-    NODE*  node[3];
+    // compute a specific discharge profile q = h * Un ---------------------------------------------
+    NODE   *node[3];
+    double  q[3];
 
-    double Q = 0.0;
+    double  Q   = 0.0;
+    bool    any = false;
 
     for( int c=0; c<ct->Getne(); c++ )
     {
       ELEM* el = ct->Getelem(c);
 
-      if( el->type != no )  continue;
+      if( el->type != no ) continue;
 
-      SHAPE* qShape = el->GetQShape();
+      SHAPE *lShape = el->GetLShape();
+      SHAPE *qShape = el->GetQShape();
 
       int nnd = qShape->nnd;
 
@@ -301,10 +298,11 @@ int BCONLINE::Inlet( MODEL* model, TIME* actualTime, int b, BCON* bcon )
       node[1] = el->nd[1];
       node[2] = el->nd[2];                 // midside node
 
-      // initialize the specific discharge profile q = pow(h,3/2)
+      // initialize the specific discharge profile q = pow(h,3/2) = sqrt(h*h*h)
       for( int i=0; i<nnd; i++ )
       {
-        if( isFS(node[i]->flag, NODE::kDry) || isFS(node[i]->flag, NODE::kMarsh) )
+        if( node[i]->v.S - node[i]->z < 1.0e-9
+            || isFS(node[i]->flag, NODE::kDry) || isFS(node[i]->flag, NODE::kMarsh) )
         {
           q[i] = 0.0;
         }
@@ -316,40 +314,147 @@ int BCONLINE::Inlet( MODEL* model, TIME* actualTime, int b, BCON* bcon )
 
           double cf = node[i]->cf;
           if( cf > 0.0 )  q[i] /= sqrt(cf);
+
+          any = true;
         }
 
         node[i]->mark = true;
       }
 
-      // integrate the specific discharge profile
-      for( int g=0; g<qShape->ngp; g++ )       // loop on GAUSS points
+      if( order == 1 )
       {
-        double* N  = qShape->f[g];             // quadratic shape
-        double* dN = qShape->dfdx[g];
+        // integrate the specific discharge profile
+        for( int g=0; g<lShape->ngp; g++ )       // loop on GAUSS points
+        {
+          double *M  = lShape->f[g];             // quadratic shape
+          double *dM = lShape->dfdx[g];
 
-        // compute normal vector at Gauss point g
-        double dx = dN[0]*node[0]->x + dN[1]*node[1]->x + dN[2]*node[2]->x;
-        double dy = dN[0]*node[0]->y + dN[1]*node[1]->y + dN[2]*node[2]->y;
+          // compute normal vector at Gauss point g
+          double dy = dM[0]*node[0]->y + dM[1]*node[1]->y;
+          double dx = dM[0]*node[0]->x + dM[1]*node[1]->x;
 
-        double qg = N[0]*q[0] + N[1]*q[1] + N[2]*q[2];
+          double qg = M[0]*q[0] + M[1]*q[1];
 
-        double weight = qShape->weight[g] * sqrt(dx*dx + dy*dy);
+          double weight = lShape->weight[g] * sqrt(dx*dx + dy*dy);
 
-        Q += weight * qg;
+          Q += weight * qg;
+        }
+      }
+      else
+      {
+        // integrate the specific discharge profile
+        for( int g=0; g<qShape->ngp; g++ )       // loop on GAUSS points
+        {
+          double *N  = qShape->f[g];             // quadratic shape
+          double *dN = qShape->dfdx[g];
+
+          // compute normal vector at Gauss point g
+          double dx = dN[0]*node[0]->x + dN[1]*node[1]->x + dN[2]*node[2]->x;
+          double dy = dN[0]*node[0]->y + dN[1]*node[1]->y + dN[2]*node[2]->y;
+
+          double qg = N[0]*q[0] + N[1]*q[1] + N[2]*q[2];
+
+          double weight = qShape->weight[g] * sqrt(dx*dx + dy*dy);
+
+          Q += weight * qg;
+        }
       }
     }
 
-    //////////////////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////////////////////////
     // MPI: sum of discharge Q from all subdomains
 #   ifdef _MPI_
     Q = model->subdom->Mpi_sum( Q );
 #   endif
-    //////////////////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////////////////////////
 
-//  double Qratio = (Q > 0.0)? (-fabs(Qspec/Q)) : (0.0);
-    double Qratio = -Qspec/Q;
+    double Qratio;
 
-    // set boundary conditions at nodes --------------------------------------------------
+    // any wet node on inlet boundary found ? ------------------------------------------------------
+    if( any )
+    {
+      Qratio = (fabs(Q) > 0.0)? (-Qspec/Q) : (0.0);
+    }
+
+    // initialize flow depth and velocity on the dry inlet boundary --------------------------------
+    else
+    {
+      for( int c=0; c<ct->Getne(); c++ )
+      {
+        ELEM *el = ct->Getelem(c);
+
+        SHAPE *lShape = el->GetLShape();
+        SHAPE *qShape = el->GetQShape();
+
+        if( el->type != no ) continue;
+
+        int nnd = qShape->nnd;
+
+        node[0] = el->nd[0];                 // corner nodes
+        node[1] = el->nd[1];
+        node[2] = el->nd[2];                 // midside node
+
+        for( int i=0; i<nnd; i++ )
+        {
+          node[i]->v.S = Sspec;
+
+          double h = Sspec - node[i]->zor;
+          if( h > 0.0 ) q[i] = sqrt( h*h*h );
+          else          q[i] = 0.0;
+        }
+
+        if( order == 1 )
+        {
+          // integrate the specific discharge profile
+          for( int g=0; g<lShape->ngp; g++ )       // loop on GAUSS points
+          {
+            double *M  = lShape->f[g];             // quadratic shape
+            double *dM = lShape->dfdx[g];
+
+            // compute normal vector at Gauss point g
+            double dy = dM[0]*node[0]->y + dM[1]*node[1]->y;
+            double dx = dM[0]*node[0]->x + dM[1]*node[1]->x;
+
+            double qg = M[0]*q[0] + M[1]*q[1];
+
+            double weight = lShape->weight[g] * sqrt(dx*dx + dy*dy);
+
+            Q += weight * qg;
+          }
+        }
+        else
+        {
+          // integrate the specific discharge profile
+          for( int g=0; g<qShape->ngp; g++ )       // loop on GAUSS points
+          {
+            double *N  = qShape->f[g];             // quadratic shape
+            double *dN = qShape->dfdx[g];
+
+            // compute normal vector at Gauss point g
+            double dx = dN[0]*node[0]->x + dN[1]*node[1]->x + dN[2]*node[2]->x;
+            double dy = dN[0]*node[0]->y + dN[1]*node[1]->y + dN[2]*node[2]->y;
+
+            double qg = N[0]*q[0] + N[1]*q[1] + N[2]*q[2];
+
+            double weight = qShape->weight[g] * sqrt(dx*dx + dy*dy);
+
+            Q += weight * qg;
+          }
+        }
+      }
+
+      // /////////////////////////////////////////////////////////////////////////////////////////////
+      // MPI: sum of discharge Q from all subdomains
+  #   ifdef _MPI_
+      Q = model->subdom->Mpi_sum( Q );
+  #   endif
+      // /////////////////////////////////////////////////////////////////////////////////////////////
+
+      Qratio = (fabs(Q) > 0.0)? (-Qspec/Q) : (0.0);
+    }
+
+
+    // set boundary conditions at nodes ------------------------------------------------------------
 
     for( int i=0; i<rg->Getnp(); i++ )
     {
@@ -405,9 +510,8 @@ int BCONLINE::Inlet( MODEL* model, TIME* actualTime, int b, BCON* bcon )
   }
 
 
-  ////////////////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
   // BCON::kInlet
-  ////////////////////////////////////////////////////////////////////////////////////////
 
   else if( isFS(kind, BCON::kInlet) )
   {
@@ -455,7 +559,7 @@ int BCONLINE::Inlet( MODEL* model, TIME* actualTime, int b, BCON* bcon )
 
     // -----------------------------------------------------------------------------------
 
-    else // if( count > 1 )
+    else // if( ndat > 1 )
     {
       for( int c=0; c<ct->Getne(); c++ )
       {
@@ -528,13 +632,12 @@ int BCONLINE::Inlet( MODEL* model, TIME* actualTime, int b, BCON* bcon )
     }
   }
 
-  ////////////////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
 
   return b;
 }
 
-
-//////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int BCONLINE::Outlet( MODEL*model, TIME *actualTime, int b, BCON *bcon, double *preQ )
 {
@@ -543,9 +646,8 @@ int BCONLINE::Outlet( MODEL*model, TIME *actualTime, int b, BCON *bcon, double *
 
   GRID *ct = model->control;
 
-  ////////////////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
   // BCON::kSQOutlet
-  ////////////////////////////////////////////////////////////////////////////////////////
 
   if( isFS(kind, BCON::kSQOutlet) )
   {
@@ -595,12 +697,12 @@ int BCONLINE::Outlet( MODEL*model, TIME *actualTime, int b, BCON *bcon, double *
 
     Q = fabs( Q );   // not interested in flow direction !?
 
-    //////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     // MPI: sum of discharge Q from all subdomains
 #   ifdef _MPI_
     Q = model->subdom->Mpi_sum( Q );
 #   endif
-    //////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
     double  SQ = 0.0;
     double  SG = 0.0;
@@ -691,9 +793,8 @@ int BCONLINE::Outlet( MODEL*model, TIME *actualTime, int b, BCON *bcon, double *
   }
 
 
-  ////////////////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
   // BCON::kSTOutlet
-  ////////////////////////////////////////////////////////////////////////////////////////
 
   else if( isFS(kind, BCON::kSTOutlet) )  // determine outlet condition S for actual time
   {
@@ -753,9 +854,8 @@ int BCONLINE::Outlet( MODEL*model, TIME *actualTime, int b, BCON *bcon, double *
   }
 
 
-  ////////////////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
   // BCON::kOutlet
-  ////////////////////////////////////////////////////////////////////////////////////////
 
   else if( isFS(kind, BCON::kOutlet) )
   {
@@ -875,13 +975,12 @@ int BCONLINE::Outlet( MODEL*model, TIME *actualTime, int b, BCON *bcon, double *
     }
   }
 
-  ////////////////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
 
   return b;
 }
 
-
-//////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int BCONLINE::Further( MODEL* model, TIME* actualTime, int b, BCON* bcon, long* ki )
 {
@@ -892,9 +991,8 @@ int BCONLINE::Further( MODEL* model, TIME* actualTime, int b, BCON* bcon, long* 
   GRID* rg = model->region;
 
 
-  ////////////////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
   // BCON::kOpenBnd
-  ////////////////////////////////////////////////////////////////////////////////////////
 
   if( isFS(kind, BCON::kOpenBnd) )
   {
@@ -935,9 +1033,8 @@ int BCONLINE::Further( MODEL* model, TIME* actualTime, int b, BCON* bcon, long* 
   }
 
 
-  ////////////////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
   // BCON::kSlip || BCON::kSetUV
-  ////////////////////////////////////////////////////////////////////////////////////////
 
   if( isFS(kind, BCON::kSlip)  ||  isFS(kind, BCON::kSetUV) )
   {
@@ -985,7 +1082,7 @@ int BCONLINE::Further( MODEL* model, TIME* actualTime, int b, BCON* bcon, long* 
 
     // ---------------------------------------------------------------------------------------------
 
-    else // if( count > 1 )
+    else // if( ndat > 1 )
     {
       for( int c=0; c<ct->Getne(); c++ )
       {
@@ -1061,9 +1158,8 @@ int BCONLINE::Further( MODEL* model, TIME* actualTime, int b, BCON* bcon, long* 
   }
 
 
-  ////////////////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
   // BCON::kLoglaw
-  ////////////////////////////////////////////////////////////////////////////////////////
 
   if( isFS(kind, BCON::kLoglaw) )
   {
@@ -1110,9 +1206,8 @@ int BCONLINE::Further( MODEL* model, TIME* actualTime, int b, BCON* bcon, long* 
   }
 
 
-  ////////////////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
   // BCON::kSetS
-  ////////////////////////////////////////////////////////////////////////////////////////
 
   else if( isFS(kind, BCON::kSetS) )
   {
@@ -1155,7 +1250,7 @@ int BCONLINE::Further( MODEL* model, TIME* actualTime, int b, BCON* bcon, long* 
 
     // ---------------------------------------------------------------------------------------------
 
-    else // if( count > 1 )
+    else // if( ndat > 1 )
     {
       for( int c=0; c<ct->Getne(); c++ )
       {
@@ -1225,9 +1320,8 @@ int BCONLINE::Further( MODEL* model, TIME* actualTime, int b, BCON* bcon, long* 
   }
 
 
-  ////////////////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
   // BCON::kSetKD
-  ////////////////////////////////////////////////////////////////////////////////////////
 
   else if( isFS(kind, BCON::kSetKD) )
   {
@@ -1272,7 +1366,7 @@ int BCONLINE::Further( MODEL* model, TIME* actualTime, int b, BCON* bcon, long* 
 
     // ---------------------------------------------------------------------------------------------
 
-    else // if( count > 1 )
+    else // if( ndat > 1 )
     {
       for( int c=0; c<ct->Getne(); c++ )
       {
@@ -1345,9 +1439,8 @@ int BCONLINE::Further( MODEL* model, TIME* actualTime, int b, BCON* bcon, long* 
   }
 
 
-  ////////////////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
   // BCON::kSetC
-  ////////////////////////////////////////////////////////////////////////////////////////
 
   else if( isFS(kind, BCON::kSetC) )
   {
@@ -1390,7 +1483,7 @@ int BCONLINE::Further( MODEL* model, TIME* actualTime, int b, BCON* bcon, long* 
 
     // ---------------------------------------------------------------------------------------------
 
-    else // if( count > 1 )
+    else // if( ndat > 1 )
     {
       for( int c=0; c<ct->Getne(); c++ )
       {
@@ -1460,9 +1553,8 @@ int BCONLINE::Further( MODEL* model, TIME* actualTime, int b, BCON* bcon, long* 
   }
 
 
-  ////////////////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
   // BCON::kRateC
-  ////////////////////////////////////////////////////////////////////////////////////////
 
   else if( isFS(kind, BCON::kRateC) )
   {
@@ -1505,7 +1597,7 @@ int BCONLINE::Further( MODEL* model, TIME* actualTime, int b, BCON* bcon, long* 
 
     // ---------------------------------------------------------------------------------------------
 
-    else // if( count > 1 )
+    else // if( ndat > 1 )
     {
       for( int c=0; c<ct->Getne(); c++ )
       {
@@ -1574,14 +1666,14 @@ int BCONLINE::Further( MODEL* model, TIME* actualTime, int b, BCON* bcon, long* 
     CF( *ki, BCON::kRateC );
   }
 
-  ////////////////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
 
   else
   {
     *ki = 0l;
   }
 
-  ////////////////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
 
   return b;
 }

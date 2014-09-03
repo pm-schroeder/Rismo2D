@@ -112,7 +112,7 @@ class DRYREW
       rewetLimit   = 0.005;
       rewetPasses  = 100;
       countDown    = 5;
-    };
+    }
 
     double interpolate( NODE*, int, int );
 };

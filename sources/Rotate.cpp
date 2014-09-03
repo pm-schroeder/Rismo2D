@@ -39,7 +39,7 @@
 #include "Eqs.h"
 
 
-void EQS::Rotate2D( int nnd, NODE** nd, int df, double** estifm, double* force )
+void EQS::Rotate2D( int nnd, int eqid, NODE** nd, double** estifm, double* force )
 {
   for( int i=0; i<nnd; i++ )
   {
@@ -69,34 +69,27 @@ void EQS::Rotate2D( int nnd, NODE** nd, int df, double** estifm, double* force )
         continue;
       }
 
-
-      int indU = i;
-      int indV = nnd  +  i;
-
+      int j = eqid + i;
 
       if( estifm )
       {
         // multiply estifm[][] * rot[][] -----------------------------------------------------------
 
-        for( int j=0; j<maxEleq; j++ )
+        for( int k=0; k<maxEleq; k++ )
         {
-          double tmp      = estifm[j][indU] * rot[0][0]  +
-                            estifm[j][indV] * rot[1][0];
-          estifm[j][indV] = estifm[j][indU] * rot[0][1]  +
-                            estifm[j][indV] * rot[1][1];
-          estifm[j][indU] = tmp;
+          double tmp   = estifm[k][i] * rot[0][0]  +  estifm[k][j] * rot[1][0];
+          estifm[k][j] = estifm[k][i] * rot[0][1]  +  estifm[k][j] * rot[1][1];
+          estifm[k][i] = tmp;
         }
 
 
         // multiply transpose(rot[][]) * estifm[][] ------------------------------------------------
 
-        for( int j=0; j<maxEleq; j++ )
+        for( int k=0; k<maxEleq; k++ )
         {
-          double tmp      = rot[0][0] * estifm[indU][j]  +
-                            rot[1][0] * estifm[indV][j];
-          estifm[indV][j] = rot[0][1] * estifm[indU][j]  +
-                            rot[1][1] * estifm[indV][j];
-          estifm[indU][j] = tmp;
+          double tmp   = rot[0][0] * estifm[i][k]  +  rot[1][0] * estifm[j][k];
+          estifm[j][k] = rot[0][1] * estifm[i][k]  +  rot[1][1] * estifm[j][k];
+          estifm[i][k] = tmp;
         }
       }
 
@@ -105,9 +98,9 @@ void EQS::Rotate2D( int nnd, NODE** nd, int df, double** estifm, double* force )
       {
         // force vector: multiply transpose(rot[][]) * force[] -------------------------------------
 
-        double tmp  = rot[0][0] * force[indU]  +  rot[1][0] * force[indV];
-        force[indV] = rot[0][1] * force[indU]  +  rot[1][1] * force[indV];
-        force[indU] = tmp;
+        double tmp = rot[0][0] * force[i]  +  rot[1][0] * force[j];
+        force[j]   = rot[0][1] * force[i]  +  rot[1][1] * force[j];
+        force[i]   = tmp;
       }
     }
   }

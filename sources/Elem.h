@@ -58,8 +58,8 @@
 #include "Defs.h"
 #include "Node.h"
 
-#define kMaxNodes1D       3   // maximum number of nodes at 1D-element
-#define kMaxNodes2D       8   // maximum number of nodes at 2D-element
+#define kMaxNodes1D       3   // maximum number of nodes of 1D-element
+#define kMaxNodes2D       8   // maximum number of nodes of 2D-element
 
 
 class SHAPE;
@@ -103,14 +103,10 @@ class ELEM
 
     double   areaFact;                            // factor for inclined elements
 
-    double   U;                                   // velocity U
-    double   V;                                   //          V
+    double   U, Uo;                               // velocity U
+    double   V, Vo;                               //          V
     double   P;                                   // pressure
     double   dz;                                  // change of bed elevation
-
-//    SHAPE*   lShape;                              // linear shape specification
-//    SHAPE*   bShape;                              // hyperbolic shape specification
-//    SHAPE*   qShape;                              // quadratic shape specification
 
   public:
     ELEM();
@@ -118,10 +114,10 @@ class ELEM
 
     ELEM    operator =( const ELEM& );
 
-    void    Setno( int n )   { this->no = n; };
-    void    Setname( int n ) { this->name = n; };
-    int     Getno()          { return this->no; };
-    int     Getname()        { return this->name; };
+    void    Setno( int n )   { this->no = n; }
+    void    Setname( int n ) { this->name = n; }
+    int     Getno()          { return this->no; }
+    int     Getname()        { return this->name; }
 
     void    Setshape( int );
     int     GetshapeID();
@@ -134,7 +130,8 @@ class ELEM
     int     Getnnd();
     NODE*   Getnode( int );
 
-    void    center( double*, double* );
+    void    Center( double*, double* );
+    void    Center( double*, double*, double* );
     double  area();
     double  perimeter();
 };

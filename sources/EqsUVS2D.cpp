@@ -46,19 +46,27 @@
 
 //#define kDebug
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 EQS_UVS2D::EQS_UVS2D() : EQS( 3, 2, 0 )
 {
   neq = 0;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+EQS_UVS2D::EQS_UVS2D( int dfcn, int dfmn, int dfel ) : EQS( dfcn, dfmn, dfel )
+{
+  neq = 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 EQS_UVS2D::~EQS_UVS2D()
 {
 }
 
-
-// ---------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void EQS_UVS2D::Execute( PROJECT* project, int steadyFlow )
 {
@@ -1092,8 +1100,8 @@ void EQS_UVS2D::Execute( PROJECT* project, int steadyFlow )
 //void EQS_UVS2D::Predict( PROJECT* project, int init, double dt, double th )
 void EQS_UVS2D::Predict( PROJECT* project, int, double, double )
 {
-  MODEL*  model = project->M2D;
-  GRID*   rg    = model->region;
+  MODEL *model = project->M2D;
+  GRID  *rg    = model->region;
 
 //if( init )
 //{
@@ -1154,21 +1162,21 @@ void EQS_UVS2D::Predict( PROJECT* project, int, double, double )
       nd->vo.dSdt = 0.0;
     }
 
-    // check for previously dry nodes
-    // if( isFS(nd->flag, NODE::kDryPrev)
-    // if( nd->vo.S < nd->zor + dryLimit )  // TODO: Pruefen, ob das hier alles richtig ist...
-    // {                                    // Probleme:
-    //   nd->vo.U = nd->v.U;                // 1. Das Fuellen und Leeren der Marsh-Elemente wird
-    //   nd->vo.V = nd->v.V;                //    nicht beruecksichtigt. Quell-Senkenterme ergaenzen?
-    //   nd->vo.S = nd->v.S;                // 2. Die Entscheidung, ob ein Knoten im letzten
-    //                                      //    Zeitschritt trocken war, ist nicht eindeutig.
-    //   nd->vo.dUdt = 0.0;                 //    Besser waere es, diese Information zu speichern.
-    //   nd->vo.dVdt = 0.0;                 // 3. Welchen Wert nimmt man fuer den Wert des alten
-    //   nd->vo.dSdt = 0.0;                 //    Wasserspiegels an?
-    // }                                    //    Vielleicht: vo.S = v.S - dryLimit ???
-  }                                         // Wuerde es Sinn machen, die Aenderung der Sohlhoehe
-}                                           // zwischen zwei Zeitschritten zu protokollieren und
-                                            // im Zeitgradienten dHdt=dSdt-dZdt zu beruecksichtigen?
+    // check for previously dry nodes      // TODO: Pruefen, ob das hier alles richtig ist...
+    // if( isFS(nd->flag, NODE::kDryPrev)  // Probleme:
+    // if( nd->vo.S < nd->zor + dryLimit ) // 1. Das Fuellen und Leeren der Marsh-Elemente wird
+    // {                                   //    nicht beruecksichtigt. Quell-Senkenterme ergaenzen?
+    //   nd->vo.U = nd->v.U;               // 2. Die Entscheidung, ob ein Knoten im letzten
+    //   nd->vo.V = nd->v.V;               //    Zeitschritt trocken war, ist nicht eindeutig.
+    //   nd->vo.S = nd->v.S;               //    Besser waere es, diese Information zu speichern.
+    //                                     // 3. Welchen Wert nimmt man fuer den Wert des alten
+    //   nd->vo.dUdt = 0.0;                //    Wasserspiegels an?
+    //   nd->vo.dVdt = 0.0;                //    Vielleicht: vo.S = v.S - dryLimit ???
+    //   nd->vo.dSdt = 0.0;                // Wuerde es Sinn machen, die Aenderung der Sohlhoehe
+    // }                                   // zwischen zwei Zeitschritten zu protokollieren und
+  }                                        // im Zeitgradienten dHdt=dSdt-dZdt zu beruecksichtigen?
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 

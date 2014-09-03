@@ -118,35 +118,50 @@ void PROJECT::PrintTheCycle( int iter )
     case kUVSCyc:
       if( iter == 0 )
       {
-        sprintf( rtxt, "prediction step in UVS cycle" );
+        sprintf( rtxt, "prediction step in UVS cycle (Taylor-Hood)" );
       }
       else if( isFS(actualTurb, BCONSET::kVtAnisotrop) )
       {
-        sprintf( rtxt, "%d. iteration in anisotrop UVS cycle", iter );
+        sprintf( rtxt, "%d. iteration in anisotrop UVS cycle (Taylor-Hood)", iter );
       }
       else
       {
-        sprintf( rtxt, "%d. iteration in UVS cycle", iter );
+        sprintf( rtxt, "%d. iteration in UVS cycle (Taylor-Hood)", iter );
       }
       break;
 
     case kUVS_TMCyc:
       if( iter == 0 )
       {
-        sprintf( rtxt, "prediction step in unsteady UVS cycle" );
+        sprintf( rtxt, "prediction step in unsteady UVS cycle (Taylor-Hood)" );
       }
       else if( isFS(actualTurb, BCONSET::kVtAnisotrop) )
       {
-        sprintf( rtxt, "%d. iteration in unsteady anisotrop UVS cycle", iter );
+        sprintf( rtxt, "%d. iteration in unsteady anisotrop UVS cycle (Taylor-Hood)", iter );
       }
       else
       {
-        sprintf( rtxt, "%d. iteration in unsteady UVS cycle", iter );
+        sprintf( rtxt, "%d. iteration in unsteady UVS cycle (Taylor-Hood)", iter );
       }
       break;
 
-    case kUVS_LVCyc:
-      sprintf( rtxt, "%d. iteration in UVS_LV cycle", iter );
+    case kUVS_MECyc:
+      sprintf( rtxt, "%d. iteration in UVS cycle (MINI)", iter );
+      break;
+
+    case kUVS_ME_TMCyc:
+      if( iter == 0 )
+      {
+        sprintf( rtxt, "prediction step in unsteady UVS cycle (MINI)" );
+      }
+      else if( isFS(actualTurb, BCONSET::kVtAnisotrop) )
+      {
+        sprintf( rtxt, "%d. iteration in unsteady anisotrop UVS cycle (MINI)", iter );
+      }
+      else
+      {
+        sprintf( rtxt, "%d. iteration in unsteady UVS cycle (MINI)", iter );
+      }
       break;
 
     case kDispCurv2D:
@@ -215,7 +230,7 @@ void PROJECT::PrintTheCycle( int iter )
       sprintf( rtxt, "smoothing cycle - free surface");
       break;
 
-    case kSurfaceToVol:
+    case kCornerToVol:
       sprintf( rtxt, "free surface to volumes cycle");
       break;
 

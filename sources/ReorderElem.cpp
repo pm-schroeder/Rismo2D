@@ -53,7 +53,7 @@ ELEM* MODEL::ReorderElem( int ns, SECTION* section )
   {
     ELEM* rElem = region->Getelem(e);
 
-    rElem->center( &xcenter[rElem->Getno()], &ycenter[rElem->Getno()] );
+    rElem->Center( &xcenter[rElem->Getno()], &ycenter[rElem->Getno()] );
     rElem->mark = false;
   }
 

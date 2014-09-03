@@ -52,8 +52,8 @@ double* MODEL::Curv2D()
   // allocate memory for rotation of flow field
   // -------------------------------------------------------------------------------------
 
-  double* curv = (double*) MEMORY::memo.Array_nd( np );
-  double* wght = (double*) MEMORY::memo.Array_nd( np );
+  double* curv = (double*) MEMORY::memo.Array_nd( np, "MODEL::Curv2D(1)" );
+  double* wght = (double*) MEMORY::memo.Array_nd( np, "MODEL::Curv2D(1)");
 
   for( int n=0; n<np; n++ )  curv[n] = wght[n] = 0.0;
 

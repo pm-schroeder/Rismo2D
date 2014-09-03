@@ -48,35 +48,37 @@ MEMORY::MEMORY( int array )
 
   m_array = array;
 
-  m_temp = new ITEM* [m_array];
-  m_size = new unsigned int [m_array];
-  m_flag = new unsigned int [m_array];
+  m_temp   = new ITEM* [m_array];
+  m_size   = new unsigned int [m_array];
+  m_flag   = new unsigned int [m_array];
+  m_method = new char* [m_array];
 
-  if( !m_temp || !m_size || !m_flag )
+  if( !m_temp || !m_size || !m_flag || !m_method )
     REPORT::rpt.Error( kMemoryFault, "can not allocate memory - MEMORY::MEMORY(1)" );
 
   for( int i=0; i<m_array; i++ )
   {
-    m_temp[i] = NULL;
-    m_size[i] = 0;
-    m_flag[i] = 0;
+    m_temp[i]   = 0;
+    m_size[i]   = 0;
+    m_flag[i]   = 0;
+    m_method[i] = new char[50];
   }
 }
 
 
 MEMORY::~MEMORY()
 {
-  for( int i=0; i<m_array; i++ )
-  {
-    if( m_temp[i] )  Delete( i );
-  }
+  for( int i=0; i<m_array; i++ ) Delete( i );
+  for( int i=0; i<m_array; i++ ) delete[] m_method[i];
+
   delete[] m_temp;
   delete[] m_size;
   delete[] m_flag;
+  delete[] m_method;
 }
 
 
-void* MEMORY::Array_nd( unsigned int nnd )
+void* MEMORY::Array_nd( unsigned int nnd, char *method )
 {
   if( nnd > m_max_nnd )
   {
@@ -84,19 +86,21 @@ void* MEMORY::Array_nd( unsigned int nnd )
     {
       if( isFS(m_flag[i], kNd) )
       {
-        if( !isFS(m_flag[i], kUsed) )  Delete(i);
-        else                           SF( m_flag[i], kDelete );
+        if( !isFS(m_flag[i], kUsed) )
+          Delete(i);
+        else
+          SF( m_flag[i], kDelete );
       }
     }
 
     m_max_nnd = nnd;
   }
 
-  return Array( m_max_nnd, kNd );
+  return Array( m_max_nnd, kNd, method );
 }
 
 
-void* MEMORY::Array_el( unsigned int nel )
+void* MEMORY::Array_el( unsigned int nel, char *method )
 {
   if( nel > m_max_nel )
   {
@@ -104,19 +108,21 @@ void* MEMORY::Array_el( unsigned int nel )
     {
       if( isFS(m_flag[i], kEl) )
       {
-        if( !isFS(m_flag[i], kUsed) )  Delete(i);
-        else                           SF( m_flag[i], kDelete );
+        if( !isFS(m_flag[i], kUsed) )
+          Delete(i);
+        else
+          SF( m_flag[i], kDelete );
       }
     }
 
     m_max_nel = nel;
   }
 
-  return Array( m_max_nel, kEl );
+  return Array( m_max_nel, kEl, method );
 }
 
 
-void* MEMORY::Array_eq( unsigned int neq )
+void* MEMORY::Array_eq( unsigned int neq, char *method )
 {
   if( neq > m_max_neq )
   {
@@ -124,19 +130,21 @@ void* MEMORY::Array_eq( unsigned int neq )
     {
       if( isFS(m_flag[i], kEq) )
       {
-        if( !isFS(m_flag[i], kUsed) )  Delete(i);
-        else                           SF( m_flag[i], kDelete );
+        if( !isFS(m_flag[i], kUsed) )
+          Delete(i);
+        else
+          SF( m_flag[i], kDelete );
       }
     }
 
     m_max_neq = neq;
   }
 
-  return Array( m_max_neq, kEq );
+  return Array( m_max_neq, kEq, method );
 }
 
 
-void* MEMORY::Array( unsigned int n, unsigned int flag )
+void* MEMORY::Array( unsigned int n, unsigned int flag, char *method )
 {
   // -------------------------------------------------------------------------------------
   // look for an array that fits "n"
@@ -145,9 +153,11 @@ void* MEMORY::Array( unsigned int n, unsigned int flag )
   {
     if( !isFS(m_flag[i], kUsed) && isFS(m_flag[i], flag) )
     {
-      if( m_size[i] == n )
+      //if( m_size[i] == n )
+      if( m_size[i] >= n )
       {
         SF( m_flag[i], kUsed );
+        if( method ) strcpy( m_method[i], method );
         return m_temp[i];
       }
     }
@@ -162,7 +172,7 @@ void* MEMORY::Array( unsigned int n, unsigned int flag )
   {
     if( !isFS(m_flag[i], kUsed)  &&  isFS(m_flag[i], kDelete) )
     {
-      if( m_temp[i] )  delete[] m_temp[i];
+      if( m_temp[i] ) delete[] m_temp[i];
 
       if( !(m_temp[i] = new ITEM[n]) )
         REPORT::rpt.Error( kMemoryFault, "can not allocate memory - MEMORY::Array(1)" );
@@ -171,6 +181,7 @@ void* MEMORY::Array( unsigned int n, unsigned int flag )
 
       SF( m_flag[i], kUsed );
       SF( m_flag[i], flag );
+      if( method ) strcpy( m_method[i], method );
       return m_temp[i];
     }
   }
@@ -188,6 +199,7 @@ void* MEMORY::Array( unsigned int n, unsigned int flag )
 
       SF( m_flag[i], kUsed );
       SF( m_flag[i], flag );
+      if( method ) strcpy( m_method[i], method );
       return m_temp[i];
     }
   }
@@ -303,7 +315,8 @@ int** MEMORY::Imatrix( unsigned int rows, unsigned int cols )
 
   REPORT::rpt.Error( kUnexpectedFault, "unexpected internal fault - MEMORY::Imatrix(3)" );
 
-  return NULL;}
+  return NULL;
+}
 
 
 double** MEMORY::Dmatrix( unsigned int rows, unsigned int cols )
@@ -361,9 +374,25 @@ void MEMORY::PrintInfo()
 
   char text[200];
 
-  sprintf( text, "\n %s %u %s\n %s %u arrays | %u in use\n",
-                 "(MEMORY)               ", nbytes,
+  sprintf( text, "\n%-25s%u %s\n%-25s%u arrays | %u in use\n",
+                 " (MEMORY)", nbytes,
                  "bytes of memory allocated",
                  "                       ", nalloc, nused );
   REPORT::rpt.Output( text, 3 );
+
+  REPORT::rpt.Output( "\n", 5 );
+
+  for( int i=0; i<m_array; i++ )
+  {
+    if( isFS(m_flag[i], kUsed)  &&  m_temp[i] )
+    {
+      sprintf( text, "%-25sarray[%3d] attached by method %s\n", " ", i, m_method[i] );
+      REPORT::rpt.Output( text, 5 );
+    }
+    else if( m_temp[i] )
+    {
+      sprintf( text, "%-25sarray[%3d] detached by method %s\n", " ", i, m_method[i] );
+      REPORT::rpt.Output( text, 5 );
+    }
+  }
 }

@@ -1,25 +1,26 @@
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 //
-// E Q S _ U V S 2 D
+// E Q S _ U V S 2 D _ M E _ T M
 //
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // FILES
 //
-// EqsUVS2D.h     : definition file of the class.
-// EqsUVS2D.cpp   : implementation file of the class.
+// EqsUVS2D_ME_TM.h     : definition file of the class.
+// EqsUVS2D_ME_TM.cpp   : implementation file of the class.
 //
-// CoefsUVS2D.cpp : methods EQS_UVS2D::Coefs()
-//                          EQS_UVS2D::Bound()
-//                          EQS_UVS2D::Region()
-//                          EQS_UVS2D::Bound_pinc()
-//                          EQS_UVS2D::Region_pinc()
+// CoefsUVS2D_ME_TM.cpp : methods EQS_UVS2D_ME_TM::Coefs()
+//                                EQS_UVS2D_ME_TM::Bound()
+//                                EQS_UVS2D_ME_TM::Region()
+//                                EQS_UVS2D_ME_TM::Bound_dt()
+//                                EQS_UVS2D_ME_TM::Region_dt()
 //
 // -------------------------------------------------------------------------------------------------
 //
 // DESCRIPTION
 //
-// This class implements a differential equation system for shallow water flow.
+// This class implements a differential equation system for shallow water flow with a modified
+// time discretization with better convergence behaviour if time steps are very small (H-LES).
 //
 // -------------------------------------------------------------------------------------------------
 //
@@ -54,65 +55,28 @@
 //
 //    date              changes
 // ------------  ----  -----------------------------------------------------------------------------
-//  01.09.1992    sc    first implementation / first concept
-//  01.11.1999    sc
-//  02.01.2010    ko    implementation of diffuse Q at Nodes (Source/Sink)
-//                      in Region/RegionAI
-//  14.01.2011    sc    experimental: implementation of methods Bound_pinc() and
-//                      Region_pinc() with partially integrated convective terms
-//  21.01.2011    sc    Error detected in Region(): Wrong initialization in formulation
-//                      of the element stiffness matrix (H-derivative of y-momentum):
-//                      #     ifdef kBoussinesq2D
-//                            ...
-//                      #     else
-//                            dfxx  =  0.0;
-//                            dfyx  =  0.0;   (should be dfxy = 0.0;)
-//                            ...
-//  18.08.2012    sc     The anisotrop method EQS_UVS2D::RegionAI is now implemented
+//  03.01.2013    sc    first implementation / first concept
 //
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef EQS_UVS2D_INCL
-#define EQS_UVS2D_INCL
+#ifndef EQS_UVS2D_ME_TM_INCL
+#define EQS_UVS2D_ME_TM_INCL
 
-#include "Eqs.h"
-
-
-class  DRYREW;
-class  ELEM;
-class  MODEL;
-class  NODE;
-class  PROJECT;
-class  TIMEINT;
+#include "EqsUVS2D_ME.h"
 
 
-class EQS_UVS2D : public EQS
+class EQS_UVS2D_ME_TM : public EQS_UVS2D_ME
 {
-  protected:
-    double  relaxThdt_UV;
-    double  relaxThdt_H;
-
-    // dispersion terms
-    double *Duu;
-    double *Dvv;
-    double *Duv;
-
   public:
-    EQS_UVS2D();
-    EQS_UVS2D( int dfcn, int dfmn, int dfel );
-    virtual ~EQS_UVS2D();
+    EQS_UVS2D_ME_TM();
+    ~EQS_UVS2D_ME_TM();
 
-    virtual void Execute( PROJECT*, int );
     virtual void Predict( PROJECT*, int, double, double );
     virtual void Timegrad( PROJECT*, double, double );
 
-    virtual int  Coefs( ELEM*, PROJECT*, double**, double* );
-
   protected:
+    virtual int  Coefs( ELEM*, PROJECT*, double**, double* );
     virtual void Bound( ELEM*, PROJECT*, double**, double* );
     virtual void Region( ELEM*, PROJECT*, double**, double* );
-
-    virtual void Bound_pinc( ELEM*, PROJECT*, double**, double* );
-    virtual void Region_pinc( ELEM*, PROJECT*, double**, double* );
 };
 #endif

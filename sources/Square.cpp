@@ -31,10 +31,10 @@
 //
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 
-/* ------------------------------------------------------------------------ *
- * compute values of all shape functions at Gauss point g and its weight    *
- * element type: SQUARE                                                     *
- * ------------------------------------------------------------------------ */
+// -------------------------------------------------------------------------------------------------
+// compute values of all shape functions at Gauss point g and its weight
+// element type: SQUARE
+// -------------------------------------------------------------------------------------------------
 
 #include "Defs.h"
 #include "Shape.h"
@@ -42,39 +42,49 @@
 
 void SHAPE::shapeOfSquare()
 {
-  int dg = (this->degree + 1) / 2;
+  int dg = (degree + 1) / 2;
 
-  for( int g=0; g<this->ngp; g++ )
+  for( int g=0; g<ngp; g++ )
   {
     int igp_x = g % dg;
     int igp_y = g / dg;
 
-    double xgp = this->loc_1D[dg-1][igp_x];
-    double ygp = this->loc_1D[dg-1][igp_y];
+    double xgp = loc_1D[dg-1][igp_x];
+    double ygp = loc_1D[dg-1][igp_y];
 
-    this->weight[g] = this->weight_1D[dg-1][igp_x] *
-                      this->weight_1D[dg-1][igp_y];
+    weight[g] = weight_1D[dg-1][igp_x] * weight_1D[dg-1][igp_y];
 
-    switch( this->nnd )
+    switch( nnd )
     {
       // linear shape function, corner nodes: 0,1,2,3
-       case 4:
+      case 4:
         for( int i=0; i<4; i++ )
         {
-          this->f[g][i]    = lSquare(   i, xgp, ygp );
-          this->dfdx[g][i] = lSquareDx( i,      ygp );
-          this->dfdy[g][i] = lSquareDy( i, xgp      );
+          f[g][i]    = lSquare(   i, xgp, ygp );
+          dfdx[g][i] = lSquareDx( i,      ygp );
+          dfdy[g][i] = lSquareDy( i, xgp      );
         }
         break;
 
-      // quadratic shape function,  corner nodes: 0,1,2,3
-      //                           midside nodes: 4,5,6,7
+        // hyperbolic shape function, corner nodes: 0,1,2,3
+        //                            center node:  4
+      case 5:
+        for( int i=0; i<5; i++ )
+        {
+          f[g][i]    = bSquare(   i, xgp, ygp );
+          dfdx[g][i] = bSquareDx( i, xgp, ygp );
+          dfdy[g][i] = bSquareDy( i, xgp, ygp );
+        }
+        break;
+
+        // quadratic shape function, corner nodes: 0,1,2,3
+        //                          midside nodes: 4,5,6,7
       case 8:
         for( int i=0; i<8; i++ )
         {
-          this->f[g][i]    = qSquare(   i, xgp, ygp );
-          this->dfdx[g][i] = qSquareDx( i, xgp, ygp );
-          this->dfdy[g][i] = qSquareDy( i, xgp, ygp );
+          f[g][i]    = qSquare(   i, xgp, ygp );
+          dfdx[g][i] = qSquareDx( i, xgp, ygp );
+          dfdy[g][i] = qSquareDy( i, xgp, ygp );
         }
         break;
     }
@@ -86,113 +96,227 @@ void SHAPE::shapeOfSquare()
     double x, y;
     localSquare( n, &x, &y );
 
-    switch( this->nnd )
+    switch( nnd )
     {
       // linear shape function, corner nodes: 0,1,2,3
-       case 4:
+      case 4:
         for( int i=0; i<4; i++ )
         {
-          this->dndx[n][i] = lSquareDx( i,    y );
-          this->dndy[n][i] = lSquareDy( i, x    );
+          dndx[n][i] = lSquareDx( i,    y );
+          dndy[n][i] = lSquareDy( i, x    );
         }
         break;
 
-      // quadratic shape function,  corner nodes: 0,1,2,3
-      //                           midside nodes: 4,5,6,7
+        // hyperbolic shape function, corner nodes: 0,1,2,3
+        //                            center node:  4
+        case 5:
+          for( int i=0; i<5; i++ )
+          {
+            dndx[n][i] = bSquareDx( i, x, y );
+            dndy[n][i] = bSquareDy( i, x, y );
+          }
+          break;
+
+        // quadratic shape function,  corner nodes: 0,1,2,3
+        //                           midside nodes: 4,5,6,7
       case 8:
         for( int i=0; i<8; i++ )
         {
-          this->dndx[n][i] = qSquareDx( i, x, y );
-          this->dndy[n][i] = qSquareDy( i, x, y );
+          dndx[n][i] = qSquareDx( i, x, y );
+          dndy[n][i] = qSquareDy( i, x, y );
         }
         break;
     }
   }
 }
 
-/* ------------------------------------------------------------------------ *
- * compute local coordinates of node                                        */
+// function to obtain  local coordinates of node ---------------------------------------------------
 
 int SHAPE::localSquare( int node, double *xi, double *eta )
 {
-  switch(node)
+  switch( nnd )
   {
-  case  0:
-    *xi   = -1.0; *eta  = -1.0; break;
-  case  1:
-    *xi   =  1.0; *eta  = -1.0; break;
-  case  2:
-    *xi   =  1.0; *eta  =  1.0; break;
-  case  3:
-    *xi   = -1.0; *eta  =  1.0; break;
+    case 4:
+    case 8:
+      switch( node )
+      {
+        case  0:
+          *xi   = -1.0; *eta  = -1.0; break;
+        case  1:
+          *xi   =  1.0; *eta  = -1.0; break;
+        case  2:
+          *xi   =  1.0; *eta  =  1.0; break;
+        case  3:
+          *xi   = -1.0; *eta  =  1.0; break;
 
-  case  4:
-    *xi   =  0.0; *eta  = -1.0; break;
-  case  5:
-    *xi   =  1.0; *eta  =  0.0; break;
-  case  6:
-    *xi   =  0.0; *eta  =  1.0; break;
-  case  7:
-    *xi   = -1.0; *eta  =  0.0; break;
+        case  4:
+          *xi   =  0.0; *eta  = -1.0; break;
+        case  5:
+          *xi   =  1.0; *eta  =  0.0; break;
+        case  6:
+          *xi   =  0.0; *eta  =  1.0; break;
+        case  7:
+          *xi   = -1.0; *eta  =  0.0; break;
 
-  default:
-    return (-1);
+        default:
+          return -1;
+      }
+      break;
+
+    case 5:
+      switch( node )
+      {
+        case  0:
+          *xi   = -1.0; *eta  = -1.0; break;
+        case  1:
+          *xi   =  1.0; *eta  = -1.0; break;
+        case  2:
+          *xi   =  1.0; *eta  =  1.0; break;
+        case  3:
+          *xi   = -1.0; *eta  =  1.0; break;
+        case  4:
+          *xi   =  0.0; *eta  =  0.0; break;
+
+        default:
+          return -1;
+      }
+      break;
   }
-  return (0);
+
+  return 0;
 }
 
-/* function to compute values of a linear shape function (square) */
+
+// function to compute values of a linear shape function (square) ----------------------------------
+
 double SHAPE::lSquare( int node, double x, double y )
 {
-  double xi, eta;       /* local coordinates of node */
+  double xi, eta;       // local coordinates of node
 
-  localSquare(node, &xi, &eta);
+  localSquare( node, &xi, &eta );
 
-  return ( (1.0 + xi*x) * (1.0 + eta*y) / 4.0 );
+  return (1.0 + xi*x) * (1.0 + eta*y) / 4.0;
 }
 
-/* function to compute dfdx of a quadratic shape function (square) */
+
+// function to compute dfdx of a linear shape function (square) ---------------------------------
+
 double SHAPE::lSquareDx( int node, double y )
 {
-  double xi, eta;       /* local coordinates of node */
+  double xi, eta;       // local coordinates of node
 
   localSquare(node, &xi, &eta);
 
-  return ( xi * (1.0 + eta*y) / 4.0 );
+  return xi * (1.0 + eta*y) / 4.0;
 }
 
-/* function to compute dfdy of a quadratic shape function (square) */
+
+// function to compute dfdy of a linear shape function (square) ---------------------------------
+
 double SHAPE::lSquareDy( int node, double x )
 {
-  double xi, eta;       /* local coordinates of node */
+  double xi, eta;       // local coordinates of node
 
-  localSquare(node, &xi, &eta);
+  localSquare( node, &xi, &eta );
 
-  return( eta * (1.0 + xi*x) / 4.0 );
+  return eta * (1.0 + xi*x) / 4.0;
 }
 
-/* function to compute values of a quadratic shape function (square) */
+
+// function to compute values of a bubble shape function (square) ----------------------------------
+
+double SHAPE::bSquare( int node, double x, double y )
+{
+  double xi, eta;       // local coordinates of node
+
+  localSquare( node, &xi, &eta );
+
+  switch( node )
+  {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+      return ( (1 + xi*x) * (1 + eta*y)  -  (1 - x*x) * (1 - y*y) ) / 4.0;
+      break;
+
+    case 4:
+      return (1 - x*x) * (1 - y*y);
+      break;
+  }
+}
+
+
+// function to compute dfdx of a bubble shape function (square) ------------------------------------
+
+double SHAPE::bSquareDx( int node, double x, double y )
+{
+  double xi, eta;       // local coordinates of node
+
+  localSquare( node, &xi, &eta );
+
+  switch( node )
+  {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+      return ( xi * (1 + eta*y)  +  2 * x * (1 - y*y) ) / 4.0;
+      break;
+
+    case 4:
+      return 2 * x * (y*y - 1);
+      break;
+  }
+}
+
+
+// function to compute dfdy of a bubble shape function (square) ------------------------------------
+
+double SHAPE::bSquareDy( int node, double x, double y )
+{
+  double xi, eta;       // local coordinates of node
+
+  localSquare( node, &xi, &eta );
+
+  switch( node )
+  {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+      return ( (1 + xi*x) * eta  +  (1 - x*x) * 2 * y ) / 4.0;
+      break;
+
+    case 4:
+      return (x*x - 1) * 2 * y;
+      break;
+  }
+}
+
+
+// function to compute values of a quadratic shape function (square) -------------------------------
 double SHAPE::qSquare( int node, double x, double y )
 {
-  double xi, eta;       /* local coordinates of node */
+  double xi, eta;       // local coordinates of node
 
-  localSquare(node, &xi, &eta);
+  localSquare( node, &xi, &eta );
 
-  switch(node)
+  switch( node )
   {
-  case 0:
-  case 1:
-  case 2:
-  case 3:
-    return( (1.0 + xi*x) * (1.0 + eta*y) * (xi*x + eta*y -1.0) / 4.0 );
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+      return (1.0 + xi*x) * (1.0 + eta*y) * (xi*x + eta*y -1.0) / 4.0;
 
-  case 4:
-  case 6:
-    return( (1.0 - x*x) * (1.0 + eta*y) / 2.0 );
+    case 4:
+    case 6:
+      return (1.0 - x*x) * (1.0 + eta*y) / 2.0;
 
-  case 5:
-  case 7:
-    return( (1.0 + xi*x) * (1.0-y*y) / 2.0 );
+    case 5:
+    case 7:
+      return (1.0 + xi*x) * (1.0-y*y) / 2.0;
   }
 
   return 0.0;
@@ -203,23 +327,23 @@ double SHAPE::qSquareDx( int node, double x, double y )
 {
   double xi, eta;       /* local coordinates of node */
 
-  localSquare(node, &xi, &eta);
+  localSquare( node, &xi, &eta );
 
-  switch(node)
+  switch( node )
   {
-  case 0:
-  case 1:
-  case 2:
-  case 3:
-    return( (1.0 + eta*y) * (2.0*x + xi*eta*y) / 4.0 );
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+      return (1.0 + eta*y) * (2.0*x + xi*eta*y) / 4.0;
 
-  case 4:
-  case 6:
-    return( -x * (1.0 + eta*y) );
+    case 4:
+    case 6:
+      return -x * (1.0 + eta*y);
 
-  case 5:
-  case 7:
-    return( xi * (1.0 - y*y) / 2.0 );
+    case 5:
+    case 7:
+      return xi * (1.0 - y*y) / 2.0;
   }
 
   return 0.0;
@@ -230,23 +354,23 @@ double SHAPE::qSquareDy( int node, double x, double y )
 {
   double xi, eta;       /* local coordinates of node */
 
-  localSquare(node, &xi, &eta);
+  localSquare( node, &xi, &eta );
 
-  switch(node)
+  switch( node )
   {
-  case 0:
-  case 1:
-  case 2:
-  case 3:
-    return( (1.0 + xi*x) * (2.0*y + xi*eta*x) / 4.0 );
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+      return (1.0 + xi*x) * (2.0*y + xi*eta*x) / 4.0;
 
-  case 4:
-  case 6:
-    return( eta * (1.0 - x*x) / 2.0 );
+    case 4:
+    case 6:
+      return eta * (1.0 - x*x) / 2.0;
 
-  case 5:
-  case 7:
-    return( -y * (1.0 + xi*x) );
+    case 5:
+    case 7:
+      return -y * (1.0 + xi*x);
   }
 
   return 0.0;

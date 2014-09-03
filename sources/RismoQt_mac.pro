@@ -67,7 +67,6 @@ SOURCES += \
     Front.cpp \
     Fromat.cpp \
     Friction.cpp \
-    EqsUVS2D_LV.cpp \
     EqsUVS2D.cpp \
     EqsSL2D.cpp \
     EqsPPE2D.cpp \
@@ -93,7 +92,6 @@ SOURCES += \
     Contin.cpp \
     Connect.cpp \
     Compute.cpp \
-    CoefsUVS2D_LV.cpp \
     CoefsUVS2D.cpp \
     CoefsSL2D.cpp \
     CoefsPPE2D.cpp \
@@ -151,7 +149,6 @@ HEADERS += \
     Frontm.h \
     Front.h \
     Fromat.h \
-    EqsUVS2D_LV.h \
     EqsUVS2D.h \
     EqsSL2D.h \
     EqsPPE2D.h \

@@ -67,7 +67,6 @@ SOURCES += \
     Front.cpp \
     Fromat.cpp \
     Friction.cpp \
-    EqsUVS2D_LV.cpp \
     EqsUVS2D.cpp \
     EqsSL2D.cpp \
     EqsPPE2D.cpp \
@@ -93,7 +92,6 @@ SOURCES += \
     Contin.cpp \
     Connect.cpp \
     Compute.cpp \
-    CoefsUVS2D_LV.cpp \
     CoefsUVS2D.cpp \
     CoefsSL2D.cpp \
     CoefsPPE2D.cpp \
@@ -118,7 +116,15 @@ SOURCES += \
     CoefsUVS2D_TM.cpp \
     EqsUVS2D_TM.cpp \
     EqsUVS2D_TMAI.cpp \
-    CoefsUVS2D_TMAI.cpp
+    CoefsUVS2D_TMAI.cpp \
+    CoefsUVS2D_ME.cpp \
+    EqsUVS2D_ME.cpp \
+    CoefsUVS2D_ME_AI.cpp \
+    EqsUVS2D_ME_AI.cpp \
+    CoefsUVS2D_ME_TM.cpp \
+    EqsUVS2D_ME_TM.cpp \
+    EqsUVS2D_ME_TMAI.cpp \
+    CoefsUVS2D_ME_TMAI.cpp
 
 HEADERS += \
     Vars.h \
@@ -150,7 +156,6 @@ HEADERS += \
     Frontm.h \
     Front.h \
     Fromat.h \
-    EqsUVS2D_LV.h \
     EqsUVS2D.h \
     EqsSL2D.h \
     EqsPPE2D.h \
@@ -171,7 +176,11 @@ HEADERS += \
     Asciifile.h \
     EqsUVS2D_AI.h \
     EqsUVS2D_TM.h \
-    EqsUVS2D_TMAI.h
+    EqsUVS2D_TMAI.h \
+    EqsUVS2D_ME.h \
+    EqsUVS2D_ME_AI.h \
+    EqsUVS2D_ME_TM.h \
+    EqsUVS2D_ME_TMAI.h
 
 #INCLUDEPATH += /usr/include/mpi
 

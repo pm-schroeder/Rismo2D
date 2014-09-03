@@ -74,15 +74,17 @@ int BICGSTAB::Iterate( PROJECT* project,
   int neq    = crsmat->m_neq;
   int neq_dn = crsmat->m_neq_dn;
 
-  double* r0 = (double*) MEMORY::memo.Array_eq( neq );
-  double* ri = (double*) MEMORY::memo.Array_eq( neq );
-  double* vi = (double*) MEMORY::memo.Array_eq( neq );
-  double* pi = (double*) MEMORY::memo.Array_eq( neq );
-  double* yi = (double*) MEMORY::memo.Array_eq( neq );
-  double* zi = (double*) MEMORY::memo.Array_eq( neq );
-  double* ti = (double*) MEMORY::memo.Array_eq( neq );
-  double* t_ = (double*) MEMORY::memo.Array_eq( neq );
-  double* xm = (double*) MEMORY::memo.Array_eq( neq );      // best solution for X
+  double* r0 = (double*) MEMORY::memo.Array_eq( neq, "BICGSTAB::Iterate(1)" );
+  double* ri = (double*) MEMORY::memo.Array_eq( neq, "BICGSTAB::Iterate(2)" );
+  double* vi = (double*) MEMORY::memo.Array_eq( neq, "BICGSTAB::Iterate(3)" );
+  double* pi = (double*) MEMORY::memo.Array_eq( neq, "BICGSTAB::Iterate(4)" );
+  double* yi = (double*) MEMORY::memo.Array_eq( neq, "BICGSTAB::Iterate(5)" );
+  double* zi = (double*) MEMORY::memo.Array_eq( neq, "BICGSTAB::Iterate(6)" );
+  double* ti = (double*) MEMORY::memo.Array_eq( neq, "BICGSTAB::Iterate(7)" );
+  double* t_ = (double*) MEMORY::memo.Array_eq( neq, "BICGSTAB::Iterate(8)" );
+
+  // best solution for X up to iteration it
+  double* xm = (double*) MEMORY::memo.Array_eq( neq, "BICGSTAB::Iterate(9)" );
 
   memcpy( xm, x, neq*sizeof(double) );
 

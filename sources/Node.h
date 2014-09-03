@@ -146,11 +146,11 @@ class NODE
 
     NODE operator =( const NODE& );
 
-    void Setno( int no )     { this->no = no; };
-    int  Getno()             { return this->no; };
+    void Setno( int no )     { this->no = no; }
+    int  Getno()             { return this->no; }
 
-    void Setname( int name ) { this->name = name; };
-    int  Getname()           { return this->name; };
+    void Setname( int name ) { this->name = name; }
+    int  Getname()           { return this->name; }
 };
 
 #endif

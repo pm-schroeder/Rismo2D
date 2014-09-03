@@ -154,7 +154,7 @@ void PROJECT::Compute()
     }
   }
 
-  REPORT::rpt.Message( 1, "\n\n%-25s%d%-25s%\n\n",
+  REPORT::rpt.Message( 1, "\n\n%-25s%d%s\n\n",
                           " (PROJECT::Compute)", ngauge, " gauges found." );
 
   gaugeS  = new double[maxgauge];
@@ -444,10 +444,10 @@ void PROJECT::Compute()
     {
       switch( theCycle )
       {
-        // -------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // Navier-Stokes cycle
 
-        case kUVSCyc:                                                   // 2D: UVS coupled
+        case kUVSCyc:                                       // 2D: Taylor-Hood element
           if( isFS(actualTurb, BCONSET::kVtAnisotrop) )
           {
             eqs_uvs2d_ai.Execute( this, actualStat );
@@ -458,8 +458,7 @@ void PROJECT::Compute()
           }
           break;
 
-
-        case kUVS_TMCyc:                                                // 2D: UVS coupled
+        case kUVS_TMCyc:                                    // 2D: Taylor-Hood element
           if( isFS(actualTurb, BCONSET::kVtAnisotrop) )
           {
             eqs_uvs2d_tmai.Execute( this, actualStat );
@@ -470,22 +469,35 @@ void PROJECT::Compute()
           }
           break;
 
-
-        case kUVS_LVCyc:                           // 2D: UVS coupled, linear UV, const. S
-          eqs_uvs2d_lv.Execute( this, actualStat );
+        case kUVS_MECyc:                                    // 2D: MINI element
+          if( isFS(actualTurb, BCONSET::kVtAnisotrop) )
+          {
+            eqs_uvs2d_me_ai.Execute( this, actualStat );
+          }
+          else
+          {
+            eqs_uvs2d_me.Execute( this, actualStat );
+          }
           break;
 
-/*
-        case kUVS_LVXCyc:
-          eqs_uvs2d_lvx.Execute( this );
+        case kUVS_ME_TMCyc:                                 // 2D: MINI element
+          if( isFS(actualTurb, BCONSET::kVtAnisotrop) )
+          {
+            eqs_uvs2d_me_tmai.Execute( this, actualStat );
+          }
+          else
+          {
+            eqs_uvs2d_me_tm.Execute( this, actualStat );
+          }
           break;
-*/
+
+        // -----------------------------------------------------------------------------------------
 
         case kDispCurv2D:
           eqs_disp.Execute( this );
           break;
 
-        // -------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // algebraic eddy viscosity model cycles
 
         case kKDInitCyc:
@@ -684,33 +696,34 @@ void PROJECT::Compute()
           R2D->Turbulence( this );
           break;
 
-        case kSurfaceToVol:
+
+        case kCornerToVol:
           // print information on actual iteration
           PrintTheCycle( 1 );
           REPORT::rpt.PrintTime( 1 );
 
+          for( int e=0; e<R2D->Getne(); e++ )
           {
-            for( int e=0; e<R2D->Getne(); e++ )
+            ELEM *el = R2D->Getelem(e);
+
+            el->U = 0.0;
+            el->V = 0.0;
+            el->P = 0.0;
+
+            if( !isFS(el->flag, ELEM::kDry) )
             {
-              ELEM* el = R2D->Getelem(e);
+              int ncn = el->Getncn();
 
-              el->P = 0.0;
-
-              if( !isFS(el->flag, ELEM::kDry) )
+              for( int i=0; i<ncn; i++ )
               {
-                int ncn = el->Getncn();
-
-                for( int i=0; i<ncn; i++ )
-                {
-                  el->U += el->nd[i]->v.U;
-                  el->V += el->nd[i]->v.V;
-                  el->P += el->nd[i]->v.S;
-                }
-
-                el->P /= ncn;
-                el->U /= ncn;
-                el->V /= ncn;
+                el->U += el->nd[i]->v.U;
+                el->V += el->nd[i]->v.V;
+                el->P += el->nd[i]->v.S;
               }
+
+              el->U /= ncn;
+              el->V /= ncn;
+              el->P /= ncn;
             }
           }
           break;
@@ -758,9 +771,9 @@ void PROJECT::Compute()
       if( !theCycle )
       {
         // proceed to next time step -----------------------------------------------------
-        for( int i=0; i<R2D->Getnp(); i++ )
+        for( int n=0; n<R2D->Getnp(); n++ )
         {
-          NODE* nd = R2D->Getnode(i);
+          NODE *nd = R2D->Getnode(n);
 
           if( isFS(nd->flag, NODE::kDry) )  SF( nd->flag, NODE::kDryPrev );
           else                              CF( nd->flag, NODE::kDryPrev );
@@ -780,6 +793,20 @@ void PROJECT::Compute()
           nd->vo.dUdt = nd->v.dUdt;
           nd->vo.dVdt = nd->v.dVdt;
           nd->vo.dSdt = nd->v.dSdt;
+        }
+
+        for( int e=0; e<R2D->Getne(); e++ )
+        {
+          ELEM *el = R2D->Getelem(e);
+
+          if( isFS(el->flag, ELEM::kDry) )  SF( el->flag, ELEM::kDryPrev );
+          else                              CF( el->flag, ELEM::kDryPrev );
+
+          if( isFS(el->flag, ELEM::kMarsh) )  SF( el->flag, ELEM::kMarshPrev );
+          else                                CF( el->flag, ELEM::kMarshPrev );
+
+          el->Uo = el->U;
+          el->Vo = el->V;
         }
 
         // -------------------------------------------------------------------------------

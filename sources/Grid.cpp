@@ -410,7 +410,7 @@ void GRID::InputControl( char* fileName, GRID* region, SUBDOM* subdom )
 
   int* con[5];
   for( int i=0; i<5; i++ )
-    con[i] = (int*) MEMORY::memo.Array_el( nectr );
+    con[i] = (int*) MEMORY::memo.Array_el( nectr, "GRID::InputControl(1)" );
 
   ne = 0;
 
@@ -496,7 +496,7 @@ void GRID::InputControl( char* fileName, GRID* region, SUBDOM* subdom )
 
   delete file;
 
-  for( int i=0; i<5; i++ )  MEMORY::memo.Delete( con[i] );
+  for( int i=0; i<5; i++ )  MEMORY::memo.Detach( con[i] );
 
 
   ////////////////////////////////////////////////////////////////////////////////////////
@@ -849,7 +849,7 @@ void GRID::InputInitial( int isAscii, char* name, TIME* time, SUBDOM* subdom, in
       ////////////////////////////////////////////////////////////////////////////////////
       // read node data
 
-      double* nd_data = (double*) MEMORY::memo.Array_nd( npInit );
+      double* nd_data = (double*) MEMORY::memo.Array_nd( npInit, "GRID::InputInitial(1)" );
 
       for( int i=0; i<11; i++ )
       {
@@ -1007,7 +1007,7 @@ void GRID::InputInitial( int isAscii, char* name, TIME* time, SUBDOM* subdom, in
         el->P /= ncn;
       }
 
-      double* ne_data = (double*) MEMORY::memo.Array_el( neInit );
+      double* ne_data = (double*) MEMORY::memo.Array_el( neInit, "GRID::InputInitial(2)" );
 
       if( relno >= 40000  &&  neInit > 0  )
       {
@@ -1269,8 +1269,8 @@ void GRID::OutputData( PROJECT* project, int timeStep, char* time )
     fwrite( &ne,                                sizeof(int),   len, id );
 
     double* data;
-    if( np > ne )  data = (double*) MEMORY::memo.Array_nd( np );
-    else           data = (double*) MEMORY::memo.Array_el( ne );
+    if( np > ne )  data = (double*) MEMORY::memo.Array_nd( np, "GRID::OutputData(1)" );
+    else           data = (double*) MEMORY::memo.Array_el( ne, "GRID::OutputData(2)" );
 
     len = np;
 

@@ -1,25 +1,8 @@
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 //
-// E Q S _ U V S 2 D _ A I
+// class EQS_UVS2D_ME_TMAI
 //
 // /////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// FILES
-//
-// EqsUVS2D_AI.h     : definition file of the class.
-// EqsUVS2D_AI.cpp   : implementation file of the class.
-//
-// CoefsUVS2D_AI.cpp : methods EQS_UVS2D_AI::Coefs()
-//                             EQS_UVS2D_AI::Region()
-//
-// -------------------------------------------------------------------------------------------------
-//
-// DESCRIPTION
-//
-// This class implements a differential equation system for shallow water flow with an
-// anisotrop turbulence closure (Elder).
-//
-// -------------------------------------------------------------------------------------------------
 //
 // COPYRIGHT (C) 2011 - 2014  by  P.M. SCHROEDER  (sc)
 //
@@ -46,34 +29,26 @@
 // Walzbachtal / Germany
 // michael.schroeder@hnware.de
 //
-// -------------------------------------------------------------------------------------------------
-//
-// HISTORY
-//
-//    date              changes
-// ------------  ----  -----------------------------------------------------------------------------
-//  01.01.200x    sc    first implementation / first concept
-//
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef EQS_UVS2D_AI_INCL
-#define EQS_UVS2D_AI_INCL
+#include "Defs.h"
+#include "Report.h"
+#include "Vars.h"
+#include "Shape.h"
+#include "Memory.h"
+#include "Node.h"
+#include "Elem.h"
+#include "Model.h"
+#include "Project.h"
 
-#include "EqsUVS2D.h"
+#include "EqsUVS2D_ME_TMAI.h"
 
 
-class  ELEM;
-class  PROJECT;
-
-
-class EQS_UVS2D_AI : public EQS_UVS2D
+EQS_UVS2D_ME_TMAI::EQS_UVS2D_ME_TMAI() : EQS_UVS2D_ME_TM()
 {
-  public:
-    EQS_UVS2D_AI();
-    ~EQS_UVS2D_AI();
+}
 
-  protected:
-    void Region( ELEM*, PROJECT*, double**, double* );
-    void Region_40306( ELEM*, PROJECT*, double**, double* );
-};
-#endif
+
+EQS_UVS2D_ME_TMAI::~EQS_UVS2D_ME_TMAI()
+{
+}

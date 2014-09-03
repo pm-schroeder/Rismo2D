@@ -83,11 +83,11 @@ void EQS_DZ::Execute( PROJECT* project, int shape )
   REPORT::rpt.PrintTime( 1 );
 
   // bed evolution -----------------------------------------------------------------------
-  dzdt  = (double*) MEMORY::memo.Array_nd( rgnp );
+  dzdt  = (double*) MEMORY::memo.Array_nd( rgnp, "EQS_DZ::Execute(1)" );
   for( int n=0; n<rgnp; n++ )  dzdt[n] = 0.0;
 
   // reduction factor to account for transport on rigid bed ------------------------------
-  etaQb = (double*) MEMORY::memo.Array_nd( rgnp );
+  etaQb = (double*) MEMORY::memo.Array_nd( rgnp, "EQS_DZ::Execute(2)" );
 
   for( int n=0; n<rgnp; n++ )  etaQb[n] = 1.0;
 
@@ -107,12 +107,12 @@ void EQS_DZ::Execute( PROJECT* project, int shape )
     //////////////////////////////////////////////////////////////////////////////////////
     case 1:
     {
-      double* A    = (double*) MEMORY::memo.Array_el( rgne );  // element area
-      double* Vtot = (double*) MEMORY::memo.Array_el( rgne );  // change of volume (total)
-      double* Vmax = (double*) MEMORY::memo.Array_el( rgne );  // max change of volume
-      double* dzdt = (double*) MEMORY::memo.Array_el( rgne );  // change of elevation
-      double* dz   = (double*) MEMORY::memo.Array_nd( rgnp );  // change of elevation at node
-      double* wght = (double*) MEMORY::memo.Array_nd( rgnp );  // weighting factor per node
+      double* A    = (double*) MEMORY::memo.Array_el( rgne, "EQS_DZ::Execute(3)" );  // element area
+      double* Vtot = (double*) MEMORY::memo.Array_el( rgne, "EQS_DZ::Execute(4)" );  // change of volume (total)
+      double* Vmax = (double*) MEMORY::memo.Array_el( rgne, "EQS_DZ::Execute(5)" );  // max change of volume
+      double* dzdt = (double*) MEMORY::memo.Array_el( rgne, "EQS_DZ::Execute(6)" );  // change of elevation
+      double* dz   = (double*) MEMORY::memo.Array_nd( rgnp, "EQS_DZ::Execute(7)" );  // change of elevation at node
+      double* wght = (double*) MEMORY::memo.Array_nd( rgnp, "EQS_DZ::Execute(8)" );  // weighting factor per node
 
       double** V   = (double**) MEMORY::memo.Dmatrix( rgne, kMaxNodes2D );  // node wise change
 
@@ -404,8 +404,8 @@ void EQS_DZ::Execute( PROJECT* project, int shape )
       if( shape == kLinear )  coefs = kBottomEvol_L;
       else                    coefs = kBottomEvol;
 
-      double* B = (double*) MEMORY::memo.Array_eq( neq );      // right hand side
-      double* X = (double*) MEMORY::memo.Array_eq( neq );      // change of Z
+      double* B = (double*) MEMORY::memo.Array_eq( neq, "EQS_DZ::Execute(9)" ); // right hand side
+      double* X = (double*) MEMORY::memo.Array_eq( neq, "EQS_DZ::Execute(10)" );// change of Z
 
       initStructure = true;
 

@@ -190,8 +190,8 @@ void EQS_PPE2D::Execute( PROJECT* project )
 
   SetEqno( model, 3, 2, 0, project->fix, project->elemKind );
 
-  double* B = (double*) MEMORY::memo.Array_eq( neq );
-  double* X = (double*) MEMORY::memo.Array_eq( neq );
+  double* B = (double*) MEMORY::memo.Array_eq( neq, "EQS_PPE2D::Execute(1)" );
+  double* X = (double*) MEMORY::memo.Array_eq( neq, "EQS_PPE2D::Execute(2)" );
 
 
   for( int it=0; it<project->actualCycit; it++ )

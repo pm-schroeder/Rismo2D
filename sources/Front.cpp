@@ -191,7 +191,7 @@ void FRONT::Direct( PROJECT* project, MODEL* model, EQS* eqs, double* vec )
     if( !(elemCounter % 50) )
     {
       REPORT::rpt.Screen( 5, "\r                                                          " );
-      REPORT::rpt.Screen(5,  "\r %6d ", elemCounter );
+      REPORT::rpt.Screen( 5,  "\r %6d ", elemCounter );
     }
 
     elemCounter++;

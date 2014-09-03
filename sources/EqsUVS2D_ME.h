@@ -75,12 +75,9 @@ class  TIMEINT;
 class EQS_UVS2D_ME : public EQS_UVS2D
 {
   protected:
-    int      tri_id[4];
-    int      quad_id[5];
-
     double **UElimEq;
     double **VElimEq;
-    double **PElimEq;
+
     double   relaxThdt_UV;
     double   relaxThdt_H;
 
@@ -89,13 +86,11 @@ class EQS_UVS2D_ME : public EQS_UVS2D
     virtual ~EQS_UVS2D_ME();
 
     virtual void Execute( PROJECT*, int );
-    virtual int  Coefs( ELEM*, PROJECT*, double**, double* );
+    virtual void Eliminate( ELEM*, double**, double* , int, int, int, int );
 
   protected:
     virtual void Bound( ELEM*, PROJECT*, double**, double* );
     virtual void Region( ELEM*, PROJECT*, double**, double* );
-
-    int  PToNode( PROJECT* );
 };
 
 #endif

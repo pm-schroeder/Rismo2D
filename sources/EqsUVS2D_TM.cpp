@@ -63,6 +63,7 @@ EQS_UVS2D_TM::~EQS_UVS2D_TM()
 
 void EQS_UVS2D_TM::Timegrad( PROJECT* project, double dt, double th )
 {
+  // call the base class ---------------------------------------------------------------------------
   EQS_UVS2D::Timegrad( project, dt, th );
   return;
 
@@ -238,6 +239,7 @@ void EQS_UVS2D_TM::Timegrad( PROJECT* project, double dt, double th )
 
 void EQS_UVS2D_TM::Predict( PROJECT* project, int init, double dt, double th )
 {
+  // call the base class ---------------------------------------------------------------------------
   EQS_UVS2D::Predict( project, init, dt, th );
   return;
 

@@ -105,7 +105,7 @@ void ELEM::Setshape( int id )
 //                    qShape = SHAPE::get( id, 6 );   break;
 //
 //    case kSquare:   lShape = SHAPE::get( id, 4 );
-//                    bShape = NULL;
+//                    bShape = SHAPE::get( id, 5 );
 //                    qShape = SHAPE::get( id, 8 );   break;
 //
 //    default:
@@ -129,7 +129,7 @@ NODE* ELEM::Getnode( int i )
 }
 
 
-void ELEM::center( double* xc, double* yc )
+void ELEM::Center( double* xc, double* yc )
 {
   int nnd = 0;
 
@@ -152,6 +152,34 @@ void ELEM::center( double* xc, double* yc )
 
   *xc /= nnd;
   *yc /= nnd;
+}
+
+
+void ELEM::Center( double* xc, double* yc, double* zc )
+{
+  int nnd = 0;
+
+  *xc = *yc = *zc = 0.0;
+
+  switch( GetshapeID() )
+  {
+    case kLine:       nnd = 2;  break;
+    case kTriangle:   nnd = 3;  break;
+    case kSquare:     nnd = 4;  break;
+  }
+
+  for( int i=0; i<nnd; i++ )
+  {
+    NODE* nd = Getnode(i);
+
+    *xc += nd->x;
+    *yc += nd->y;
+    *zc += nd->z;
+  }
+
+  *xc /= nnd;
+  *yc /= nnd;
+  *zc /= nnd;
 }
 
 

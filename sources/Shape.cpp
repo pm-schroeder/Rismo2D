@@ -65,10 +65,12 @@ SHAPE* SHAPE::pShape = NULL;
 double SHAPE::loc_1D[4][4];
 double SHAPE::weight_1D[4][4];
 
-double SHAPE::loc_TRI3[4][2];
-double SHAPE::weight_TRI3[4];
+double SHAPE::loc_TRI3[6][2];
+double SHAPE::weight_TRI3[6];
+
 double SHAPE::loc_TRI5[7][2];
 double SHAPE::weight_TRI5[7];
+
 double SHAPE::loc_TRI7[13][2];
 double SHAPE::weight_TRI7[13];
 
@@ -80,7 +82,7 @@ SHAPE::SHAPE()
 
 SHAPE::~SHAPE()
 {
-  if( nShape )  delete[]  pShape;
+  if( nShape )  delete[] pShape;
 }
 
 
@@ -137,7 +139,7 @@ void SHAPE::types( int GPdeg )
 {
   // allocate memory for shapes ----------------------------------------------------------
 
-  nShape = 7;
+  nShape = 8;
   pShape = new SHAPE [nShape];
 
   if( !pShape )
@@ -159,13 +161,15 @@ void SHAPE::types( int GPdeg )
       i=0; s = &pShape[i]; s->dim = 1; s->ident = kLine; s->ngp =  2; s->order = 1; s->nnd = 2;
       i++; s = &pShape[i]; s->dim = 1; s->ident = kLine; s->ngp =  2; s->order = 2; s->nnd = 3;
 
-      i++; s = &pShape[i]; s->dim = 2; s->ident = kTri;  s->ngp =  4; s->order = 1; s->nnd = 3;
-      i++; s = &pShape[i]; s->dim = 2; s->ident = kTri;  s->ngp =  4; s->order = 2; s->nnd = 6;
+      i++; s = &pShape[i]; s->dim = 2; s->ident = kTri;  s->ngp =  6; s->order = 1; s->nnd = 3;
+      i++; s = &pShape[i]; s->dim = 2; s->ident = kTri;  s->ngp =  6; s->order = 2; s->nnd = 6;
 
-      i++; s = &pShape[i]; s->dim = 2; s->ident = kTri;  s->ngp =  4; s->order = 3; s->nnd = 4;
+      i++; s = &pShape[i]; s->dim = 2; s->ident = kTri;  s->ngp =  6; s->order = 3; s->nnd = 4;
 
       i++; s = &pShape[i]; s->dim = 2; s->ident = kQuad; s->ngp =  4; s->order = 1; s->nnd = 4;
       i++; s = &pShape[i]; s->dim = 2; s->ident = kQuad; s->ngp =  4; s->order = 2; s->nnd = 8;
+
+      i++; s = &pShape[i]; s->dim = 2; s->ident = kQuad; s->ngp =  4; s->order = 3; s->nnd = 5;
       break;
 
     case 5:
@@ -179,6 +183,8 @@ void SHAPE::types( int GPdeg )
 
       i++; s = &pShape[i]; s->dim = 2; s->ident = kQuad; s->ngp =  9; s->order = 1; s->nnd = 4;
       i++; s = &pShape[i]; s->dim = 2; s->ident = kQuad; s->ngp =  9; s->order = 2; s->nnd = 8;
+
+      i++; s = &pShape[i]; s->dim = 2; s->ident = kQuad; s->ngp =  9; s->order = 3; s->nnd = 5;
       break;
 
     case 7:
@@ -192,6 +198,8 @@ void SHAPE::types( int GPdeg )
 
       i++; s = &pShape[i]; s->dim = 2; s->ident = kQuad; s->ngp = 16; s->order = 1; s->nnd = 4;
       i++; s = &pShape[i]; s->dim = 2; s->ident = kQuad; s->ngp = 16; s->order = 2; s->nnd = 8;
+
+      i++; s = &pShape[i]; s->dim = 2; s->ident = kQuad; s->ngp = 16; s->order = 3; s->nnd = 5;
       break;
   }
 }
@@ -239,45 +247,71 @@ void SHAPE::gp()
   weight_1D[3][3] =  0.347854845137454;
 
 
-  // location of triangular Gauss points (3rd-order)--------------------------------------
+  // location and weight of triangular Gauss points (3rd-order) ------------------------------------
 
-  loc_TRI3[0][0] = 1.0/3.0;
-  loc_TRI3[0][1] = 1.0/3.0;
-  loc_TRI3[1][0] = 0.6;
-  loc_TRI3[1][1] = 0.2;
-  loc_TRI3[2][0] = 0.2;
-  loc_TRI3[2][1] = 0.6;
-  loc_TRI3[3][0] = 0.2;
-  loc_TRI3[3][1] = 0.2;
+  // 1. COWPER (1973):
+  //    Gaussian Quadrature Formulas for Triangles
+  //    4-point formula, 3rd order precision
 
+  // These points do not converge for bubble shape functions.
 
-  // weight of Gauss points --------------------------------------------------------------
+  //loc_TRI3[0][0] = 1.0/3.0;    loc_TRI3[0][1] = 1.0/3.0;
+  //loc_TRI3[1][0] = 0.6;        loc_TRI3[1][1] = 0.2;
+  //loc_TRI3[2][0] = 0.2;        loc_TRI3[2][1] = 0.6;
+  //loc_TRI3[3][0] = 0.2;        loc_TRI3[3][1] = 0.2;
 
-  weight_TRI3[0] = -0.28125;
-  weight_TRI3[1] =  0.260416666666667;
-  weight_TRI3[2] =  0.260416666666667;
-  weight_TRI3[3] =  0.260416666666667;
+  //weight_TRI3[0] = -0.28125;
+  //weight_TRI3[1] =  0.260416666666667;
+  //weight_TRI3[2] =  0.260416666666667;
+  //weight_TRI3[3] =  0.260416666666667;
 
+  // 2. GAZETA DE SOUZA + APARECIDO (2007):
+  //    Numerical integration by Gauss-Legendre quadrature over triangular domains
+  //    4-point formula, 3rd order precision
 
-  // location of triangular Gauss points (5th-order) -------------------------------------
+  // Poor results on bubble shape functions; just convergent.
 
-  loc_TRI5[0][0] = 1.0/3.0;
-  loc_TRI5[0][1] = 1.0/3.0;
-  loc_TRI5[1][0] = 0.0597158717897698;
-  loc_TRI5[1][1] = 0.470142064105115;
-  loc_TRI5[2][0] = 0.470142064105115;
-  loc_TRI5[2][1] = 0.0597158717897698;
-  loc_TRI5[3][0] = 0.470142064105115;
-  loc_TRI5[3][1] = 0.470142064105115;
-  loc_TRI5[4][0] = 0.797426985353087;
-  loc_TRI5[4][1] = 0.101286507323456;
-  loc_TRI5[5][0] = 0.101286507323456;
-  loc_TRI5[5][1] = 0.797426985353087;
-  loc_TRI5[6][0] = 0.101286507323456;
-  loc_TRI5[6][1] = 0.101286507323456;
+//  loc_TRI3[0][0] = 0.1889958;     loc_TRI3[0][1] = 0.1889958;
+//  loc_TRI3[1][0] = 0.7053418;     loc_TRI3[1][1] = 0.1279915;
+//  loc_TRI3[2][0] = 0.1279915;     loc_TRI3[2][1] = 0.7053418;
+//  loc_TRI3[3][0] = 0.4776709;     loc_TRI3[3][1] = 0.4776709;
 
+//  weight_TRI3[0] = 0.1971687836;
+//  weight_TRI3[1] = 0.125;
+//  weight_TRI3[2] = 0.125;
+//  weight_TRI3[3] = 0.05283122;
 
-  // weight of Gauss points --------------------------------------------------------------
+  // 3. COWPER (1973):
+  //    Gaussian Quadrature Formulas for Triangles
+  //    6-point formula, 3rd order precision
+
+  // It works.
+
+  loc_TRI3[0][0] = 0.109039009072877;     loc_TRI3[0][1] = 0.231933368553031;
+  loc_TRI3[1][0] = 0.109039009072877;     loc_TRI3[1][1] = 0.659027622374092;
+  loc_TRI3[2][0] = 0.231933368553031;     loc_TRI3[2][1] = 0.109039009072877;
+  loc_TRI3[3][0] = 0.231933368553031;     loc_TRI3[3][1] = 0.659027622374092;
+  loc_TRI3[4][0] = 0.659027622374092;     loc_TRI3[4][1] = 0.109039009072877;
+  loc_TRI3[5][0] = 0.659027622374092;     loc_TRI3[5][1] = 0.231933368553031;
+
+  weight_TRI3[0] = 1.0/12.0;
+  weight_TRI3[1] = 1.0/12.0;
+  weight_TRI3[2] = 1.0/12.0;
+  weight_TRI3[3] = 1.0/12.0;
+  weight_TRI3[4] = 1.0/12.0;
+  weight_TRI3[5] = 1.0/12.0;
+
+  // location and weight of triangular Gauss points (5th-order) ------------------------------------
+
+  // 1. Reference: COWPER (1973):
+  //               Gaussian Quadrature Formulas for Triangles (7 points)
+  loc_TRI5[0][0] = 1.0/3.0;               loc_TRI5[0][1] = 1.0/3.0;
+  loc_TRI5[1][0] = 0.0597158717897698;    loc_TRI5[1][1] = 0.470142064105115;
+  loc_TRI5[2][0] = 0.470142064105115;     loc_TRI5[2][1] = 0.0597158717897698;
+  loc_TRI5[3][0] = 0.470142064105115;     loc_TRI5[3][1] = 0.470142064105115;
+  loc_TRI5[4][0] = 0.797426985353087;     loc_TRI5[4][1] = 0.101286507323456;
+  loc_TRI5[5][0] = 0.101286507323456;     loc_TRI5[5][1] = 0.797426985353087;
+  loc_TRI5[6][0] = 0.101286507323456;     loc_TRI5[6][1] = 0.101286507323456;
 
   weight_TRI5[0] = 0.1125;
   weight_TRI5[1] = 0.0661970763942531;
@@ -287,8 +321,29 @@ void SHAPE::gp()
   weight_TRI5[5] = 0.0629695902724136;
   weight_TRI5[6] = 0.0629695902724136;
 
+  // 2. Reference: Gazeta de Souza + Aparecido (2007):
+  //               Numerical integration by Gauss-Legendre quadrature over triangular domains
+  //loc_TRI5[0][0] = 0.1063508;     loc_TRI5[0][1] = 0.1063508;
+  //loc_TRI5[1][0] = 0.4718246;     loc_TRI5[1][1] = 0.08452624;
+  //loc_TRI5[2][0] = 0.8372983;     loc_TRI5[2][1] = 0.06270166;
+  //loc_TRI5[3][0] = 0.08452624;    loc_TRI5[3][1] = 0.4718246;
+  //loc_TRI5[4][0] = 0.375;         loc_TRI5[4][1] = 0.375;
+  //loc_TRI5[5][0] = 0.6654738;     loc_TRI5[5][1] = 0.2781754;
+  //loc_TRI5[6][0] = 0.06270166;    loc_TRI5[6][1] = 0.8372983;
+  //loc_TRI5[7][0] = 0.2781754;     loc_TRI5[7][1] = 0.6654738;
+  //loc_TRI5[8][0] = 0.4936492;     loc_TRI5[8][1] = 0.4936492;
 
-  // location of triangular Gauss points (7th-order) -------------------------------------
+  //weight_TRI5[0] = 0.06846439;
+  //weight_TRI5[1] = 0.08563571;
+  //weight_TRI5[2] = 0.03858025;
+  //weight_TRI5[3] = 0.08563571;
+  //weight_TRI5[4] = 0.09876543;
+  //weight_TRI5[5] = 0.03782109;
+  //weight_TRI5[6] = 0.03858025;
+  //weight_TRI5[7] = 0.03782109;
+  //weight_TRI5[8] = 0.008696116;
+
+  // location and weight of triangular Gauss points (7th-order) ------------------------------------
 
   loc_TRI7[ 0][0] = 1.0/3.0;
   loc_TRI7[ 0][1] = 1.0/3.0;
@@ -316,9 +371,6 @@ void SHAPE::gp()
   loc_TRI7[11][1] = 0.048690315425316;
   loc_TRI7[12][0] = 0.048690315425316;
   loc_TRI7[12][1] = 0.312865496004875;
-
-
-  // weight of Gauss points --------------------------------------------------------------
 
   weight_TRI7[ 0] = -0.074785022233835;
   weight_TRI7[ 1] =  0.087807628716602;
@@ -383,7 +435,7 @@ double SHAPE::jacobi2D( int     nnd,
   trafo[1][0] = -jacobi[1][0] / det;
   trafo[1][1] =  jacobi[0][0] / det;
 
-  return (det);
+  return det;
 }
 
 

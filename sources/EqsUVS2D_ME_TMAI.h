@@ -1,23 +1,25 @@
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 //
-// E Q S _ U V S 2 D _ A I
+// E Q S _ U V S 2 D _ M E _ T M A I
 //
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // FILES
 //
-// EqsUVS2D_AI.h     : definition file of the class.
-// EqsUVS2D_AI.cpp   : implementation file of the class.
+// EqsUVS2D_ME_TMAI.h     : definition file of the class.
+// EqsUVS2D_ME_TMAI.cpp   : implementation file of the class.
 //
-// CoefsUVS2D_AI.cpp : methods EQS_UVS2D_AI::Coefs()
-//                             EQS_UVS2D_AI::Region()
+// CoefsUVS2D_ME_TMAI.cpp : methods EQS_UVS2D_ME_TMAI::Coefs()
+//                                  EQS_UVS2D_ME_TMAI::Region()
+//                                  EQS_UVS2D_ME_TMAI::Region_dt()
 //
 // -------------------------------------------------------------------------------------------------
 //
 // DESCRIPTION
 //
-// This class implements a differential equation system for shallow water flow with an
-// anisotrop turbulence closure (Elder).
+// This class implements a differential equation system for shallow water flow with a modified
+// time discretization with better convergence behaviour if time steps are very small (H-LES)
+// using an anisotropic turbulence closure (Elder).
 //
 // -------------------------------------------------------------------------------------------------
 //
@@ -52,28 +54,23 @@
 //
 //    date              changes
 // ------------  ----  -----------------------------------------------------------------------------
-//  01.01.200x    sc    first implementation / first concept
+//  03.01.2013    sc    first implementation / first concept
 //
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef EQS_UVS2D_AI_INCL
-#define EQS_UVS2D_AI_INCL
+#ifndef EQS_UVS2D_ME_TMAI_INCL
+#define EQS_UVS2D_ME_TMAI_INCL
 
-#include "EqsUVS2D.h"
-
-
-class  ELEM;
-class  PROJECT;
+#include "EqsUVS2D_ME_TM.h"
 
 
-class EQS_UVS2D_AI : public EQS_UVS2D
+class EQS_UVS2D_ME_TMAI : public EQS_UVS2D_ME_TM
 {
   public:
-    EQS_UVS2D_AI();
-    ~EQS_UVS2D_AI();
+    EQS_UVS2D_ME_TMAI();
+    ~EQS_UVS2D_ME_TMAI();
 
   protected:
     void Region( ELEM*, PROJECT*, double**, double* );
-    void Region_40306( ELEM*, PROJECT*, double**, double* );
 };
 #endif

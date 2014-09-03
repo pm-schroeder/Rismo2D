@@ -76,13 +76,10 @@ void EQS_UVS2D::Bound( ELEM*    elem,
   SHAPE* lShape  = elem->GetLShape();
   SHAPE* qShape  = elem->GetQShape();
 
-  TYPE*  type    = TYPE::Getid( elem->type );
-
-  int    ncn     = lShape->nnd;
   int    nnd     = qShape->nnd;
 
-  int    startV  = nnd;
-  int    startS  = 2 * nnd;
+  int    eqidV   = nnd;
+  int    eqidS   = 2 * nnd;
 
   double gravity = project->g;
 
@@ -128,13 +125,13 @@ void EQS_UVS2D::Bound( ELEM*    elem,
 
   // row index for force vector and element stiffness matrix -----------------------------
 
-  int r0U = 0;        int r1U = 1;            int r2U = 2;
-  int r0V = startV;   int r1V = startV + 1;   int r2V = startV + 2;
+  int r0U = 0;       int r1U = 1;           int r2U = 2;
+  int r0V = eqidV;   int r1V = eqidV + 1;   int r2V = eqidV + 2;
 
 
   // column index for element stiffness matrix -------------------------------------------
 
-  int c0H = startS;   int c1H = startS + 1;
+  int c0H = eqidS;   int c1H = eqidS + 1;
 
 
   for( int g=0; g<qShape->ngp; g++ )   // loop on GAUSS points
@@ -334,7 +331,7 @@ void EQS_UVS2D::Bound( ELEM*    elem,
 
   // apply transformation ----------------------------------------------------------------
 
-  Rotate2D( nnd, elem->nd, 3, estifm, force );
+  Rotate2D( nnd, eqidV, elem->nd, estifm, force );
 
 
   // -------------------------------------------------------------------------------------
@@ -382,8 +379,8 @@ void EQS_UVS2D::Region( ELEM*    elem,
 
   TYPE* type = TYPE::Getid( elem->type );
 
-  int startV = nnd;
-  int startS = 2 * nnd;
+  int eqidV = nnd;
+  int eqidS = 2 * nnd;
 
   if( force )
   {
@@ -685,11 +682,9 @@ void EQS_UVS2D::Region( ELEM*    elem,
 
       f   =  H * dVdt;                                  // time
       f  +=  H * (U * dVdx  +  V * dVdy);               // convection
-      fx  =  0.0;
-      fy  =  0.0;
 
-      fx +=  H * vt * (dVdx + dUdy);                    // eddy viscosity
-      fy +=  H * vt * (dVdy + dVdy);
+      fx  =  H * vt * (dVdx + dUdy);                    // eddy viscosity
+      fy  =  H * vt * (dVdy + dVdy);
 
       // -------------------------------------------------------------------------------------------
       // The following depth-averaged Boussinesq approach leads to instabilities in LES.
@@ -716,7 +711,7 @@ void EQS_UVS2D::Region( ELEM*    elem,
       fx *= weight;
       fy *= weight;
 
-      forcePtr = force + startV;
+      forcePtr = force + eqidV;
 
       for( int j=0; j<nnd; j++ )
       {
@@ -733,7 +728,7 @@ void EQS_UVS2D::Region( ELEM*    elem,
 
       f *= weight;
 
-      forcePtr = force + startS;
+      forcePtr = force + eqidS;
 
       for( int j=0; j<ncn; j++ )
       {
@@ -825,7 +820,7 @@ void EQS_UVS2D::Region( ELEM*    elem,
 
       for( int j=0; j<nnd; j++ )
       {
-        estifmPtr = estifm[j] + startV;
+        estifmPtr = estifm[j] + eqidV;
 
         for( int k=0; k<nnd; k++ )
         {
@@ -869,7 +864,7 @@ void EQS_UVS2D::Region( ELEM*    elem,
 
       for( int j=0; j<nnd; j++ )
       {
-        estifmPtr = estifm[j] + startS;
+        estifmPtr = estifm[j] + eqidS;
 
         for( int k=0; k<ncn; k++ )
         {
@@ -905,7 +900,7 @@ void EQS_UVS2D::Region( ELEM*    elem,
 
       for( int j=0; j<nnd; j++ )
       {
-        estifmPtr = estifm[j + startV];
+        estifmPtr = estifm[j + eqidV];
 
         for( int k=0; k<nnd; k++ )
         {
@@ -941,12 +936,12 @@ void EQS_UVS2D::Region( ELEM*    elem,
       {
         t[j]  = df__ * n[j]  +  df_x * dndx[j]  +  df_y * dndy[j];
         tx[j] = dfx_ * n[j]  +  dfxx * dndx[j];
-        ty[j] = dfy_ * n[j]  +  dfyy * dndy[j];
+        ty[j] = dfy_ * n[j]                     +  dfyy * dndy[j];
       }
 
       for( int j=0; j<nnd; j++ )
       {
-        estifmPtr = estifm[j + startV] + startV;
+        estifmPtr = estifm[j + eqidV] + eqidV;
 
         for( int k=0; k<nnd; k++ )
         {
@@ -990,7 +985,7 @@ void EQS_UVS2D::Region( ELEM*    elem,
 
       for( int j=0; j<nnd; j++ )
       {
-        estifmPtr = estifm[j + startV] + startS;
+        estifmPtr = estifm[j + eqidV] + eqidS;
 
         for( int k=0; k<ncn; k++ )
         {
@@ -1011,7 +1006,7 @@ void EQS_UVS2D::Region( ELEM*    elem,
 
       for( int j=0; j<ncn; j++ )
       {
-        estifmPtr = estifm[j + startS];
+        estifmPtr = estifm[j + eqidS];
 
         for( int k=0; k<nnd; k++ )
         {
@@ -1032,7 +1027,7 @@ void EQS_UVS2D::Region( ELEM*    elem,
 
       for( int j=0; j<ncn; j++ )
       {
-        estifmPtr = estifm[j + startS] + startV;
+        estifmPtr = estifm[j + eqidS] + eqidV;
 
         for( int k=0; k<nnd; k++ )
         {
@@ -1055,7 +1050,7 @@ void EQS_UVS2D::Region( ELEM*    elem,
 
       for( int j=0; j<ncn; j++ )
       {
-        estifmPtr = estifm[j + startS] + startS;
+        estifmPtr = estifm[j + eqidS] + eqidS;
 
         for( int k=0; k<ncn; k++ )
         {
@@ -1069,7 +1064,7 @@ void EQS_UVS2D::Region( ELEM*    elem,
 
   // apply transformation --------------------------------------------------------------------------
 
-  Rotate2D( nnd, elem->nd, 3, estifm, force );
+  Rotate2D( nnd, eqidV, elem->nd, estifm, force );
 
 
   // -----------------------------------------------------------------------------------------------
@@ -1117,8 +1112,8 @@ void EQS_UVS2D::Region( ELEM*    elem,
 
       if( estifm )
       {
-        estifm[i][i]          = area * H;
-        estifm[i][i + startS] = area * Un;
+        estifm[i][i]         = area * H;
+        estifm[i][i + eqidS] = area * Un;
       }
     }
   }
@@ -1139,8 +1134,8 @@ void EQS_UVS2D::Region( ELEM*    elem,
       NODE* lnode = elem->nd[l];
       NODE* rnode = elem->nd[r];
 
-      int nofeqHl = startS + l;    // dfH at left corner node
-      int nofeqHr = startS + r;    // dfH at right corner node
+      int nofeqHl = eqidS + l;    // dfH at left corner node
+      int nofeqHr = eqidS + r;    // dfH at right corner node
 
 
       // set equation row dfU to zero --------------------------------------------------------------
@@ -1197,13 +1192,10 @@ void EQS_UVS2D::Bound_pinc( ELEM*    elem,
   SHAPE* lShape  = elem->GetLShape();
   SHAPE* qShape  = elem->GetQShape();
 
-  TYPE*  type    = TYPE::Getid( elem->type );
-
-  int    ncn     = lShape->nnd;
   int    nnd     = qShape->nnd;
 
-  int    startV  = nnd;
-  int    startS  = 2 * nnd;
+  int    eqidV   = nnd;
+  int    eqidS   = 2 * nnd;
 
   double gravity = project->g;
 
@@ -1253,13 +1245,13 @@ void EQS_UVS2D::Bound_pinc( ELEM*    elem,
 
   // row index for force vector and element stiffness matrix -----------------------------
 
-  int r0U = 0;        int r1U = 1;            int r2U = 2;
-  int r0V = startV;   int r1V = startV + 1;   int r2V = startV + 2;
+  int r0U = 0;       int r1U = 1;           int r2U = 2;
+  int r0V = eqidV;   int r1V = eqidV + 1;   int r2V = eqidV + 2;
 
 
   // column index for element stiffness matrix -------------------------------------------
 
-  int c0H = startS;   int c1H = startS + 1;
+  int c0H = eqidS;   int c1H = eqidS + 1;
 
 
   for( int g=0; g<qShape->ngp; g++ )   // loop on GAUSS points
@@ -1488,7 +1480,7 @@ void EQS_UVS2D::Bound_pinc( ELEM*    elem,
 
   // apply transformation ----------------------------------------------------------------
 
-  Rotate2D( nnd, elem->nd, 3, estifm, force );
+  Rotate2D( nnd, eqidV, elem->nd, estifm, force );
 
 
   // -------------------------------------------------------------------------------------
@@ -1536,8 +1528,8 @@ void EQS_UVS2D::Region_pinc( ELEM*    elem,
 
   TYPE* type = TYPE::Getid( elem->type );
 
-  int startV = nnd;
-  int startS = 2 * nnd;
+  int eqidV = nnd;
+  int eqidS = 2 * nnd;
 
   if( force )
   {
@@ -1870,7 +1862,7 @@ void EQS_UVS2D::Region_pinc( ELEM*    elem,
       fx *= weight;
       fy *= weight;
 
-      forcePtr = force + startV;
+      forcePtr = force + eqidV;
 
       for( int j=0; j<nnd; j++ )
       {
@@ -1886,7 +1878,7 @@ void EQS_UVS2D::Region_pinc( ELEM*    elem,
       f *= weight;
       f += SS * weight;   // Source or Sink
 
-      forcePtr = force + startS;
+      forcePtr = force + eqidS;
 
       for( int j=0; j<ncn; j++ )
       {
@@ -1978,7 +1970,7 @@ void EQS_UVS2D::Region_pinc( ELEM*    elem,
 
       for( int j=0; j<nnd; j++ )
       {
-        estifmPtr = estifm[j] + startV;
+        estifmPtr = estifm[j] + eqidV;
 
         for( int k=0; k<nnd; k++ )
         {
@@ -2022,7 +2014,7 @@ void EQS_UVS2D::Region_pinc( ELEM*    elem,
 
       for( int j=0; j<nnd; j++ )
       {
-        estifmPtr = estifm[j] + startS;
+        estifmPtr = estifm[j] + eqidS;
 
         for( int k=0; k<ncn; k++ )
         {
@@ -2058,7 +2050,7 @@ void EQS_UVS2D::Region_pinc( ELEM*    elem,
 
       for( int j=0; j<nnd; j++ )
       {
-        estifmPtr = estifm[j + startV];
+        estifmPtr = estifm[j + eqidV];
 
         for( int k=0; k<nnd; k++ )
         {
@@ -2099,7 +2091,7 @@ void EQS_UVS2D::Region_pinc( ELEM*    elem,
 
       for( int j=0; j<nnd; j++ )
       {
-        estifmPtr = estifm[j + startV] + startV;
+        estifmPtr = estifm[j + eqidV] + eqidV;
 
         for( int k=0; k<nnd; k++ )
         {
@@ -2143,7 +2135,7 @@ void EQS_UVS2D::Region_pinc( ELEM*    elem,
 
       for( int j=0; j<nnd; j++ )
       {
-        estifmPtr = estifm[j + startV] + startS;
+        estifmPtr = estifm[j + eqidV] + eqidS;
 
         for( int k=0; k<ncn; k++ )
         {
@@ -2164,7 +2156,7 @@ void EQS_UVS2D::Region_pinc( ELEM*    elem,
 
       for( int j=0; j<ncn; j++ )
       {
-        estifmPtr = estifm[j + startS];
+        estifmPtr = estifm[j + eqidS];
 
         for( int k=0; k<nnd; k++ )
         {
@@ -2185,7 +2177,7 @@ void EQS_UVS2D::Region_pinc( ELEM*    elem,
 
       for( int j=0; j<ncn; j++ )
       {
-        estifmPtr = estifm[j + startS] + startV;
+        estifmPtr = estifm[j + eqidS] + eqidV;
 
         for( int k=0; k<nnd; k++ )
         {
@@ -2208,7 +2200,7 @@ void EQS_UVS2D::Region_pinc( ELEM*    elem,
 
       for( int j=0; j<ncn; j++ )
       {
-        estifmPtr = estifm[j + startS] + startS;
+        estifmPtr = estifm[j + eqidS] + eqidS;
 
         for( int k=0; k<ncn; k++ )
         {
@@ -2222,7 +2214,7 @@ void EQS_UVS2D::Region_pinc( ELEM*    elem,
 
   // apply transformation --------------------------------------------------------------------------
 
-  Rotate2D( nnd, elem->nd, 3, estifm, force );
+  Rotate2D( nnd, eqidV, elem->nd, estifm, force );
 
 
   // -----------------------------------------------------------------------------------------------
@@ -2273,8 +2265,8 @@ void EQS_UVS2D::Region_pinc( ELEM*    elem,
 
       if( estifm )
       {
-        estifm[i][i]          = area * H;
-        estifm[i][i + startS] = area * Un;
+        estifm[i][i]         = area * H;
+        estifm[i][i + eqidS] = area * Un;
       }
     }
   }
@@ -2295,8 +2287,8 @@ void EQS_UVS2D::Region_pinc( ELEM*    elem,
       NODE* lnode = elem->nd[l];
       NODE* rnode = elem->nd[r];
 
-      int nofeqHl = startS + l;    // dfH at left corner node
-      int nofeqHr = startS + r;    // dfH at right corner node
+      int nofeqHl = eqidS + l;    // dfH at left corner node
+      int nofeqHr = eqidS + r;    // dfH at right corner node
 
 
       // set equation row dfU to zero --------------------------------------------------------------
