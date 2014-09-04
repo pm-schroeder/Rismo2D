@@ -74,7 +74,7 @@
 #include <time.h>
 #include <stdarg.h>
 
-#define kRelease     40600.007          // release
+#define kRelease     40600.008          // release
 
 #define PI           3.141592653589793
 

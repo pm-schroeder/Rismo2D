@@ -364,7 +364,8 @@ int BCONLINE::Inlet( MODEL* model, TIME* actualTime, int b, BCON* bcon, int orde
     // /////////////////////////////////////////////////////////////////////////////////////////////
     // MPI: sum of discharge Q from all subdomains
 #   ifdef _MPI_
-    Q = model->subdom->Mpi_sum( Q );
+    Q   = model->subdom->Mpi_sum( Q );
+    any = model->subdom->Mpi_sum( any );
 #   endif
     // /////////////////////////////////////////////////////////////////////////////////////////////
 
