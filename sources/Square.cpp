@@ -244,6 +244,8 @@ double SHAPE::bSquare( int node, double x, double y )
       return (1 - x*x) * (1 - y*y);
       break;
   }
+
+  return 0.0;
 }
 
 
@@ -268,6 +270,8 @@ double SHAPE::bSquareDx( int node, double x, double y )
       return 2 * x * (y*y - 1);
       break;
   }
+
+  return 0.0;
 }
 
 
@@ -292,6 +296,8 @@ double SHAPE::bSquareDy( int node, double x, double y )
       return (x*x - 1) * 2 * y;
       break;
   }
+
+  return 0.0;
 }
 
 

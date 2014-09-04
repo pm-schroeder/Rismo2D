@@ -185,3 +185,9 @@ HEADERS += \
 #INCLUDEPATH += /usr/include/mpi
 
 #unix:!macx:!symbian: LIBS += -lmpi -lmpi++
+
+OTHER_FILES += \
+    ../Makefile_brutus \
+    ../Makefile_cleo \
+    ../Makefile_mpi \
+    ../Makefile
