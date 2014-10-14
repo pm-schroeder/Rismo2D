@@ -44,6 +44,7 @@
 #include "Node.h"
 #include "Elem.h"
 #include "Model.h"
+#include "Subdom.h"
 
 
 double* MODEL::Rot2D()
@@ -146,6 +147,9 @@ double* MODEL::Rot2D()
       }
     }
   }
+
+  subdom->Mpi_assemble( rot );
+  subdom->Mpi_assemble( wgt );
 
 
   // -------------------------------------------------------------------------------------

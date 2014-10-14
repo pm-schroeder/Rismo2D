@@ -40,6 +40,7 @@
 #include "Node.h"
 #include "Elem.h"
 #include "Model.h"
+#include "Subdom.h"
 
 
 double* MODEL::Curv2D()
@@ -164,6 +165,9 @@ double* MODEL::Curv2D()
       }
     }
   }
+
+  subdom->Mpi_assemble( curv );
+  subdom->Mpi_assemble( wght );
 
 
   // -------------------------------------------------------------------------------------
